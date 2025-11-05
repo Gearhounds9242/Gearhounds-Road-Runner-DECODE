@@ -90,13 +90,13 @@ public class GearhoundsHardware extends Hardware {
         BottomMotor.setDirection(DcMotorSimple.Direction.FORWARD);
 
 
-        leftFront = robotMap.get(DcMotorEx.class, "frontLeft");
+        leftFront = robotMap.get(DcMotorEx.class, "leftFront");
         leftFront.setDirection(DcMotorSimple.Direction.FORWARD);
-        leftBack = robotMap.get(DcMotorImplEx.class, "backLeft");
+        leftBack = robotMap.get(DcMotorImplEx.class, "leftBack");
         leftBack.setDirection(DcMotorSimple.Direction.FORWARD);
-        rightFront = robotMap.get(DcMotorEx.class, "frontRight");
+        rightFront = robotMap.get(DcMotorEx.class, "rightFront");
         rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
-        rightBack = robotMap.get(DcMotorEx.class, "backRight");
+        rightBack = robotMap.get(DcMotorEx.class, "rightBack");
         rightBack.setDirection(DcMotorSimple.Direction.REVERSE);
 
         intake = robotMap.get(DcMotorEx.class, "intake");
