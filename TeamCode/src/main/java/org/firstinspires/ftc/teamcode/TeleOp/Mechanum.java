@@ -132,22 +132,22 @@ public class Mechanum extends OpMode {
 
 
         if (gamepad1.right_trigger > 0.1){
-            robot.intake.setVelocity(Intake_Speed);
+            robot.intake.setPower(Intake_Speed);
         } else if (gamepad1.right_trigger <0.99) {
-            robot.intake.setVelocity(0);
+            robot.intake.setPower(0);
         }
 
 
         if(gamepad2.right_trigger > 0.1){
-            robot.BottomMotor.setVelocity(Bottom_Speed * gamepad2.right_trigger);
+            robot.BottomMotor.setPower(Bottom_Speed * gamepad2.right_trigger);
         } else if (gamepad2.right_trigger < 0.99) {
-            robot.BottomMotor.setVelocity(0);
+            robot.BottomMotor.setPower(0);
         }
 
         if(gamepad2.left_trigger > 0.1){
-            robot.TopMotor.setVelocity(Top_Speed * gamepad2.left_trigger);
+            robot.TopMotor.setPower(Top_Speed * gamepad2.left_trigger);
         } else if (gamepad2.left_trigger < 0.99) {
-            robot.TopMotor.setVelocity(0);
+            robot.TopMotor.setPower(0);
         }
 
 
