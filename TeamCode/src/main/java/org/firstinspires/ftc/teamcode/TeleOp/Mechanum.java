@@ -214,10 +214,10 @@ public class Mechanum extends OpMode {
         double rb = (rotY + rotX - rx) / d;
 
         //set rightFront negative so it goes same direction as other heels
-        robot.leftFront.setVelocity(1500 * lf * shift);
-        robot.leftBack.setVelocity(1500 * lb * shift);
-        robot.rightFront.setVelocity(1500 * rf * shift);
-        robot.rightBack.setVelocity(1500 * rb * shift);
+        robot.leftFront.setPower(1500 * lf * shift);
+        robot.leftBack.setPower(1500 * lb * shift);
+        robot.rightFront.setPower(1500 * rf * shift);
+        robot.rightBack.setPower(1500 * rb * shift);
         telemetry.addData("", "Intake Speed %f", Intake_Speed);
         telemetry.addData("", "Outtake Top Speed %f", Top_Speed);
         telemetry.addData("", "Outtake Bottom Speed %f", Bottom_Speed);
