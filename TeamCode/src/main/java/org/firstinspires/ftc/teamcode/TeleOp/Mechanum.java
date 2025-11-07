@@ -34,6 +34,8 @@ package org.firstinspires.ftc.teamcode.TeleOp;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.PoseVelocity2d;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -41,6 +43,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
+import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Utilities.GearhoundsHardware;
 
 
@@ -107,7 +110,7 @@ public class Mechanum extends OpMode {
      */
     @Override
     public void loop() {
-
+        MecanumDrive drive = new MecanumDrive(hardwareMap, new Pose2d(0, 0, 0));
         // Send data to Dashboard
         TelemetryPacket packet = new TelemetryPacket();
         packet.put("TopMotor", ((robot.TopMotor.getVelocity() / 28) * 60));
@@ -115,7 +118,6 @@ public class Mechanum extends OpMode {
         packet.put("TopVoltage", robot.TopMotor.getCurrent(CurrentUnit.AMPS));
         packet.put("BottomVoltage", robot.BottomMotor.getCurrent(CurrentUnit.AMPS));
         dashboard.sendTelemetryPacket(packet);
-
 
 
 
@@ -131,6 +133,7 @@ public class Mechanum extends OpMode {
         }
 
 
+
         if (gamepad1.right_trigger > 0.1){
             robot.intake.setPower(Intake_Speed);
         } else if (gamepad1.right_trigger <0.99) {
@@ -139,19 +142,28 @@ public class Mechanum extends OpMode {
 
 
         if(gamepad2.right_trigger > 0.1){
-            robot.BottomMotor.setPower(Bottom_Speed * gamepad2.right_trigger);
+            robot.BottomMotor.setVelocity(Bottom_Speed * gamepad2.right_trigger);
         } else if (gamepad2.right_trigger < 0.99) {
-            robot.BottomMotor.setPower(0);
+            robot.BottomMotor.setVelocity(0);
         }
 
         if(gamepad2.left_trigger > 0.1){
-            robot.TopMotor.setPower(Top_Speed * gamepad2.left_trigger);
+            robot.TopMotor.setVelocity(Top_Speed * gamepad2.left_trigger);
         } else if (gamepad2.left_trigger < 0.99) {
-            robot.TopMotor.setPower(0);
+            robot.TopMotor.setVelocity(0);
         }
 
 
-        if (gamepad2.y) {
+
+
+
+drive.setDrivePowers( new Pose2d(
+        -gamepad1.left_stick_y,
+        -gamepad1.left_stick_x,
+        -gamepad1.right_stick_x
+));
+
+        if (gamepad2.yWasPressed()) {
             p2ytime = runtime.seconds();
         }
 
@@ -172,15 +184,15 @@ public class Mechanum extends OpMode {
         }
 
 
-        if(gamepad2.dpad_down){
+        if(gamepad2.dpadDownWasReleased()){
             ballNumber -=1;
         }
 
-        if(gamepad2.dpad_up){
+        if(gamepad2.dpadUpWasReleased()){
             ballNumber +=1;
         }
 
-
+        drive.setWeightedDrivePower
 
         if(gamepad2.dpad_right){
             robot.drop.setPosition(drop_high);

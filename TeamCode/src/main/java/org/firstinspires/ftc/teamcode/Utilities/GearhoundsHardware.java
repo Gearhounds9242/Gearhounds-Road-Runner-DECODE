@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.Utilities;
 
 //import com.qualcomm.hardware.bosch.BNO055IMU i
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorImplEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
