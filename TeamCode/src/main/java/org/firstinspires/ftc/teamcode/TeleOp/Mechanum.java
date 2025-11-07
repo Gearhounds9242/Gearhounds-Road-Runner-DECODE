@@ -34,16 +34,20 @@ package org.firstinspires.ftc.teamcode.TeleOp;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+import com.acmerobotics.roadrunner.MecanumKinematics;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.PoseVelocity2d;
+import com.acmerobotics.roadrunner.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import org.firstinspires.ftc.teamcode.MecanumDrive;
+
 
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
-import org.firstinspires.ftc.teamcode.MecanumDrive;
+
 import org.firstinspires.ftc.teamcode.Utilities.GearhoundsHardware;
 
 
@@ -124,7 +128,6 @@ public class Mechanum extends OpMode {
 
 
 
-
         if (gamepad1.ps){
             shift = 0.5;
         }
@@ -156,12 +159,15 @@ public class Mechanum extends OpMode {
 
 
 
+        drive.setDrivePowers(new PoseVelocity2d(
+                new Vector2d(
+                        -gamepad1.left_stick_y,
+                        -gamepad1.left_stick_x
+                ),
+                -gamepad1.right_stick_x
+        ));
 
-drive.setDrivePowers( new Pose2d(
-        -gamepad1.left_stick_y,
-        -gamepad1.left_stick_x,
-        -gamepad1.right_stick_x
-));
+
 
         if (gamepad2.yWasPressed()) {
             p2ytime = runtime.seconds();
@@ -192,48 +198,48 @@ drive.setDrivePowers( new Pose2d(
             ballNumber +=1;
         }
 
-        drive.setWeightedDrivePower
 
         if(gamepad2.dpad_right){
             robot.drop.setPosition(drop_high);
 
-        }        double facing = robot.imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
-        double y = gamepad1.left_stick_y;
-        double x = -gamepad1.left_stick_x;
-        double rx = -gamepad1.right_stick_x;
-        if (gamepad1.options) {
-            robot.imu.resetYaw();
         }
-
-        // This button choice was made so that it is hard to hit on accident,
-        // it can be freely changed based on preference.
-        // The equivalent button is start on Xbox-style controllers.
-        if (gamepad1.options) {
-            robot.imu.resetYaw();
-        }
-
-
-
-        double rotX = x * Math.cos(-facing) - y * Math.sin(-facing);
-        rotX = rotX * 1.1;
-        double rotY = x * Math.sin(-facing) + y * Math.cos(-facing);
-
-        double d = Math.max(Math.abs(rotY) + Math.abs(rotX) + Math.abs(rx), 1);
-
-        double lf = (rotY + rotX + rx) / d;
-        double lb = (rotY - rotX + rx) / d;
-        double rf = (rotY - rotX - rx) / d;
-        double rb = (rotY + rotX - rx) / d;
-
-        //set rightFront negative so it goes same direction as other heels
-        robot.leftFront.setPower(1500 * lf * shift);
-        robot.leftBack.setPower(1500 * lb * shift);
-        robot.rightFront.setPower(1500 * rf * shift);
-        robot.rightBack.setPower(1500 * rb * shift);
-        telemetry.addData("", "Intake Speed %f", Intake_Speed);
-        telemetry.addData("", "Outtake Top Speed %f", Top_Speed);
-        telemetry.addData("", "Outtake Bottom Speed %f", Bottom_Speed);
-        telemetry.addData("", "Ball number %d", ballNumber);
+//        double facing = robot.imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
+//        double y = gamepad1.left_stick_y;
+//        double x = -gamepad1.left_stick_x;
+//        double rx = -gamepad1.right_stick_x;
+//        if (gamepad1.options) {
+//            robot.imu.resetYaw();
+//        }
+//
+//        // This button choice was made so that it is hard to hit on accident,
+//        // it can be freely changed based on preference.
+//        // The equivalent button is start on Xbox-style controllers.
+//        if (gamepad1.options) {
+//            robot.imu.resetYaw();
+//        }
+//
+//
+//
+//        double rotX = x * Math.cos(-facing) - y * Math.sin(-facing);
+//        rotX = rotX * 1.1;
+//        double rotY = x * Math.sin(-facing) + y * Math.cos(-facing);
+//
+//        double d = Math.max(Math.abs(rotY) + Math.abs(rotX) + Math.abs(rx), 1);
+//
+//        double lf = (rotY + rotX + rx) / d;
+//        double lb = (rotY - rotX + rx) / d;
+//        double rf = (rotY - rotX - rx) / d;
+//        double rb = (rotY + rotX - rx) / d;
+//
+//        //set rightFront negative so it goes same direction as other heels
+//        robot.leftFront.setPower(1500 * lf * shift);
+//        robot.leftBack.setPower(1500 * lb * shift);
+//        robot.rightFront.setPower(1500 * rf * shift);
+//        robot.rightBack.setPower(1500 * rb * shift);
+//        telemetry.addData("", "Intake Speed %f", Intake_Speed);
+//        telemetry.addData("", "Outtake Top Speed %f", Top_Speed);
+//        telemetry.addData("", "Outtake Bottom Speed %f", Bottom_Speed);
+//        telemetry.addData("", "Ball number %d", ballNumber);
 
 
 
