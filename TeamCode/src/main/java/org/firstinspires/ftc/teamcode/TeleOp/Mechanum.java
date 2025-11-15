@@ -42,6 +42,8 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.teamcode.Utilities.GearhoundsHardware;
+import org.firstinspires.ftc.teamcode.Utilities.VisionSystem;
+
 
 
 
@@ -59,8 +61,22 @@ public class Mechanum extends OpMode {
 //    InterpLUT velocityTopLut = new InterpLUT();
 
     private FtcDashboard dashboard;
+    private VisionSystem vision;
     public static double Intake_Speed = 0;
     // back power 1650 for both
+
+
+    // ========= 自动对齐 & Launch Zone 参数（可在 Dashboard 调） =========
+    public static double TARGET_FORWARD_IN = 36.0;   // 你理想的发射距离（离桶多远）
+    public static double MIN_FORWARD_IN    = 12.0;   // Launch Zone 前界（离墙太近不对齐）
+    public static double MAX_FORWARD_IN    = 72.0;   // Launch Zone 深度（3 tiles = 72in）
+    public static double MAX_LATERAL_IN    = 72.0;   // 左右允许范围（6 tiles = 144in，一半72）
+    public static double MAX_YAW_DEG       = 25.0;   // 自动对齐允许的最大偏角
+
+    public static double kP_FORWARD = 0.02;
+    public static double kP_LATERAL = 0.02;
+    public static double kP_YAW     = 0.01;
+
 
     //front power 1600 bottom 1480 top
     public static double Top_Speed = 2000;
@@ -90,6 +106,7 @@ public class Mechanum extends OpMode {
 
 //        velocityTopLut.add(12,1000);
 //        velocityTopLut.add(24,2000);
+        vision = new VisionSystem(hardwareMap);
 
     }
 
@@ -116,10 +133,55 @@ public class Mechanum extends OpMode {
         packet.put("BottomVoltage", robot.BottomMotor.getCurrent(CurrentUnit.AMPS));
         dashboard.sendTelemetryPacket(packet);
 
+        // ========= 1. 从 VisionSystem 读取 Tag 数据 =========
+        VisionSystem.TagData tagData = vision.getTagData();
 
+        boolean hasTag = tagData.hasTag;
+        boolean inLaunchZone = false;
 
+        double auto_vx = 0.0;    // 前后微调
+        double auto_vy = 0.0;    // 左右微调
+        double auto_omega = 0.0; // 旋转微调
 
+        if (hasTag) {
+            double forward = tagData.forwardIn;
+            double lateral = tagData.lateralIn;
+            double yawDeg  = tagData.yawDeg;
 
+            // Launch Zone 判定（用 manual 的深度/宽度 + 自己设置的角度容忍）
+            inLaunchZone =
+                    forward >= MIN_FORWARD_IN &&
+                            forward <= MAX_FORWARD_IN &&
+                            Math.abs(lateral) <= MAX_LATERAL_IN &&
+                            Math.abs(yawDeg)  <= MAX_YAW_DEG;
+
+            telemetry.addData("Tag Forward (in)", forward);
+            telemetry.addData("Tag Lateral (in)", lateral);
+            telemetry.addData("Tag Yaw (deg)", yawDeg);
+            telemetry.addData("In Launch Zone", inLaunchZone);
+
+            if (inLaunchZone) {
+                double errorForward = forward - TARGET_FORWARD_IN;  // 正：太远了
+                double errorLateral = lateral;                      // 想要 0
+                double errorYaw     = yawDeg;                       // 想要 0
+
+                // 注意 forward：往前走会让 forward 距离变小，所以要取负号
+                auto_vx    = -errorForward * kP_FORWARD;
+                // lateral 假设正值表示目标在右边 → 机器人向右平移
+                auto_vy    = errorLateral * kP_LATERAL;
+                // yaw 正值时，让机器人往相反方向转
+                auto_omega = -errorYaw * kP_YAW;
+
+                telemetry.addData("Auto vx", auto_vx);
+                telemetry.addData("Auto vy", auto_vy);
+                telemetry.addData("Auto omega", auto_omega);
+                telemetry.addData("AutoAlign Status", "ACTIVE");
+            } else {
+                telemetry.addData("AutoAlign Status", "Tag seen, but not in Launch Zone");
+            }
+        } else {
+            telemetry.addData("AutoAlign Status", "No AprilTag detected");
+        }
 
 
 
@@ -185,39 +247,43 @@ public class Mechanum extends OpMode {
         if(gamepad2.dpad_right){
             robot.drop.setPosition(drop_high);
 
-        }        double facing = robot.imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
-        double y = gamepad1.left_stick_y;
-        double x = -gamepad1.left_stick_x;
+        }
+
+        double facing = robot.imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
+        double y = -gamepad1.left_stick_y;
+        double x = gamepad1.left_stick_x;
         double rx = -gamepad1.right_stick_x;
         if (gamepad1.options) {
             robot.imu.resetYaw();
         }
 
-        // This button choice was made so that it is hard to hit on accident,
-        // it can be freely changed based on preference.
-        // The equivalent button is start on Xbox-style controllers.
-        if (gamepad1.options) {
-            robot.imu.resetYaw();
-        }
+        double rotY = y * Math.cos(-facing) - x * Math.sin(-facing);
+        double rotX = y * Math.sin(-facing) + x * Math.cos(-facing);
+        rotX *= 1.1;
 
+        // ========= 这里把 Driver 控制 + Auto Align 合并 =========
+        double vx = rotY;      // 前后：field-centric之后的前进
+        double vy = rotX;      // 左右平移
+        double omega = rx;     // 旋转
 
+        // 自动对齐是“叠加”，不是替代
+        vx    += auto_vx;
+        vy    += auto_vy;
+        omega += auto_omega;
 
-        double rotX = x * Math.cos(-facing) - y * Math.sin(-facing);
-        rotX = rotX * 1.1;
-        double rotY = x * Math.sin(-facing) + y * Math.cos(-facing);
+        // ========= mecanum 轮子功率 =========
+        double d = Math.max(Math.abs(vx) + Math.abs(vy) + Math.abs(omega), 1);
 
-        double d = Math.max(Math.abs(rotY) + Math.abs(rotX) + Math.abs(rx), 1);
+        double lf = (vx + vy + omega) / d;
+        double lb = (vx - vy + omega) / d;
+        double rf = (vx - vy - omega) / d;
+        double rb = (vx + vy - omega) / d;
 
-        double lf = (rotY + rotX + rx) / d;
-        double lb = (rotY - rotX + rx) / d;
-        double rf = (rotY - rotX - rx) / d;
-        double rb = (rotY + rotX - rx) / d;
+        robot.leftFront.setPower(lf * shift);
+        robot.leftBack.setPower(lb * shift);
+        robot.rightFront.setPower(rf * shift);
+        robot.rightBack.setPower(rb * shift);
 
-        //set rightFront negative so it goes same direction as other heels
-        robot.leftFront.setPower(1500 * lf * shift);
-        robot.leftBack.setPower(1500 * lb * shift);
-        robot.rightFront.setPower(1500 * rf * shift);
-        robot.rightBack.setPower(1500 * rb * shift);
         telemetry.addData("", "Intake Speed %f", Intake_Speed);
         telemetry.addData("", "Outtake Top Speed %f", Top_Speed);
         telemetry.addData("", "Outtake Bottom Speed %f", Bottom_Speed);

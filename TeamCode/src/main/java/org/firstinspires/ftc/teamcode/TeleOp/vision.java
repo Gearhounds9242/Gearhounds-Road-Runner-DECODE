@@ -68,7 +68,6 @@ public class vision extends LinearOpMode {
             telemetry.update();
         }
 
-
         visionPortal.close();
     }
 }
