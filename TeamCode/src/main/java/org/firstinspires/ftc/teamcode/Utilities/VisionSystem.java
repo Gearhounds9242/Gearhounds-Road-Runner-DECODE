@@ -14,19 +14,31 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * VisionSystem: manages webcam + AprilTag detection.
+ * Provides clean data for:
+ *   - forward distance (inches)
+ *   - lateral offset (inches)
+ *   - yaw angle (degrees)
+ * Handles exposure and gain setup automatically.
+ */
 public class VisionSystem {
 
+    /** Data packet passed to TeleOp for auto-alignment */
     public static class TagData {
         public boolean hasTag = false;
-        public double forwardIn = 0.0;   // 朝向桶的距离（英寸）
-        public double lateralIn = 0.0;   // 左右偏移（英寸）
-        public double yawDeg = 0.0;      // 旋转角度（度）
+        public int id = -1;
+        public double forwardIn = 0.0;   // Tag distance forward/back relative to camera (inches)
+        public double lateralIn = 0.0;   // Tag offset left/right relative to camera (inches)
+        public double yawDeg = 0.0;      // Tag yaw relative to camera (degrees)
     }
 
     private final VisionPortal visionPortal;
     private final AprilTagProcessor tagProcessor;
 
+    /** Constructor: builds AprilTag pipeline and configures the webcam */
     public VisionSystem(HardwareMap hardwareMap) {
+
         tagProcessor = new AprilTagProcessor.Builder()
                 .setDrawAxes(true)
                 .setDrawCubeProjection(true)
@@ -41,38 +53,40 @@ public class VisionSystem {
                 .setStreamFormat(VisionPortal.StreamFormat.MJPEG)
                 .build();
 
-        // 等到摄像头开始推流再调曝光
-        while (visionPortal.getCameraState() != VisionPortal.CameraState.STREAMING) {
-            // busy wait ok during init
-        }
+        // Wait until streaming begins before setting exposure/gain
+        while (visionPortal.getCameraState() != VisionPortal.CameraState.STREAMING) {}
 
+        // Manual exposure
         ExposureControl exposureControl = visionPortal.getCameraControl(ExposureControl.class);
         if (exposureControl != null && exposureControl.isExposureSupported()) {
             exposureControl.setMode(ExposureControl.Mode.Manual);
             exposureControl.setExposure(15, TimeUnit.MILLISECONDS);
         }
 
+        // Manual gain
         GainControl gainControl = visionPortal.getCameraControl(GainControl.class);
         if (gainControl != null) {
             gainControl.setGain(80);
         }
     }
 
+    /** Returns latest TagData (hasTag=false if no AprilTag detected) */
     public TagData getTagData() {
         TagData data = new TagData();
 
-        List<AprilTagDetection> detections = tagProcessor.getDetections();
-        if (detections == null || detections.isEmpty()) {
-            return data; // hasTag = false
-        }
+        List<AprilTagDetection> list = tagProcessor.getDetections();
+        if (list == null || list.isEmpty()) return data;
 
-        AprilTagDetection tag = detections.get(0);
-        if (tag.ftcPose == null) {
-            return data;
-        }
+        AprilTagDetection tag = list.get(0);
+        if (tag.ftcPose == null) return data;
 
-        // FTC 官方约定：x 左右、y 前后、z 高度；这里我们用 y 当 forward, x 当 lateral
         data.hasTag = true;
+        data.id = tag.id;
+
+        // FTC coordinate frame:
+        // x = left/right (inches)
+        // y = forward/back (inches)
+        // z = up/down (unused)
         data.forwardIn = tag.ftcPose.y;
         data.lateralIn = tag.ftcPose.x;
         data.yawDeg = tag.ftcPose.yaw;
@@ -80,6 +94,7 @@ public class VisionSystem {
         return data;
     }
 
+    /** Cleanly closes the camera */
     public void close() {
         if (visionPortal != null) {
             visionPortal.close();
