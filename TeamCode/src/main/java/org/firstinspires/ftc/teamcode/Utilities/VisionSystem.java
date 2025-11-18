@@ -7,6 +7,8 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.ExposureControl;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.GainControl;
+import org.firstinspires.ftc.teamcode.MecanumDrive;
+import org.firstinspires.ftc.teamcode.TeleOp.Mechanum;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
@@ -79,6 +81,15 @@ public class VisionSystem {
 
         AprilTagDetection tag = list.get(0);
         if (tag.ftcPose == null) return data;
+
+        // Determine which bucket tag we should accept
+        int myGoalTag = Mechanum.isRedAlliance ? 24 : 20;
+
+        // Filter: only accept our alliance's scoring bucket tag
+        if (tag.id != myGoalTag) {
+            // Not our scoring target → ignore
+            return data;
+        }
 
         data.hasTag = true;
         data.id = tag.id;

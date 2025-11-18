@@ -32,6 +32,8 @@ public class Mechanum extends OpMode {
     private FtcDashboard dashboard;
     private VisionSystem vision;
 
+    public static boolean isRedAlliance = false;   // set false when you are blue
+
     // -----------------------------
     // Intake / shooter parameters
     // (all @Config so you can tune in Dashboard)
