@@ -3,14 +3,19 @@ package org.firstinspires.ftc.teamcode.TeleOp;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.PoseVelocity2d;
+import com.acmerobotics.roadrunner.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import org.firstinspires.ftc.teamcode.MecanumDrive;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.teamcode.Utilities.GearhoundsHardware;
 import org.firstinspires.ftc.teamcode.Utilities.VisionSystem;
+
 
 /**
  * Main TeleOp for field-centric mecanum drive + intake + shooter + drop.
@@ -33,7 +38,7 @@ public class Mechanum extends OpMode {
     private VisionSystem vision;
 
     public static boolean isRedAlliance = false;   // set false when you are blue
-
+    private MecanumDrive drive; // persistent drive
     // -----------------------------
     // Intake / shooter parameters
     // (all @Config so you can tune in Dashboard)
@@ -115,7 +120,7 @@ public class Mechanum extends OpMode {
 
         robot.init(hardwareMap);             // motors/servos/IMU setup
         vision = new VisionSystem(hardwareMap); // webcam + AprilTag setup
-
+        drive = new MecanumDrive(hardwareMap, new Pose2d(0, 0, 0));
         telemetry.addData("Status", "Initialized");
         telemetry.update();
     }
@@ -187,7 +192,7 @@ public class Mechanum extends OpMode {
 
         // Two-ball sequence
         if (((runtime.seconds() - p2ytime) < twoballtime1) && ballNumber == 2) {
-            robot.drop.setPosition(0.30);
+            robot.drop.setPosition(0.28);
         } else if (((runtime.seconds() - p2ytime) < twoballtime2) && ballNumber == 2) {
             robot.drop.setPosition(0.69);
         } else if (((runtime.seconds() - p2ytime) < twoballtime3) && ballNumber == 2) {
@@ -281,45 +286,30 @@ public class Mechanum extends OpMode {
         // IMU yaw in radians for field-centric transformation
         double facing = robot.imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
 
-        // Driver inputs (gamepad1)
-        double y  = -gamepad1.left_stick_y;    // forward/back
-        double x  =  gamepad1.left_stick_x;    // strafe
-        double rx = -gamepad1.right_stick_x;   // rotation
+        Pose2d pose = drive.localizer.getPose();
+        double heading = pose.heading.toDouble(); // radians
 
-        // Reset IMU yaw if driver presses OPTIONS
-        if (gamepad1.options) {
-            robot.imu.resetYaw();
+        drive.setDrivePowers(drive.localizer.getPose().heading.inverse().times(new PoseVelocity2d(
+                new Vector2d(
+                        -gamepad1.left_stick_y,
+                        -gamepad1.left_stick_x
+                ),
+                -gamepad1.right_stick_x
+        )));
+
+
+        if (gamepad1.optionsWasPressed()) {
+            drive.localizer.setPose(
+                    new Pose2d(
+                            drive.localizer.getPose().position,
+                            0.0
+                    )
+            );
         }
 
-        // Convert driver inputs into field-centric robot-relative components
-        double rotY = y * Math.cos(-facing) - x * Math.sin(-facing);
-        double rotX = y * Math.sin(-facing) + x * Math.cos(-facing);
+        // Update Road Runner’s localization
+        drive.localizer.update();
 
-        // Slight strafe scaling to compensate for imperfect strafing
-        rotX *= 1.1;
-
-        // Driver's intended robot velocities
-        double vx = rotY;
-        double vy = rotX;
-        double omega = rx;
-
-        // Add auto-align corrections (overlay on top of driver control)
-        vx    += auto_vx;    // currently always 0
-        vy    += auto_vy;
-        omega += auto_omega;
-
-        // Mecanum wheel power calculation
-        double denom = Math.max(Math.abs(vx) + Math.abs(vy) + Math.abs(omega), 1.0);
-
-        double lf = (vx + vy + omega) / denom;
-        double lb = (vx - vy + omega) / denom;
-        double rf = (vx - vy - omega) / denom;
-        double rb = (vx + vy - omega) / denom;
-
-        robot.leftFront.setPower(lf * shift);
-        robot.leftBack.setPower(lb * shift);
-        robot.rightFront.setPower(rf * shift);
-        robot.rightBack.setPower(rb * shift);
 
         // -------------------------------------------------------
         // 9) Telemetry to Driver Station

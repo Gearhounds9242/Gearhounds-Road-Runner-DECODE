@@ -20,7 +20,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 public class GearhoundsHardware extends Hardware {
     public HardwareMap robotMap;
 
-// Examples Here
+    // Examples Here
 /*  public DcMotorEx ExampleMotor;
     public Servo ExampleServo;
     public HuskyLens huskyLens;
@@ -30,7 +30,7 @@ public class GearhoundsHardware extends Hardware {
     public DcMotorEx TopMotor;
     public DcMotorEx BottomMotor;
 
-//Comment back in when needed for vision
+    //Comment back in when needed for vision
 //    public WebcamName webcamName;
 //Drivetrain Members
     public DcMotorEx leftFront;
@@ -67,7 +67,7 @@ public class GearhoundsHardware extends Hardware {
 
         // Save reference to Hardware map
         robotMap = hwMap;
-    //Examples Here
+        //Examples Here
     /*
         huskyLens = robotMap.get(HuskyLens.class, "huskyLens");
         ExampleServo = robotMap.get(Servo.class, "ExampleServo");
@@ -77,7 +77,7 @@ public class GearhoundsHardware extends Hardware {
 
 //Comment back in when needed for vision
 //        webcamName = robotMap.get(WebcamName.class, "Webcam 1");
-    //Drivetrain Members
+        //Drivetrain Members
 
         drop = robotMap.get(Servo.class, "drop");
 
@@ -96,9 +96,22 @@ public class GearhoundsHardware extends Hardware {
         leftBack = robotMap.get(DcMotorImplEx.class, "leftBack");
         leftBack.setDirection(DcMotorSimple.Direction.FORWARD);
         rightFront = robotMap.get(DcMotorEx.class, "rightFront");
-        rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
+        rightFront.setDirection(DcMotorSimple.Direction.FORWARD);
         rightBack = robotMap.get(DcMotorEx.class, "rightBack");
-        rightBack.setDirection(DcMotorSimple.Direction.REVERSE);
+        rightBack.setDirection(DcMotorSimple.Direction.FORWARD);
+
+
+
+        leftFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        leftBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
+        leftBack.setDirection(DcMotorSimple.Direction.REVERSE);
+
+
+
 
         intake = robotMap.get(DcMotorEx.class, "intake");
         intake.setDirection(DcMotorImplEx.Direction.FORWARD);
