@@ -11,6 +11,8 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 
+import com.seattlesolvers.solverslib.util.InterpLUT;
+
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.teamcode.Utilities.GearhoundsHardware;
@@ -27,38 +29,28 @@ import org.firstinspires.ftc.teamcode.Utilities.VisionSystem;
 @Config
 @TeleOp(name = "Mechanum", group = "TeamCode/TeleOp")
 public class Mechanum extends OpMode {
-
-    // -----------------------------
-    // Hardware and system objects
-    // -----------------------------
     private final GearhoundsHardware robot = new GearhoundsHardware();
     private final ElapsedTime runtime = new ElapsedTime();
-    // InterpLUT velocityTopLut = new InterpLUT();
+     InterpLUT velocityTopLut = new InterpLUT();
+     InterpLUT velocityBottomLut = new InterpLUT();
     private FtcDashboard dashboard;
     private VisionSystem vision;
 
     public static boolean isRedAlliance = false;   // set false when you are blue
-    private MecanumDrive drive; // persistent drive
-    // -----------------------------
-    // Intake / shooter parameters
-    // (all @Config so you can tune in Dashboard)
-    // -----------------------------
-    public static double Intake_Speed = 0.0;   // intake power
+    private MecanumDrive drive;
+    public static double Intake_Speed = 0.0;
     // back power 1650 for both
     // front power 1600 bottom 1480 top
-    public static double Top_Speed = 2000.0;   // top shooter "speed" (you may treat as power or scale factor)
-    public static double Bottom_Speed = 2000.0;// bottom shooter "speed"
-    public static double shift = 1.0;          // driving speed scale (PS/Share buttons)
-
-    // -----------------------------
+    public static double Top_Speed = 2000.0;
+    public static double Bottom_Speed = 2000.0;
+    public static double shift = 1.0;
     // Drop servo + ball count logic
-    // -----------------------------
     public static double drop_up = 0.63;
     public static double drop_down = 0.36;
     public static double drop_high = 0.36;
 
-    public static double p2ytime = 0.0; // timestamp when gamepad2.y pressed
-    public static int ballNumber = 0;   // number of balls loaded
+    public static double p2ytime = 0.0;
+    public static int ballNumber = 0;
 
     // two-ball timing (seconds)
     public static double twoballtime1 = 0.1;
@@ -75,7 +67,7 @@ public class Mechanum extends OpMode {
     // We do NOT control forward distance; driver decides how far to stand.
     // These bounds are only used to reject obviously bad distances.
     public static double MIN_FORWARD_IN = 12.0;   // too close to the goal? don't auto-align
-    public static double MAX_FORWARD_IN = 110.0;  // too far from goal? don't auto-align
+    public static double MAX_FORWARD_IN = 1100.0;  // too far from goal? don't auto-align
 
     // Maximum yaw magnitude (deg) where we still try to auto-align
     public static double MAX_YAW_DEG = 25.0;
@@ -106,17 +98,25 @@ public class Mechanum extends OpMode {
         return false;
     }
 
-    // -----------------------------
-    // INIT (called once when you hit INIT on DS)
-    // -----------------------------
     @Override
     public void init() {
         dashboard = FtcDashboard.getInstance();
         dashboard.setTelemetryTransmissionInterval(25);
 
         telemetry.addData("Status", "Initializing...");
-        telemetry.update();// velocityTopLut.add(12,1000);
-        // velocityTopLut.add(24,2000);
+        telemetry.update();
+
+         velocityTopLut.add(72, 1480);
+         velocityTopLut.add(48,1180);
+         velocityTopLut.add(108.5,1650);
+         velocityTopLut.add(96, 1550);
+         velocityTopLut.createLUT();
+
+         velocityBottomLut.add(72, 1540);
+         velocityBottomLut.add(48,2000);
+         velocityBottomLut.add(108.5,1650);
+         velocityBottomLut.add(96, 1550);
+         velocityBottomLut.createLUT();
 
         robot.init(hardwareMap);             // motors/servos/IMU setup
         vision = new VisionSystem(hardwareMap); // webcam + AprilTag setup
@@ -291,10 +291,10 @@ public class Mechanum extends OpMode {
 
         drive.setDrivePowers(drive.localizer.getPose().heading.inverse().times(new PoseVelocity2d(
                 new Vector2d(
-                        -gamepad1.left_stick_y,
-                        -gamepad1.left_stick_x
+                        (-gamepad1.left_stick_y * shift),
+                        (-gamepad1.left_stick_x * shift)
                 ),
-                -gamepad1.right_stick_x
+                (-gamepad1.right_stick_x * shift)
         )));
 
 
