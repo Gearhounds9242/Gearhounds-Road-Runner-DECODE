@@ -68,7 +68,6 @@ public class Mechanum extends OpMode {
     // one-ball timing (seconds)
     public static double oneballtime1 = 0.1;
     public static double oneballtime2 = 0.5;
-
     // -----------------------------
     // Auto-align parameters
     // -----------------------------
