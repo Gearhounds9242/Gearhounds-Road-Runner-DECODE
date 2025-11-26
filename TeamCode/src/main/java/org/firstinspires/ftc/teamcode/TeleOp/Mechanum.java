@@ -11,7 +11,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 
-import com.seattlesolvers.solverslib.util.InterpLUT;
+//import com.seattlesolvers.solverslib.util.InterpLUT;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
@@ -31,8 +31,8 @@ import org.firstinspires.ftc.teamcode.Utilities.VisionSystem;
 public class Mechanum extends OpMode {
     private final GearhoundsHardware robot = new GearhoundsHardware();
     private final ElapsedTime runtime = new ElapsedTime();
-     InterpLUT velocityTopLut = new InterpLUT();
-     InterpLUT velocityBottomLut = new InterpLUT();
+//     InterpLUT velocityTopLut = new InterpLUT();
+//     InterpLUT velocityBottomLut = new InterpLUT();
     private FtcDashboard dashboard;
     private VisionSystem vision;
 
@@ -106,17 +106,17 @@ public class Mechanum extends OpMode {
         telemetry.addData("Status", "Initializing...");
         telemetry.update();
 
-         velocityTopLut.add(72, 1480);
-         velocityTopLut.add(48,1180);
-         velocityTopLut.add(108.5,1650);
-         velocityTopLut.add(96, 1550);
-         velocityTopLut.createLUT();
-
-         velocityBottomLut.add(72, 1540);
-         velocityBottomLut.add(48,2000);
-         velocityBottomLut.add(108.5,1650);
-         velocityBottomLut.add(96, 1550);
-         velocityBottomLut.createLUT();
+//         velocityTopLut.add(72, 1480);
+//         velocityTopLut.add(48,1180);
+//         velocityTopLut.add(108.5,1650);
+//         velocityTopLut.add(96, 1550);
+//         velocityTopLut.createLUT();
+//
+//         velocityBottomLut.add(72, 1540);
+//         velocityBottomLut.add(48,2000);
+//         velocityBottomLut.add(108.5,1650);
+//         velocityBottomLut.add(96, 1550);
+//         velocityBottomLut.createLUT();
 
         robot.init(hardwareMap);             // motors/servos/IMU setup
         vision = new VisionSystem(hardwareMap); // webcam + AprilTag setup
