@@ -67,7 +67,7 @@ public class Mechanum extends OpMode {
     // We do NOT control forward distance; driver decides how far to stand.
     // These bounds are only used to reject obviously bad distances.
     public static double MIN_FORWARD_IN = 12.0;   // too close to the goal? don't auto-align
-    public static double MAX_FORWARD_IN = 1100.0;  // too far from goal? don't auto-align
+    public static double MAX_FORWARD_IN = 110.0;  // too far from goal? don't auto-align
 
     // Maximum yaw magnitude (deg) where we still try to auto-align
     public static double MAX_YAW_DEG = 25.0;
