@@ -66,6 +66,7 @@ public class Mechanum extends OpMode {
 
     public static double p2ytime = 0.0;
     public static int ballNumber = 0;
+    public static double offset = 0;
 
     // two-ball timing (seconds)
     public static double twoballtime1 = 0.1;
@@ -159,19 +160,21 @@ public class Mechanum extends OpMode {
         }
         if (gamepad1.dpadRightWasPressed()) {
             TARGET_ID = 24;
+            offset = -5;
         }
         if (gamepad1.dpadLeftWasPressed()) {
             TARGET_ID = 20;
+            offset = 5;
         }
 
         if (gamepad2.right_trigger > 0.1) {
-            robot.BottomMotor.setPower(Bottom_Speed * gamepad2.right_trigger);
+            robot.BottomMotor.setVelocity(Bottom_Speed * gamepad2.right_trigger);
         } else {
             robot.BottomMotor.setPower(0.0);
         }
 
         if (gamepad2.left_trigger > 0.1) {
-            robot.TopMotor.setPower(Top_Speed * gamepad2.left_trigger);
+            robot.TopMotor.setVelocity(Top_Speed * gamepad2.left_trigger);
         } else {
             robot.TopMotor.setPower(0.0);
         }
@@ -179,6 +182,19 @@ public class Mechanum extends OpMode {
         if (gamepad2.y) {
             p2ytime = runtime.seconds();
         }
+
+
+        if(gamepad2.x){
+            Top_Speed = 1480;
+            Bottom_Speed = 1540;
+        }
+
+        if(gamepad2.b){
+            Top_Speed = 1650;
+            Bottom_Speed = 1650;
+
+        }
+
 
         // Two-ball sequence
         if (((runtime.seconds() - p2ytime) < twoballtime1) && ballNumber >= 2) {
@@ -192,15 +208,21 @@ public class Mechanum extends OpMode {
 
         // One-ball sequence
         if (((runtime.seconds() - p2ytime) < oneballtime1) && ballNumber <= 1) {
-            robot.drop.setPosition(0.30);
+            robot.drop.setPosition(0.28);
         } else if (((runtime.seconds() - p2ytime) < oneballtime2) && ballNumber <= 1) {
             robot.drop.setPosition(0.63);
             ballNumber = 0;
         }
 
         // Manual ball count adjustments
-        if (gamepad2.dpad_down) ballNumber--;
-        if (gamepad2.dpad_up) ballNumber++;
+        if (gamepad2.dpadDownWasPressed()){
+            ballNumber--;
+            gamepad2.rumble(450,0,100);
+        }
+        if (gamepad2.dpadUpWasPressed()){
+            ballNumber++;
+            gamepad2.rumble(0,10000,150);
+        }
 
         // Manual drop override
         if (gamepad2.dpad_right) {
@@ -228,7 +250,7 @@ CAMERA STUFF
             double bearing = targetTag.ftcPose.bearing;
 
             if (Math.abs(bearing) > aimTolorance) {    // 5-degree tolerance
-                autoTurn = bearing * rotationFactor; // proportional turn
+                autoTurn = (bearing + offset) * rotationFactor; // proportional turn
             }
 
 //            drive.setDrivePowers(
