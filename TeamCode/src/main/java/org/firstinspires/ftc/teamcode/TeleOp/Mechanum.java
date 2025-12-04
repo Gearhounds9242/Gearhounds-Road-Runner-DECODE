@@ -166,7 +166,7 @@ public class Mechanum extends OpMode {
         }
         if (gamepad1.dpadLeftWasPressed() || gamepad1.dpadLeftWasPressed()) {
             TARGET_ID = 20;
-            offset = 5;
+            offset = -3;
         }
 
         if (gamepad2.right_trigger > 0.1) {
