@@ -140,6 +140,8 @@ public class Mechanum extends OpMode {
     @Override
     public void loop() {
 
+
+
         double autoTurn = 0;
 
         TelemetryPacket packet = new TelemetryPacket();
@@ -150,19 +152,19 @@ public class Mechanum extends OpMode {
         dashboard.sendTelemetryPacket(packet);
 
 
-        if (gamepad1.ps) shift = 0.3; // slow mode
-        if (gamepad1.share) shift = 1.0; // full speed
+        if (gamepad1.left_bumper) shift = 0.3; // slow mode
+        if (gamepad1.right_bumper) shift = 1.0; // full speed
 
         if (gamepad1.right_trigger > 0.1) {
             robot.intake.setPower(Intake_Speed);
         } else {
             robot.intake.setPower(0.0);
         }
-        if (gamepad1.dpadRightWasPressed()) {
+        if (gamepad1.dpadRightWasPressed() || gamepad1.dpadRightWasPressed()) {
             TARGET_ID = 24;
             offset = -5;
         }
-        if (gamepad1.dpadLeftWasPressed()) {
+        if (gamepad1.dpadLeftWasPressed() || gamepad1.dpadLeftWasPressed()) {
             TARGET_ID = 20;
             offset = 5;
         }
@@ -250,9 +252,9 @@ CAMERA STUFF
             double bearing = targetTag.ftcPose.bearing;
 
             if (Math.abs(bearing) > aimTolorance) {    // 5-degree tolerance
-                autoTurn = (bearing + offset) * rotationFactor; // proportional turn
+                autoTurn = (bearing + offset) * rotationFactor;// proportional turn
             }
-
+            telemetry.addData("range",targetTag.ftcPose.range);
 //            drive.setDrivePowers(
 //                    new PoseVelocity2d(
 //                            new Vector2d(0, 0),   // no translation
