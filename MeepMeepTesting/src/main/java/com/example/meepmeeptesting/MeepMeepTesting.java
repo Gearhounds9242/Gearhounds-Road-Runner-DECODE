@@ -18,37 +18,33 @@ public class MeepMeepTesting {
 //        myBot.setDimensions()
         myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(60, 15, Math.toRadians(0)))
                 //shoot 3
+//                .strafeTo(new Vector2d(55, 15))
+//                .splineToLinearHeading(new Pose2d(50, 15, Math.toRadians(25)), Math.toRadians(0))
+//                                .waitSeconds(10)
+// servo open/close with delay
+//\                .stopAndAdd(new DropUp())
+                .strafeTo(new Vector2d(52, 15))
+//                .splineToLinearHeading(new Pose2d(50, 15, Math.toRadians(-25)), Math.toRadians(0))
+                .splineToLinearHeading(new Pose2d(55, 18, Math.toRadians(-22.5)), Math.toRadians(0))
+//                .stopAndAdd(new StartShooterStrong())   // spin up
+                .waitSeconds(3)
+//                .stopAndAdd(new ShootBall())
+                .waitSeconds(3)
+//                .stopAndAdd(new StartShooter())
+                .waitSeconds(3)// spin up
+//                .stopAndAdd(new ShootBall())
+                .waitSeconds(3)
+//                .stopAndAdd(new ShootBall())
+                .waitSeconds(3)
+//                .stopAndAdd(new StopShooter())
 
 
-
-
-//                .splineToSplineHeading(
-//                        new Pose2d(30, 20, Math.toRadians(90)),
-//                        Math.toRadians(90) // arriving toward +X
-//                )
-
-
-//                .splineToLinearHeading(new Pose2d(-52, 38, Math.toRadians(90)), Math.toRadians(200))
-
-
-
-//                .splineToLinearHeading(new Pose2d(50,13, Math.toRadians(0)), Math.toRadians(0))
-//                .strafeTo(new Vector2d(50,15))
-                .strafeTo(new Vector2d(55,15))
-                .splineToLinearHeading(new Pose2d(50,15,Math.toRadians(155)), Math.toRadians(0))
-//                .waitSeconds(3)
-                .splineToLinearHeading(new Pose2d(55,18,Math.toRadians(155)),Math.toRadians(0))
-                .waitSeconds(3)//SHOOT 3 HERE
                 .splineToLinearHeading(new Pose2d(58, 36, Math.toRadians(90)), Math.toRadians(0))
-                .strafeTo(new Vector2d(60,36))
-
-
-
-
-//                        .strafeTo(new Vector2d(55,36))
-//                                .turn(Math.toRadians(90))
-//                                .strafeTo(new Vector2d( 58,36))
+                .strafeTo(new Vector2d(60, 36))
+//                .stopAndAdd(new SavePose())
                 .build());
+
+
 
 
 

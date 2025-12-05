@@ -22,10 +22,14 @@ import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.teamcode.Utilities.GearhoundsHardware;
+import org.firstinspires.ftc.teamcode.Utilities.PoseStorage;
 import org.firstinspires.ftc.teamcode.Utilities.VisionSystem;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
+import com.seattlesolvers.solverslib.controller.PController;
+import com.seattlesolvers.solverslib.controller.PIDController;
+import com.seattlesolvers.solverslib.controller.PIDFController;
 
 import java.util.List;
 
@@ -67,6 +71,8 @@ public class Mechanum extends OpMode {
     public static double p2ytime = 0.0;
     public static int ballNumber = 0;
     public static double offset = 0;
+
+//        PIDController motor = new PIDController(kP, kI, kD);
 
     // two-ball timing (seconds)
     public static double twoballtime1 = 0.1;
@@ -124,7 +130,7 @@ public class Mechanum extends OpMode {
                 .build();
 
         robot.init(hardwareMap);             // motors/servos/IMU setup// webcam + AprilTag setup
-        drive = new MecanumDrive(hardwareMap, new Pose2d(0, 0, 0));
+        drive = new MecanumDrive(hardwareMap, PoseStorage.currentPose);
         telemetry.addData("Status", "Initialized");
         telemetry.update();
 
