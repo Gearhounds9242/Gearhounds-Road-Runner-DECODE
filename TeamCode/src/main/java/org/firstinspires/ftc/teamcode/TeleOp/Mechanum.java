@@ -30,6 +30,7 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 import com.seattlesolvers.solverslib.controller.PController;
 import com.seattlesolvers.solverslib.controller.PIDController;
 import com.seattlesolvers.solverslib.controller.PIDFController;
+import org.firstinspires.ftc.teamcode.Utilities.Leds;
 
 import java.util.List;
 
@@ -52,6 +53,7 @@ public class Mechanum extends OpMode {
     private FtcDashboard dashboard;
     private AprilTagProcessor tagProcessor;
     private VisionPortal visionPortal;
+    private Leds leds;
 
     public static boolean isRedAlliance = false;   // set false when you are blue
     private MecanumDrive drive;

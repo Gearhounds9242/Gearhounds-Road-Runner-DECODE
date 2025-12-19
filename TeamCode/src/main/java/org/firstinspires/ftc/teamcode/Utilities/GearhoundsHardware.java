@@ -14,6 +14,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
+import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
+
 
 
 // Generic robot class
@@ -29,6 +31,7 @@ public class GearhoundsHardware extends Hardware {
     public DcMotorEx intake;
     public DcMotorEx TopMotor;
     public DcMotorEx BottomMotor;
+    public RevBlinkinLedDriver blinkin;
 
     //Comment back in when needed for vision
 //    public WebcamName webcamName;
@@ -74,6 +77,7 @@ public class GearhoundsHardware extends Hardware {
         ExampleMotor = robotMap.get(DcMotorEx.class, "ExampleMotor");
         NameInCodeHere = robotMap.get(DeviceTypeHere.class, "DriverStationNameHere");
     */
+        blinkin = robotMap.get(RevBlinkinLedDriver.class, "blinkin");
 
 //Comment back in when needed for vision
 //        webcamName = robotMap.get(WebcamName.class, "Webcam 1");
