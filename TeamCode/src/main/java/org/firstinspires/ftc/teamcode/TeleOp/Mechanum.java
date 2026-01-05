@@ -14,7 +14,8 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.sun.tools.javac.comp.Todo;
 
-import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+//import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcontroller.external.samples.RobotAutoDriveToAprilTagOmni;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 
 //import com.seattlesolvers.solverslib.util.InterpLUT;
@@ -57,7 +58,7 @@ public class Mechanum extends OpMode {
 
     public static boolean isRedAlliance = false;   // set false when you are blue
     private MecanumDrive drive;
-    public static double Intake_Speed = 0.0;
+    public static double Intake_Speed = -1000.0;
     // back power 1650 for both
     // front power 1600 bottom 1480 top
     public static double Top_Speed = 2000.0;
@@ -85,6 +86,19 @@ public class Mechanum extends OpMode {
     public static double oneballtime1 = 0.1;
     public static double oneballtime2 = 0.5;
 
+    public static double time1 = 1;
+    public static double time2 = 2;
+
+
+
+    public static double blocktime1 = 0.1;
+    public static double blocktime2 = 0.4;
+
+
+    public static double blockpos1 = 0.45;
+    public static double blockpos2 = 0.2;
+    private static double interval = 10;
+
     Gamepad.RumbleEffect yesEffect = new Gamepad.RumbleEffect.Builder()
             .addStep(10.0, 0.0, 300)   // strong rumble for 0.3 sec
             .addStep(0.0, 0.0, 150)   // pause for 0.15 sec
@@ -95,6 +109,7 @@ public class Mechanum extends OpMode {
             .addStep(0.0, 0.0, 150)   // pause for 0.15 sec
             .addStep(0.0, 5.0, 100)   // strong rumble
             .build();
+
 
     @Override
     public void init() {
@@ -116,20 +131,20 @@ public class Mechanum extends OpMode {
 //         velocityBottomLut.add(96, 1550);
 //         velocityBottomLut.createLUT();
         
-        tagProcessor = new AprilTagProcessor.Builder()
-                .setDrawAxes(true)
-                .setDrawCubeProjection(true)
-                .setDrawTagID(true)
-                .setDrawTagOutline(true)
-                .build();
-
-        // Vision portal
-        visionPortal = new VisionPortal.Builder()
-                .addProcessor(tagProcessor)
-                .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
-                .setCameraResolution(new Size(640, 480))
-                .enableLiveView(true)
-                .build();
+//        tagProcessor = new AprilTagProcessor.Builder()
+//                .setDrawAxes(true)
+//                .setDrawCubeProjection(true)
+//                .setDrawTagID(true)
+//                .setDrawTagOutline(true)
+//                .build();
+//
+//        // Vision portal
+//        visionPortal = new VisionPortal.Builder()
+//                .addProcessor(tagProcessor)
+//                .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
+//                .setCameraResolution(new Size(640, 480))
+//                .enableLiveView(true)
+//                .build();
 
         robot.init(hardwareMap);             // motors/servos/IMU setup// webcam + AprilTag setup
         drive = new MecanumDrive(hardwareMap, PoseStorage.currentPose);
@@ -141,14 +156,12 @@ public class Mechanum extends OpMode {
     @Override
     public void start() {
         runtime.reset();
-        robot.drop.setPosition(0.63);
+//        robot.drop.setPosition(0.63);
     }
 
 
     @Override
     public void loop() {
-
-
 
         double autoTurn = 0;
 
@@ -168,11 +181,11 @@ public class Mechanum extends OpMode {
         } else {
             robot.intake.setPower(0.0);
         }
-        if (gamepad1.dpadRightWasPressed() || gamepad1.dpadRightWasPressed()) {
+        if (gamepad1.dpadRightWasPressed() || gamepad2.dpadRightWasPressed()) {
             TARGET_ID = 24;
             offset = -5;
         }
-        if (gamepad1.dpadLeftWasPressed() || gamepad1.dpadLeftWasPressed()) {
+        if (gamepad1.dpadLeftWasPressed() || gamepad2.dpadLeftWasPressed()) {
             TARGET_ID = 20;
             offset = -3;
         }
@@ -206,38 +219,72 @@ public class Mechanum extends OpMode {
         }
 
 
-        // Two-ball sequence
-        if (((runtime.seconds() - p2ytime) < twoballtime1) && ballNumber >= 2) {
-            robot.drop.setPosition(0.28);
-        } else if (((runtime.seconds() - p2ytime) < twoballtime2) && ballNumber >= 2) {
-            robot.drop.setPosition(0.69);
-        } else if (((runtime.seconds() - p2ytime) < twoballtime3) && ballNumber >= 2) {
-            robot.drop.setPosition(0.63);
-            ballNumber -= 1;
+        if(gamepad2.right_bumper){
+            robot.transfer.setVelocity(1000);
+        }
+        else {
+            robot.transfer.setPower(0);
         }
 
-        // One-ball sequence
-        if (((runtime.seconds() - p2ytime) < oneballtime1) && ballNumber <= 1) {
-            robot.drop.setPosition(0.28);
-        } else if (((runtime.seconds() - p2ytime) < oneballtime2) && ballNumber <= 1) {
-            robot.drop.setPosition(0.63);
-            ballNumber = 0;
+
+        if ((runtime.seconds() - p2ytime) < blocktime1) {
+            robot.block.setPosition(blockpos1);
+        } else if ((runtime.seconds() - p2ytime) < blocktime2) {
+            robot.block.setPosition(blockpos2);
         }
+
+        if (gamepad2.left_bumper){
+            robot.block.setPosition(0.45);
+        }
+
+
+        if (gamepad2.dpadUpWasPressed()){
+            Top_Speed += interval;
+        }
+        if (gamepad2.dpadDownWasPressed()){
+            Top_Speed -= interval;
+        }
+
+        if (gamepad2.dpadRightWasPressed()){
+            Bottom_Speed += interval;
+        }
+        if (gamepad2.dpadLeftWasPressed()){
+            Bottom_Speed -= interval;
+        }
+
+
+        //        // Two-ball sequence
+//        if (((runtime.seconds() - p2ytime) < twoballtime1) && ballNumber >= 2) {
+//            robot.drop.setPosition(0.28);
+//        } else if (((runtime.seconds() - p2ytime) < twoballtime2) && ballNumber >= 2) {
+//            robot.drop.setPosition(0.69);
+//        } else if (((runtime.seconds() - p2ytime) < twoballtime3) && ballNumber >= 2) {
+//            robot.drop.setPosition(0.63);
+//            ballNumber -= 1;
+//        }
+//
+//        // One-ball sequence
+//        if (((runtime.seconds() - p2ytime) < oneballtime1) && ballNumber <= 1) {
+//            robot.drop.setPosition(0.28);
+//        } else if (((runtime.seconds() - p2ytime) < oneballtime2) && ballNumber <= 1) {
+//            robot.drop.setPosition(0.63);
+//            ballNumber = 0;
+//        }
 
         // Manual ball count adjustments
-        if (gamepad2.dpadDownWasPressed()){
-            ballNumber--;
-            gamepad2.rumble(450,0,100);
-        }
-        if (gamepad2.dpadUpWasPressed()){
-            ballNumber++;
-            gamepad2.rumble(0,10000,150);
-        }
+//        if (gamepad2.dpadDownWasPressed()){
+//            ballNumber--;
+//            gamepad2.rumble(450,0,100);
+//        }
+//        if (gamepad2.dpadUpWasPressed()){
+//            ballNumber++;
+//            gamepad2.rumble(0,10000,150);
+//        }
 
-        // Manual drop override
-        if (gamepad2.dpad_right) {
-            robot.drop.setPosition(drop_high);
-        }
+//        // Manual drop override
+//        if (gamepad2.dpad_right) {
+//            robot.drop.setPosition(drop_high);
+//        }
 
 
 
@@ -245,34 +292,34 @@ public class Mechanum extends OpMode {
 CAMERA STUFF
  */
         // Get detections
-        List<AprilTagDetection> detections = tagProcessor.getDetections();
-
-        // Find ONLY the target ID
-        AprilTagDetection targetTag = null;
-        for (AprilTagDetection goalTag : detections) {
-            if (goalTag.id == TARGET_ID) {
-                targetTag = goalTag;
-                break;
-            }
-        }
-        if (gamepad1.right_trigger > 0.9 && targetTag != null) {
-
-            double bearing = targetTag.ftcPose.bearing;
-
-            if (Math.abs(bearing) > aimTolorance) {    // 5-degree tolerance
-                autoTurn = (bearing + offset) * rotationFactor;// proportional turn
-            }
-            telemetry.addData("range",targetTag.ftcPose.range);
-//            drive.setDrivePowers(
-//                    new PoseVelocity2d(
-//                            new Vector2d(0, 0),   // no translation
-//                            turnPower             // rotation
-//                    )
-//            );
-       }
-            if (gamepad1.right_trigger > 0.9 && targetTag == null) {
-                gamepad1.runRumbleEffect(noEffect);
-            }
+//        List<AprilTagDetection> detections = tagProcessor.getDetections();
+//
+//        // Find ONLY the target ID
+//        AprilTagDetection targetTag = null;
+//        for (AprilTagDetection goalTag : detections) {
+//            if (goalTag.id == TARGET_ID) {
+//                targetTag = goalTag;
+//                break;
+//            }
+//        }
+//        if (gamepad1.right_trigger > 0.9 && targetTag != null) {
+//
+//            double bearing = targetTag.ftcPose.bearing;
+//
+//            if (Math.abs(bearing) > aimTolorance) {    // 5-degree tolerance
+//                autoTurn = (bearing + offset) * rotationFactor;// proportional turn
+//            }
+//            telemetry.addData("range",targetTag.ftcPose.range);
+////            drive.setDrivePowers(
+////                    new PoseVelocity2d(
+////                            new Vector2d(0, 0),   // no translation
+////                            turnPower             // rotation
+////                    )
+////            );
+//       }
+//            if (gamepad1.right_trigger > 0.9 && targetTag == null) {
+//                gamepad1.runRumbleEffect(noEffect);
+//            }
 
 
             Pose2d pose = drive.localizer.getPose();// radians

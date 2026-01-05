@@ -64,9 +64,9 @@ public class Red_Far extends LinearOpMode {
         @Override
         public void run() {
             // Drop -> Delay -> Reset
-            robot.drop.setPosition(0.28);
+//            robot.drop.setPosition(0.28);
             Red_Far.this.sleep(200);   // 300 ms delay
-            robot.drop.setPosition(0.63);
+//            robot.drop.setPosition(0.63);
         }
     }
 
@@ -80,7 +80,7 @@ public class Red_Far extends LinearOpMode {
     public class DropUp implements InstantFunction{
         @Override
         public void run() {
-            robot.drop.setPosition(0.63);
+//            robot.drop.setPosition(0.63);
             Red_Far.this.sleep(100);
         }
     }

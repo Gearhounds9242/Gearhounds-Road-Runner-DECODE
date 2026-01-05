@@ -27,7 +27,7 @@ public class GearhoundsHardware extends Hardware {
     public Servo ExampleServo;
     public HuskyLens huskyLens;
 */
-    public Servo drop;
+//    public Servo drop;
     public DcMotorEx intake;
     public DcMotorEx TopMotor;
     public DcMotorEx BottomMotor;
@@ -40,6 +40,9 @@ public class GearhoundsHardware extends Hardware {
     public DcMotorEx leftBack;
     public DcMotorEx rightFront;
     public DcMotorEx rightBack;
+
+    public DcMotorEx transfer;
+    public Servo block;
 
 
 
@@ -77,17 +80,18 @@ public class GearhoundsHardware extends Hardware {
         ExampleMotor = robotMap.get(DcMotorEx.class, "ExampleMotor");
         NameInCodeHere = robotMap.get(DeviceTypeHere.class, "DriverStationNameHere");
     */
-        blinkin = robotMap.get(RevBlinkinLedDriver.class, "blinkin");
+//        blinkin = robotMap.get(RevBlinkinLedDriver.class, "blinkin");
 
 //Comment back in when needed for vision
 //        webcamName = robotMap.get(WebcamName.class, "Webcam 1");
         //Drivetrain Members
 
-        drop = robotMap.get(Servo.class, "drop");
+//        drop = robotMap.get(Servo.class, "drop");
 
 //        motor = robotMap.get(DcMotorEx.class, "motor");
 //        motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 //        motor
+        block = robotMap.get(Servo.class,"block");
 
         TopMotor = robotMap.get(DcMotorEx.class, "topmotor");
         TopMotor.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -98,7 +102,7 @@ public class GearhoundsHardware extends Hardware {
         leftFront = robotMap.get(DcMotorEx.class, "leftFront");
         leftFront.setDirection(DcMotorSimple.Direction.FORWARD);
         leftBack = robotMap.get(DcMotorImplEx.class, "leftBack");
-        leftBack.setDirection(DcMotorSimple.Direction.FORWARD);
+        leftBack.setDirection(DcMotorSimple.Direction.REVERSE);
         rightFront = robotMap.get(DcMotorEx.class, "rightFront");
         rightFront.setDirection(DcMotorSimple.Direction.FORWARD);
         rightBack = robotMap.get(DcMotorEx.class, "rightBack");
@@ -115,6 +119,10 @@ public class GearhoundsHardware extends Hardware {
         leftBack.setDirection(DcMotorSimple.Direction.REVERSE);
 
 
+        transfer = robotMap.get(DcMotorEx.class, "transfer");
+        transfer.setDirection(DcMotorSimple.Direction.REVERSE);
+
+
 
 
         intake = robotMap.get(DcMotorEx.class, "intake");
@@ -127,7 +135,7 @@ public class GearhoundsHardware extends Hardware {
         IMU.Parameters imuParameters = new IMU.Parameters(
                 new RevHubOrientationOnRobot(
                         RevHubOrientationOnRobot.LogoFacingDirection.RIGHT,
-                        RevHubOrientationOnRobot.UsbFacingDirection.UP
+                        RevHubOrientationOnRobot.UsbFacingDirection.FORWARD
                 )
         );
         imu.initialize(imuParameters);
