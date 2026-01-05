@@ -58,7 +58,7 @@ public class Mechanum extends OpMode {
 
     public static boolean isRedAlliance = false;   // set false when you are blue
     private MecanumDrive drive;
-    public static double Intake_Speed = -1000.0;
+    public static double Intake_Speed = 1000.0;
     // back power 1650 for both
     // front power 1600 bottom 1480 top
     public static double Top_Speed = 2000.0;
@@ -156,6 +156,9 @@ public class Mechanum extends OpMode {
     @Override
     public void start() {
         runtime.reset();
+        if(!gamepad1.a || !gamepad2.a){
+        robot.block.setPosition(0.45);}
+
 //        robot.drop.setPosition(0.63);
     }
 
@@ -172,12 +175,11 @@ public class Mechanum extends OpMode {
         packet.put("BottomCurrentA", robot.BottomMotor.getCurrent(CurrentUnit.AMPS));
         dashboard.sendTelemetryPacket(packet);
 
-
         if (gamepad1.left_bumper) shift = 0.3; // slow mode
         if (gamepad1.right_bumper) shift = 1.0; // full speed
 
         if (gamepad1.right_trigger > 0.1) {
-            robot.intake.setPower(Intake_Speed);
+            robot.intake.setVelocity(Intake_Speed);
         } else {
             robot.intake.setPower(0.0);
         }
@@ -233,7 +235,7 @@ public class Mechanum extends OpMode {
             robot.block.setPosition(blockpos2);
         }
 
-        if (gamepad2.left_bumper){
+        if (gamepad2.ps){
             robot.block.setPosition(0.45);
         }
 

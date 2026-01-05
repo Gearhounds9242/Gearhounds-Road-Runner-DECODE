@@ -120,7 +120,7 @@ public class GearhoundsHardware extends Hardware {
 
 
         transfer = robotMap.get(DcMotorEx.class, "transfer");
-        transfer.setDirection(DcMotorSimple.Direction.REVERSE);
+        transfer.setDirection(DcMotorSimple.Direction.FORWARD);
 
 
 
