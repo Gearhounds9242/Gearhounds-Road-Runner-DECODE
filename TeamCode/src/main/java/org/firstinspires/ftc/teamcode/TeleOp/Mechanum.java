@@ -109,6 +109,8 @@ public class Mechanum extends OpMode {
     public static double blockpos1 = 0.45;
     public static double blockpos2 = 0.2;
     private static double interval = 10;
+    public static double rightLightColor = 1;
+    public static double leftLightColor = 1;
 
 
 
@@ -183,8 +185,8 @@ public class Mechanum extends OpMode {
 
     @Override
     public void loop() {
-//        robot.rightLight.setPosition(0.611);
-//        robot.leftLight.setPosition(0.28);
+        robot.rightLight.setPosition(rightLightColor);
+        robot.leftLight.setPosition(leftLightColor);
 
         PIDFController topShooterController = new PIDFController(top_P, top_I, top_D, top_F);
         PIDFController bottomShooterController = new PIDFController(bottom_P, bottom_I, bottom_D, bottom_F);
