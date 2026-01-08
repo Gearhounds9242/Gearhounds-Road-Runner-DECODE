@@ -10,22 +10,25 @@ import com.noahbres.meepmeep.roadrunner.entity.RoadRunnerBotEntity;
 public class MeepMeepTesting {
     public static void main(String[] args) {
         MeepMeep meepMeep = new MeepMeep(800);
+        Vector2d trianglePos = new Vector2d(60, -10);
+        Vector2d goalPos = new Vector2d(-63, -60);
+        double aimHeading = Math.atan2(goalPos.y - trianglePos.y, goalPos.x - trianglePos.x);
 
         RoadRunnerBotEntity myBot = new DefaultBotBuilder(meepMeep)
                 // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
                 .setConstraints(120, 120, Math.toRadians(180), Math.toRadians(180), 17.3)
                 .build();
 //        myBot.setDimensions()
-        myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(60, 15, Math.toRadians(0)))
+        myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(36, 32, Math.toRadians(0)))
                 //shoot 3
 //                .strafeTo(new Vector2d(55, 15))
 //                .splineToLinearHeading(new Pose2d(50, 15, Math.toRadians(25)), Math.toRadians(0))
 //                                .waitSeconds(10)
 // servo open/close with delay
 //\                .stopAndAdd(new DropUp())
-                .strafeTo(new Vector2d(52, 15))
+                .strafeTo(new Vector2d(60, -10))
 //                .splineToLinearHeading(new Pose2d(50, 15, Math.toRadians(-25)), Math.toRadians(0))
-                .splineToLinearHeading(new Pose2d(55, 18, Math.toRadians(-22.5)), Math.toRadians(0))
+                .splineToLinearHeading(new Pose2d(60, -10, aimHeading), 0.0)
 //                .stopAndAdd(new StartShooterStrong())   // spin up
                 .waitSeconds(3)
 //                .stopAndAdd(new ShootBall())
