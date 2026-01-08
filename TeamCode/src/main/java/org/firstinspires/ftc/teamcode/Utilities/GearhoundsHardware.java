@@ -1,6 +1,11 @@
 package org.firstinspires.ftc.teamcode.Utilities;
 
 //import com.qualcomm.hardware.bosch.BNO055IMU i
+import static org.firstinspires.ftc.teamcode.TeleOp.Mechanum.top_D;
+import static org.firstinspires.ftc.teamcode.TeleOp.Mechanum.top_F;
+import static org.firstinspires.ftc.teamcode.TeleOp.Mechanum.top_I;
+import static org.firstinspires.ftc.teamcode.TeleOp.Mechanum.top_P;
+
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -8,6 +13,7 @@ import com.qualcomm.robotcore.hardware.DcMotorImplEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
+import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
@@ -43,6 +49,8 @@ public class GearhoundsHardware extends Hardware {
 
     public DcMotorEx transfer;
     public Servo block;
+    public Servo leftLight;
+    public Servo rightLight;
 
 
 
@@ -92,6 +100,8 @@ public class GearhoundsHardware extends Hardware {
 //        motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 //        motor
         block = robotMap.get(Servo.class,"block");
+        leftLight = robotMap.get(Servo.class,"leftLight");
+        rightLight = robotMap.get(Servo.class,"rightLight");
 
         TopMotor = robotMap.get(DcMotorEx.class, "topmotor");
         TopMotor.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -120,13 +130,23 @@ public class GearhoundsHardware extends Hardware {
 
 
         transfer = robotMap.get(DcMotorEx.class, "transfer");
-        transfer.setDirection(DcMotorSimple.Direction.FORWARD);
+        transfer.setDirection(DcMotorSimple.Direction.REVERSE);
 
 
+        PIDFCoefficients pidf = new PIDFCoefficients(
+                top_P,  // P
+                top_I,// ,   // I
+                top_D,   // D
+                top_F   // F
+        );
 
+        TopMotor.setPIDFCoefficients(
+                DcMotor.RunMode.RUN_USING_ENCODER,
+                pidf
+        );
 
         intake = robotMap.get(DcMotorEx.class, "intake");
-        intake.setDirection(DcMotorImplEx.Direction.FORWARD);
+        intake.setDirection(DcMotorImplEx.Direction.REVERSE);
 
         // Defines the REV Hub's internal IMU (Gyro)
         imu = robotMap.get(IMU.class, "imu");
