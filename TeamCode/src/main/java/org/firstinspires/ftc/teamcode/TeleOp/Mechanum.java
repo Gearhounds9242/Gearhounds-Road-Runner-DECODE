@@ -100,9 +100,9 @@ public class Mechanum extends OpMode {
     public static double top_I = 0;
     public static double top_D = 0.3;
     public static double top_F = 2.8;
-    public static double bottom_P = 3;
+    public static double bottom_P = 1;
     public static double bottom_I = 0;
-    public static double bottom_D = 0.3;
+    public static double bottom_D = 3;
     public static double bottom_F = 1;
 
 
@@ -232,13 +232,13 @@ public class Mechanum extends OpMode {
             offset = -3;
         }
 
-        if (gamepad2.right_trigger > 0.1) {
+        if ( Math.abs(gamepad2.right_trigger )> 0.1) {
             robot.BottomMotor.setVelocity(bottomOutput);
         } else {
             robot.BottomMotor.setPower(0.0);
         }
 
-        if (gamepad2.left_trigger > 0.1) {
+        if ( Math.abs(gamepad2.left_trigger) > 0.1) {
             robot.TopMotor.setVelocity(topOutput);
         } else {
             robot.TopMotor.setPower(0.0);

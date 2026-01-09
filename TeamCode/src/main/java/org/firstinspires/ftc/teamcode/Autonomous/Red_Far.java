@@ -12,6 +12,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Utilities.GearhoundsHardware;
 import org.firstinspires.ftc.teamcode.Utilities.PoseStorage;
+import org.firstinspires.ftc.teamcode.Autonomous_Comands.start_Shooter;
 
 @Autonomous(name = "Red_Far")
 public class Red_Far extends LinearOpMode {
@@ -19,20 +20,13 @@ public class Red_Far extends LinearOpMode {
     private final GearhoundsHardware robot = new GearhoundsHardware();
 
     // Starting pose
-    Pose2d startPose = new Pose2d(new Vector2d(60, 15), Math.toRadians(0));
+    Pose2d startPose = new Pose2d(new Vector2d(60, 15), Math.toRadians(180));
     MecanumDrive drive;
 
     // ------------------------- //
     //      Instant Actions      //
     // ------------------------- //
 
-    public class StartShooter implements InstantFunction {
-        @Override
-        public void run() {
-            robot.TopMotor.setVelocity(1690);
-            robot.BottomMotor.setVelocity(1690);
-        }
-    }
 
     public class StartShooterWeak implements InstantFunction {
         @Override
@@ -101,25 +95,9 @@ public class Red_Far extends LinearOpMode {
         if (isStopRequested()) return;
 
         Action path = drive.actionBuilder(startPose)
-                .stopAndAdd(new DropUp())
-                .strafeTo(new Vector2d(52, 15))
-//                .splineToLinearHeading(new Pose2d(50, 15, Math.toRadians(-25)), Math.toRadians(0))
-                .splineToLinearHeading(new Pose2d(55, 18, Math.toRadians(-22.5)), Math.toRadians(0))
-                .stopAndAdd(new StartShooterStrong())   // spin up
-                .waitSeconds(3)
-                .stopAndAdd(new ShootBall())
-                .waitSeconds(3)
-                .stopAndAdd(new StartShooter())
-                .waitSeconds(3)// spin up
-                .stopAndAdd(new ShootBall())
-                .waitSeconds(3)
-                .stopAndAdd(new ShootBall())
-                .waitSeconds(3)
-                .stopAndAdd(new StopShooter())
-
-
-                .splineToLinearHeading(new Pose2d(58, 36, Math.toRadians(90)), Math.toRadians(0))
-                .strafeTo(new Vector2d(60, 36))
+                .strafeTo(new Vector2d(52,15))
+                .splineToLinearHeading(new Pose2d(55, 18, Math.toRadians(160)), Math.toRadians(0))
+                .stopAndAdd(new start_Shooter.StartShooter())
                 .stopAndAdd(new SavePose())
                 .build();
 
