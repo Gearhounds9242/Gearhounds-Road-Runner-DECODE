@@ -1,26 +1,21 @@
 package org.firstinspires.ftc.teamcode.Autonomous_Comands;
 
-
-
 import com.acmerobotics.roadrunner.InstantFunction;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-
 import org.firstinspires.ftc.teamcode.Utilities.GearhoundsHardware;
 
-public class start_Shooter {
+public class start_Shooter implements InstantFunction {
 
-    private final GearhoundsHardware robot = new GearhoundsHardware();
+    private final GearhoundsHardware robot;
+    private final double velocity;
 
-    public class StartShooter implements InstantFunction {
-        @Override
-        public void run() {
-            robot.TopMotor.setVelocity(1690);
-            robot.BottomMotor.setVelocity(1690);
-        }
+    public StartShooter(GearhoundsHardware robot, double velocity) {
+        this.robot = robot;
+        this.velocity = velocity;
     }
 
-
-
-
-
+    @Override
+    public void run() {
+        robot.TopMotor.setVelocity(velocity);
+        robot.BottomMotor.setVelocity(velocity);
+    }
 }
