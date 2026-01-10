@@ -16,9 +16,11 @@ import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.InstantFunction;
 import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -28,15 +30,30 @@ import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Utilities.GearhoundsHardware;
 import org.firstinspires.ftc.teamcode.Utilities.PoseStorage;
 
-@Autonomous(name = "Blue_Far")
-public class Blue_Far extends LinearOpMode {
+@Disabled/// ATTENTION IF YOU ARE GOING TO COPY THIS FILE @Disabled MUST BE REMOVED FOR IT TO SHOW UP ON THE DRIVER STATION
+@Autonomous(name = "Autonomous_Example")///  ATTENTION IF YOU ARE GOING TO COPY THIS FILE BOTH OF THE NAMES SHOWN HERE AND ON THE LINE BELOW MUST MATCH YOUR FILE NAME
+public class Autonomous_Example extends LinearOpMode {
 
-    MecanumDrive drive;
-    private final GearhoundsHardware robot = new GearhoundsHardware();
+MecanumDrive drive;
+private final GearhoundsHardware robot = new GearhoundsHardware();
 
+/// ********************************************
+///This is your starting position. It is important to get this correct as it is one of the main ways autonomous gets messed up
     // Starting pose
     Pose2d startPose = new Pose2d(new Vector2d(60, 15), Math.toRadians(180));
 
+/*
+You may see the word "Pose thrown around a lot. Pose is essentially just a way of explaining a point in space using coordinates like X and Y
+ */
+
+/// Some of the Autonomous commands include (these may change as time goes on will be updated here)
+/*
+.stopAndAdd(new SavePose())
+.stopAndAdd(new ShootBallRapid("ballCount","power","timeout")
+.stopAndAdd(new RunShooter("topPower","bottomPower", "timeout"))
+.stopAndAdd(new StopShooter())
+ */
+/// ********************************************
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -52,7 +69,7 @@ public class Blue_Far extends LinearOpMode {
         if (isStopRequested()) return;
         Actions.runBlocking(
                 drive.actionBuilder(startPose)
-
+/// Right here is where you will start your pathing, before the .stopAndAdd(new SavePose()). All GearHounds Autonomous pathing end with .stopAndAdd(new SavePose()). The .build()); is just required for Roadrunner.
                         .stopAndAdd(new SavePose())
                         .build());
 
@@ -60,6 +77,7 @@ public class Blue_Far extends LinearOpMode {
     }
 
 
+    /// Here are all of your Autonomous commands. you can use these by typing .stopAndAdd(new "command name here")
     /// Please don't go messing around in here if you don't know what you are doing proceed with CAUTION
 
 

@@ -28,8 +28,8 @@ import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Utilities.GearhoundsHardware;
 import org.firstinspires.ftc.teamcode.Utilities.PoseStorage;
 
-@Autonomous(name = "Blue_Far")
-public class Blue_Far extends LinearOpMode {
+@Autonomous(name = "Red_Close")
+public class Red_Close extends LinearOpMode {
 
     MecanumDrive drive;
     private final GearhoundsHardware robot = new GearhoundsHardware();
