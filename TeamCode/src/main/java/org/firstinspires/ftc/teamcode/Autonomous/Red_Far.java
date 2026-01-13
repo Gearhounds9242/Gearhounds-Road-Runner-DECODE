@@ -53,11 +53,11 @@ public class Red_Far extends LinearOpMode {
         Actions.runBlocking(
                 drive.actionBuilder(startPose)
                         .waitSeconds(10)
-                        .strafeToLinearHeading(new Vector2d(55,15),Math.toRadians(163))
+                        .strafeToLinearHeading(new Vector2d(55, 15), Math.toRadians(163))
                         .waitSeconds(3)
-                        .stopAndAdd(new RunShooter(1400,1400,1))
+                        .stopAndAdd(new RunShooter(1400, 1400, 0.2))
                         .stopAndAdd(new ShootBallRapid(3, 1, 4))
-                        .strafeToLinearHeading(new Vector2d(0,15),Math.toRadians(180))
+//                        .strafeToLinearHeading(new Vector2d(0,15),Math.toRadians(180))
 
                         .build());
 
@@ -76,34 +76,36 @@ public class Red_Far extends LinearOpMode {
     }
 
 
-    public class ShootBallRapid implements Action{
+    public class ShootBallRapid implements Action {
         int ballNumber;
         double transferPower;
         int currentPos;
-        int howMuchToSpinPerBall = 100;
+        int howMuchToSpinPerBall = 10000;
         int targetPos;
         int timeout;
         ElapsedTime timer;
 
-        public ShootBallRapid(int ballCount, int power, int timeout){
+        public ShootBallRapid(int ballCount, int power, int timeout) {
             this.ballNumber = ballCount;
             this.transferPower = power;
             this.timeout = timeout;
         }
+
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-            if (timer == null){
+            if (timer == null) {
                 timer = new ElapsedTime();
                 currentPos = robot.transfer.getCurrentPosition();
                 targetPos = currentPos + (ballNumber * howMuchToSpinPerBall);
+                robot.transfer.setTargetPosition(targetPos);
                 robot.transfer.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             }
-            if (transferPower > 1 || transferPower < -1 || transferPower == 0){
+            if (transferPower > 1 || transferPower < -1 || transferPower == 0) {
                 robot.leftLight.setPosition(0.28);
                 robot.rightLight.setPosition(0.28);
                 throw new RuntimeException("The transfer uses .setPower! The power must be less then 1, but not 0 or below (it can be a decimal). Change to continue");
             }
-            if(timeout <= 0){
+            if (timeout <= 0) {
                 robot.leftLight.setPosition(0.28);
                 robot.rightLight.setPosition(0.28);
                 throw new RuntimeException("The transfer timeout needs to be greater than 0!");
@@ -112,11 +114,11 @@ public class Red_Far extends LinearOpMode {
             robot.transfer.setTargetPosition(targetPos);
             robot.transfer.setPower(transferPower);
 
-            if(robot.transfer.getCurrentPosition() >= targetPos){
+            if (robot.transfer.getCurrentPosition() >= targetPos) {
                 robot.transfer.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
                 return false;
             }
-            if (timer.seconds() < timeout){
+            if (timer.seconds() < timeout) {
                 return true;
             } else {
                 robot.transfer.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -127,7 +129,7 @@ public class Red_Far extends LinearOpMode {
         }
     }
 
-    public class StopShooter implements Action{
+    public class StopShooter implements Action {
         double Top_Target_Speed = 0;
         double Bottom_Target_Speed = 0;
         ElapsedTime timer;
@@ -135,8 +137,8 @@ public class Red_Far extends LinearOpMode {
         PIDFController topShooterController = new PIDFController(top_P, top_I, top_D, top_F);
         PIDFController bottomShooterController = new PIDFController(bottom_P, bottom_I, bottom_D, bottom_F);
 
-        double topOutput = topShooterController.calculate(robot.TopMotor.getVelocity(),Top_Target_Speed);
-        double bottomOutput = bottomShooterController.calculate(robot.BottomMotor.getVelocity(),Bottom_Target_Speed);
+        double topOutput = topShooterController.calculate(robot.TopMotor.getVelocity(), Top_Target_Speed);
+        double bottomOutput = bottomShooterController.calculate(robot.BottomMotor.getVelocity(), Bottom_Target_Speed);
 
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
@@ -146,46 +148,47 @@ public class Red_Far extends LinearOpMode {
         }
     }
 
-    public class RunShooter implements Action{
+    public class RunShooter implements Action {
         double Top_Target_Speed;
         double Bottom_Target_Speed;
         //        int spoolTime;
-        int timeout;
+        double timeout;
         ElapsedTime timer;
 
         PIDFController topShooterController = new PIDFController(top_P, top_I, top_D, top_F);
         PIDFController bottomShooterController = new PIDFController(bottom_P, bottom_I, bottom_D, bottom_F);
 
-        double topOutput = topShooterController.calculate(robot.TopMotor.getVelocity(),Top_Target_Speed);
-        double bottomOutput = bottomShooterController.calculate(robot.BottomMotor.getVelocity(),Bottom_Target_Speed);
 
-        public RunShooter(double topPower, double bottomPower/*, int spoolTime*/, int timeout){
+        public RunShooter(double topPower, double bottomPower/*, int spoolTime*/, double timeout) {
             this.Top_Target_Speed = topPower;
             this.Bottom_Target_Speed = bottomPower;
 //            this.spoolTime = spoolTime;
             this.timeout = timeout;
         }
+
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-            if (timer == null){
+            if (timer == null) {
                 timer = new ElapsedTime();
                 //put code to initialize here per action
             }
-            if (Top_Target_Speed < 0 || Bottom_Target_Speed < 0){
+            if (Top_Target_Speed < 0 || Bottom_Target_Speed < 0) {
                 throw new RuntimeException("The shooter power needs to be a positive number! Change to continue");
             }
-            if(timeout <= 0){
+            if (timeout <= 0) {
                 robot.leftLight.setPosition(0.28);
                 robot.rightLight.setPosition(0.28);
                 throw new RuntimeException("The shooter timeout needs to be greater than 0!");
             }
+            double topOutput = topShooterController.calculate(robot.TopMotor.getVelocity(), Top_Target_Speed);
+            double bottomOutput = bottomShooterController.calculate(robot.BottomMotor.getVelocity(), Bottom_Target_Speed);
             robot.TopMotor.setVelocity(topOutput);
             robot.BottomMotor.setVelocity(bottomOutput);
 
-            if(robot.TopMotor.getVelocity() >= Top_Target_Speed && robot.BottomMotor.getVelocity() >= Top_Target_Speed){
-                return true;
-            }
-            if (timer.seconds() < timeout){
+//            if(robot.TopMotor.getVelocity() >= Top_Target_Speed && robot.BottomMotor.getVelocity() >= Top_Target_Speed){
+//                return true;
+//            }
+            if (timer.seconds() < timeout) {
                 return true;
             } else {
                 return false;

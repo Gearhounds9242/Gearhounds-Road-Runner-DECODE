@@ -55,7 +55,7 @@ public class Blue_Far extends LinearOpMode {
                         .waitSeconds(10)
                         .strafeToLinearHeading(new Vector2d(55,-15),Math.toRadians(-160))
                         .waitSeconds(3)
-                        .stopAndAdd(new RunShooter(1400,1400,1))
+                        .stopAndAdd(new RunShooter(1400,1400,3))
                         .stopAndAdd(new ShootBallRapid(3, 1, 4))
                         .strafeToLinearHeading(new Vector2d(0,-15),Math.toRadians(180))
 

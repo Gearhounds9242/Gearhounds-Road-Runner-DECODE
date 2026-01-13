@@ -224,13 +224,13 @@ public class Mechanum extends OpMode {
             rightLightColor = 0;
         }
 
-        if (bearing <3 || bearing >-3){
-            leftLightColor = 0.611;
-            rightLightColor = 0.611;
-        }else {
-            leftLightColor = 0;
-            rightLightColor = 0;
-        }
+//        if (bearing <3 || bearing >-3){
+//            leftLightColor = 0.611;
+//            rightLightColor = 0.611;
+//        }else {
+//            leftLightColor = 0;
+//            rightLightColor = 0;
+//        }
 
         if(leftLightColor > 0.001){
             robot.leftLight.setPosition(leftLightColor);
@@ -433,6 +433,7 @@ CAMERA STUFF
             telemetry.addData("bearing", bearing);
             telemetry.addData("range", range);
             telemetry.addData("robotRange", robotRange);
+            telemetry.addData("autopower", autoPower);
             telemetry.update();
         }
     @Override
