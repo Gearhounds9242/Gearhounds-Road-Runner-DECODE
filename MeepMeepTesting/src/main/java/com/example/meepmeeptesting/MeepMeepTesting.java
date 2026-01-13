@@ -10,41 +10,23 @@ import com.noahbres.meepmeep.roadrunner.entity.RoadRunnerBotEntity;
 public class MeepMeepTesting {
     public static void main(String[] args) {
         MeepMeep meepMeep = new MeepMeep(800);
-        Vector2d trianglePos = new Vector2d(60, -10);
-        Vector2d goalPos = new Vector2d(-63, -60);
-        double aimHeading = Math.atan2(goalPos.y - trianglePos.y, goalPos.x - trianglePos.x);
 
         RoadRunnerBotEntity myBot = new DefaultBotBuilder(meepMeep)
                 // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
-                .setConstraints(120, 120, Math.toRadians(180), Math.toRadians(180), 17.3)
+                .setConstraints(120, 120, Math.toRadians(180), Math.toRadians(130), 15.5)
                 .build();
 //        myBot.setDimensions()
-        myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(36, 32, Math.toRadians(0)))
-                //shoot 3
-//                .strafeTo(new Vector2d(55, 15))
-//                .splineToLinearHeading(new Pose2d(50, 15, Math.toRadians(25)), Math.toRadians(0))
-//                                .waitSeconds(10)
-// servo open/close with delay
-//\                .stopAndAdd(new DropUp())
-                .strafeTo(new Vector2d(60, -10))
-//                .splineToLinearHeading(new Pose2d(50, 15, Math.toRadians(-25)), Math.toRadians(0))
-                .splineToLinearHeading(new Pose2d(60, -10, aimHeading), 0.0)
-//                .stopAndAdd(new StartShooterStrong())   // spin up
+        myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(60, -15, Math.toRadians(180)))
+                .waitSeconds(10)
+                .strafeToLinearHeading(new Vector2d(55,-15),Math.toRadians(-160))
                 .waitSeconds(3)
-//                .stopAndAdd(new ShootBall())
-                .waitSeconds(3)
-//                .stopAndAdd(new StartShooter())
-                .waitSeconds(3)// spin up
-//                .stopAndAdd(new ShootBall())
-                .waitSeconds(3)
-//                .stopAndAdd(new ShootBall())
-                .waitSeconds(3)
-//                .stopAndAdd(new StopShooter())
 
+                .waitSeconds(3)
 
-                .splineToLinearHeading(new Pose2d(58, 36, Math.toRadians(90)), Math.toRadians(0))
-                .strafeTo(new Vector2d(60, 36))
-//                .stopAndAdd(new SavePose())
+                .waitSeconds(3)
+
+                .waitSeconds(3)
+                .strafeToLinearHeading(new Vector2d(0,-15),Math.toRadians(180))
                 .build());
 
 

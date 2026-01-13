@@ -53,6 +53,7 @@ public class Red_Far_Just_Move extends LinearOpMode {
         Actions.runBlocking(
                 drive.actionBuilder(startPose)
 
+                        .strafeTo(new Vector2d(20, 40))
                         .stopAndAdd(new SavePose())
                         .build());
 

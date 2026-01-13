@@ -52,8 +52,13 @@ public class Blue_Far extends LinearOpMode {
         if (isStopRequested()) return;
         Actions.runBlocking(
                 drive.actionBuilder(startPose)
+                        .waitSeconds(10)
+                        .strafeToLinearHeading(new Vector2d(55,-15),Math.toRadians(-160))
+                        .waitSeconds(3)
+                        .stopAndAdd(new RunShooter(1400,1400,1))
+                        .stopAndAdd(new ShootBallRapid(3, 1, 4))
+                        .strafeToLinearHeading(new Vector2d(0,-15),Math.toRadians(180))
 
-                        .stopAndAdd(new SavePose())
                         .build());
 
 
@@ -90,8 +95,8 @@ public class Blue_Far extends LinearOpMode {
             if (timer == null){
                 timer = new ElapsedTime();
                 currentPos = robot.transfer.getCurrentPosition();
-                robot.transfer.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 targetPos = currentPos + (ballNumber * howMuchToSpinPerBall);
+                robot.transfer.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             }
             if (transferPower > 1 || transferPower < -1 || transferPower == 0){
                 robot.leftLight.setPosition(0.28);

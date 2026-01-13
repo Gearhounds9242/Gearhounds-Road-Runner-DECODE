@@ -14,10 +14,10 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import com.sun.tools.javac.comp.Todo;
+import com.seattlesolvers.solverslib.util.InterpLUT;
 
 //import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.robotcontroller.external.samples.RobotAutoDriveToAprilTagOmni;
+
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 
@@ -52,8 +52,8 @@ public class Mechanum extends OpMode {
     public static int  TARGET_ID = 0 ;
     private final GearhoundsHardware robot = new GearhoundsHardware();
     private final ElapsedTime runtime = new ElapsedTime();
-//     InterpLUT velocityTopLut = new InterpLUT();
-//     InterpLUT velocityBottomLut = new InterpLUT();
+     InterpLUT velocityTopLut = new InterpLUT();
+     InterpLUT velocityBottomLut = new InterpLUT();
     private FtcDashboard dashboard;
     private AprilTagProcessor tagProcessor;
     private VisionPortal visionPortal;
@@ -68,9 +68,6 @@ public class Mechanum extends OpMode {
     public static double Bottom_Target_Speed = 2000.0;
     public static double shift = 1.0;
     // Drop servo + ball count logic
-    public static double drop_up = 0.63;
-    public static double drop_down = 0.36;
-    public static double drop_high = 0.36;
     public static double rotationFactor = 0.05;
     public static double aimTolorance = 1;
 
@@ -78,24 +75,6 @@ public class Mechanum extends OpMode {
     public static int ballNumber = 0;
     public static double offset = 0;
 
-//        PIDController motor = new PIDController(kP, kI, kD);
-
-    // two-ball timing (seconds)
-    public static double twoballtime1 = 0.1;
-    public static double twoballtime2 = 0.5;
-    public static double twoballtime3 = 1.0;
-
-    // one-ball timing (seconds)
-    public static double oneballtime1 = 0.1;
-    public static double oneballtime2 = 0.5;
-
-    public static double time1 = 1;
-    public static double time2 = 2;
-
-
-
-    public static double blocktime1 = 0.1;
-    public static double blocktime2 = 0.4;
     public static double top_P = 3;
     public static double top_I = 0;
     public static double top_D = 0.3;
@@ -105,12 +84,17 @@ public class Mechanum extends OpMode {
     public static double bottom_D = 3;
     public static double bottom_F = 1;
 
-
-    public static double blockpos1 = 0.45;
-    public static double blockpos2 = 0.2;
     private static double interval = 10;
-    public static double rightLightColor = 1;
-    public static double leftLightColor = 1;
+    public static double rightLightColor = 0;
+    public static double leftLightColor = 0;
+    public static double leftLightDeafualtColor = 1;
+    public static double rightLightDeafualtColor = 1;
+    public static double range;
+    public static double robotRange;
+    public static boolean autoPower = true;
+    public static double bearing = 0;
+    public static double shooterTolerance;
+    public boolean canSeeTag;
 
 
 
@@ -132,21 +116,33 @@ public class Mechanum extends OpMode {
     public void init() {
         dashboard = FtcDashboard.getInstance();
         dashboard.setTelemetryTransmissionInterval(25);
-
+//        TARGET_ID = 20;
         telemetry.addData("Status", "Initializing...");
         telemetry.update();
 
-//         velocityTopLut.add(72, 1480);
-//         velocityTopLut.add(48,1180);
-//         velocityTopLut.add(108.5,1650);
-//         velocityTopLut.add(96, 1550);
-//         velocityTopLut.createLUT();
-//
-//         velocityBottomLut.add(72, 1540);
-//         velocityBottomLut.add(48,2000);
-//         velocityBottomLut.add(108.5,1650);
-//         velocityBottomLut.add(96, 1550);
-//         velocityBottomLut.createLUT();
+        velocityTopLut.add(-1,0);
+        velocityTopLut.add(0,0);
+        velocityTopLut.add(1,0);
+        velocityTopLut.add(46,1400);
+        velocityTopLut.add(53,1300);
+        velocityTopLut.add(70,1270);
+        velocityTopLut.add(118, 1400);
+        velocityTopLut.add(140,1400);
+         velocityTopLut.createLUT();
+
+        velocityBottomLut.add(-1,0);
+        velocityBottomLut.add(0,0);
+        velocityBottomLut.add(1,0);
+        velocityBottomLut.add(46,1400);
+        velocityBottomLut.add(53,1300);
+        velocityBottomLut.add(70,1270);
+
+        velocityBottomLut.add(118, 1400);
+        velocityBottomLut.add(140,1400);
+
+
+
+         velocityBottomLut.createLUT();
         
         tagProcessor = new AprilTagProcessor.Builder()
                 .setDrawAxes(true)
@@ -161,7 +157,6 @@ public class Mechanum extends OpMode {
                 .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
                 .setCameraResolution(new Size(640, 480))
                 .enableLiveView(true)
-                .setStreamFormat(VisionPortal.StreamFormat.MJPEG)
                 .build();
 
         robot.init(hardwareMap);             // motors/servos/IMU setup// webcam + AprilTag setup
@@ -185,8 +180,12 @@ public class Mechanum extends OpMode {
 
     @Override
     public void loop() {
-        robot.rightLight.setPosition(rightLightColor);
-        robot.leftLight.setPosition(leftLightColor);
+        if (robotRange > 0 && autoPower == true) {
+            Top_Target_Speed = velocityTopLut.get(robotRange);
+            Bottom_Target_Speed = velocityBottomLut.get(robotRange);
+        }
+
+        robotRange = range;
 
         PIDFController topShooterController = new PIDFController(top_P, top_I, top_D, top_F);
         PIDFController bottomShooterController = new PIDFController(bottom_P, bottom_I, bottom_D, bottom_F);
@@ -210,6 +209,40 @@ public class Mechanum extends OpMode {
 //        if (gamepad1.left_bumper) shift = 0.3; // slow mode
 //        if (gamepad1.right_bumper) shift = 1.0; // full speed
 
+        if(((robot.TopMotor.getVelocity() == topOutput) && (bearing <3 || bearing >-3) && (robot.BottomMotor.getVelocity() == bottomOutput))){
+            leftLightColor = 0.5;
+            rightLightColor = 0.5;
+        }else{
+            leftLightColor = 0;
+            rightLightColor = 0;
+        }
+        if(((robot.TopMotor.getVelocity() == topOutput) && (robot.BottomMotor.getVelocity() == bottomOutput))){
+            leftLightColor = 0.388;
+            rightLightColor = 0.388;
+        }else{
+            leftLightColor = 0;
+            rightLightColor = 0;
+        }
+
+        if (bearing <3 || bearing >-3){
+            leftLightColor = 0.611;
+            rightLightColor = 0.611;
+        }else {
+            leftLightColor = 0;
+            rightLightColor = 0;
+        }
+
+        if(leftLightColor > 0.001){
+            robot.leftLight.setPosition(leftLightColor);
+        }else{
+            robot.leftLight.setPosition(leftLightDeafualtColor);
+        }
+        if(rightLightColor > 0.001){
+            robot.rightLight.setPosition(rightLightColor);
+        }else{
+            robot.rightLight.setPosition(rightLightDeafualtColor);
+        }
+
 
 
 
@@ -232,7 +265,7 @@ public class Mechanum extends OpMode {
             offset = -3;
         }
 
-        if ( Math.abs(gamepad2.right_trigger )> 0.1) {
+        if ( Math.abs(gamepad2.right_trigger) > 0.1) {
             robot.BottomMotor.setVelocity(bottomOutput);
         } else {
             robot.BottomMotor.setPower(0.0);
@@ -250,13 +283,13 @@ public class Mechanum extends OpMode {
 
 
         if(gamepad2.x){
-            Top_Target_Speed = 1480;
-            Bottom_Target_Speed = 1540;
+            Top_Target_Speed = 1270;
+            Bottom_Target_Speed = 1270;
         }
 
         if(gamepad2.b){
-            Top_Target_Speed = 1650;
-            Bottom_Target_Speed = 1650;
+            Top_Target_Speed = 1400;
+            Bottom_Target_Speed = 1400;
 
         }
 
@@ -278,10 +311,16 @@ public class Mechanum extends OpMode {
 //            robot.block.setPosition(blockpos2);
 //        }
 //
-//        if (gamepad2.ps){
-//            robot.block.setPosition(0.45);
-//        }
-
+        if (gamepad2.psWasPressed() && autoPower == true){
+            autoPower = false;
+            leftLightDeafualtColor = 0.333;
+            rightLightDeafualtColor = 0.333;
+        }
+        if(gamepad2.psWasPressed() && autoPower == false){
+            autoPower = true;
+            leftLightDeafualtColor = 0;
+            rightLightDeafualtColor = 0;
+        }
 
         if (gamepad2.dpadUpWasPressed()){
             Top_Target_Speed += interval;
@@ -298,39 +337,6 @@ public class Mechanum extends OpMode {
         }
 
 
-        //        // Two-ball sequence
-//        if (((runtime.seconds() - p2ytime) < twoballtime1) && ballNumber >= 2) {
-//            robot.drop.setPosition(0.28);
-//        } else if (((runtime.seconds() - p2ytime) < twoballtime2) && ballNumber >= 2) {
-//            robot.drop.setPosition(0.69);
-//        } else if (((runtime.seconds() - p2ytime) < twoballtime3) && ballNumber >= 2) {
-//            robot.drop.setPosition(0.63);
-//            ballNumber -= 1;
-//        }
-//
-//        // One-ball sequence
-//        if (((runtime.seconds() - p2ytime) < oneballtime1) && ballNumber <= 1) {
-//            robot.drop.setPosition(0.28);
-//        } else if (((runtime.seconds() - p2ytime) < oneballtime2) && ballNumber <= 1) {
-//            robot.drop.setPosition(0.63);
-//            ballNumber = 0;
-//        }
-
-        // Manual ball count adjustments
-//        if (gamepad2.dpadDownWasPressed()){
-//            ballNumber--;
-//            gamepad2.rumble(450,0,100);
-//        }
-//        if (gamepad2.dpadUpWasPressed()){
-//            ballNumber++;
-//            gamepad2.rumble(0,10000,150);
-//        }
-
-//        // Manual drop override
-//        if (gamepad2.dpad_right) {
-//            robot.drop.setPosition(drop_high);
-//        }
-
 
 
 /*
@@ -341,12 +347,27 @@ CAMERA STUFF
 
         // Find ONLY the target ID
         AprilTagDetection targetTag = null;
+
         for (AprilTagDetection goalTag : detections) {
             if (goalTag.id == TARGET_ID) {
                 targetTag = goalTag;
                 break;
             }
         }
+        if (targetTag != null) {
+            range = targetTag.ftcPose.range;
+            bearing = targetTag.ftcPose.bearing;
+        } else {
+            range = -1;
+            bearing = 0;
+            canSeeTag = false;
+        }
+
+
+//        if (targetTag == null) {
+//            range = targetTag.ftcPose.range;
+//            bearing = targetTag.ftcPose.bearing;
+//        }
         if (gamepad1.left_trigger > 0.9 && targetTag != null) {
 
             double bearing = targetTag.ftcPose.bearing;
@@ -409,9 +430,20 @@ CAMERA STUFF
             telemetry.addData("Bottom Shooter Target Speed", Bottom_Target_Speed);
             telemetry.addData("Ball Count", ballNumber);
             telemetry.addData("Selected Id", TARGET_ID);
+            telemetry.addData("bearing", bearing);
+            telemetry.addData("range", range);
+            telemetry.addData("robotRange", robotRange);
             telemetry.update();
         }
+    @Override
+    public void stop() {
+        if (visionPortal != null) {
+            visionPortal.close();
+        }
     }
+
+}
+
 
 
 
