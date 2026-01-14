@@ -35,7 +35,7 @@ public class Red_Close_Just_Move extends LinearOpMode {
     private final GearhoundsHardware robot = new GearhoundsHardware();
 
     // Starting pose
-    Pose2d startPose = new Pose2d(new Vector2d(60, 15), Math.toRadians(180));
+    Pose2d startPose = new Pose2d(new Vector2d(-39, 53), Math.toRadians(180));
 
 
     @Override
@@ -52,7 +52,8 @@ public class Red_Close_Just_Move extends LinearOpMode {
         if (isStopRequested()) return;
         Actions.runBlocking(
                 drive.actionBuilder(startPose)
-
+                        .waitSeconds(15)
+                        .splineToConstantHeading(new Vector2d(20,12),Math.toRadians(360))
                         .stopAndAdd(new SavePose())
                         .build());
 
