@@ -18,22 +18,22 @@ public class Intake {
     }
 
     public Action runIntake(double power, double timeout) {
-        return new runIntake(power, timeout);
+        return new RunIntake(power, timeout);
     }
 
     public Action stopShooter() {
-        return new stopIntake();
+        return new StopIntake();
     }
 
 
 
-    public class runIntake implements Action {
+    public class RunIntake implements Action {
         double power;
         double timeout;
         ElapsedTime timer;
 
 
-        public runIntake(double Power, double Timeout) {
+        public RunIntake(double Power, double Timeout) {
             this.power = Power;
             this.timeout = Timeout;
         }
@@ -71,7 +71,7 @@ public class Intake {
     }
 
 
-    public class stopIntake implements Action {
+    public class StopIntake implements Action {
         double power = 0;
         ElapsedTime timer;
 

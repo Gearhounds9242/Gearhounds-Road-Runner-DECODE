@@ -18,6 +18,7 @@ import com.acmerobotics.roadrunner.InstantFunction;
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
+import com.acmerobotics.roadrunner.SleepAction;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -27,6 +28,8 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import com.seattlesolvers.solverslib.controller.PIDFController;
 
 import org.firstinspires.ftc.teamcode.MecanumDrive;
+import org.firstinspires.ftc.teamcode.Mechanisms.Intake;
+import org.firstinspires.ftc.teamcode.Mechanisms.Shooter;
 import org.firstinspires.ftc.teamcode.Utilities.GearhoundsHardware;
 import org.firstinspires.ftc.teamcode.Utilities.PoseStorage;
 
@@ -48,21 +51,25 @@ public class Blue_Far extends LinearOpMode {
 
         // Create drive AFTER hardwareMap is ready
         drive = new MecanumDrive(hardwareMap, startPose);
+        Shooter shooter = new Shooter(robot);
+        Intake intake = new Intake(robot);
 
         waitForStart();
 
         if (isStopRequested()) return;
         Action path = drive.actionBuilder(startPose)
-                        .waitSeconds(10)
+                        .waitSeconds(1)
                         .strafeToLinearHeading(new Vector2d(55,-15),Math.toRadians(-160))
-                        .waitSeconds(3)
+                        .waitSeconds(1)
                         .stopAndAdd(
                                 new ParallelAction(
-                                        new RunShooter(1400,1400,4.2),
-                                        new ShootBallRapid(3,1,4)
+                                        shooter.runShooter(1400,1400,0.1),
+                                        intake.runIntake(1,0.1),
+                                        new SleepAction(3),
+                                        shooter.shootBallRapid(3,1,4)
                                 )
                         )
-                        .strafeToLinearHeading(new Vector2d(0,-15),Math.toRadians(180))
+                        .strafeToLinearHeading(new Vector2d(50,-20),Math.toRadians(180))
 
                         .build();
         Actions.runBlocking(new SequentialAction(path));
@@ -86,7 +93,7 @@ public class Blue_Far extends LinearOpMode {
         int ballNumber;
         double transferPower;
         int currentPos;
-        int howMuchToSpinPerBall = 100;
+        int howMuchToSpinPerBall = 10000;
         int targetPos;
         int timeout;
         ElapsedTime timer;
@@ -154,23 +161,60 @@ public class Blue_Far extends LinearOpMode {
         }
     }
 
+    public class runIntake implements Action {
+        double power;
+        double timeout;
+        ElapsedTime timer;
+
+
+        public runIntake(double Power, double Timeout) {
+            this.power = Power;
+            this.timeout = Timeout;
+        }
+
+        @Override
+        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            if (timer == null) {
+                timer = new ElapsedTime();
+                //put code to initialize here per action
+            }
+            if (power == 0) {
+                robot.leftLight.setPosition(0.28);
+                robot.rightLight.setPosition(0.28);
+                throw new RuntimeException("The intake power can not be 0");
+            }
+            if (power < -1 || power > 1) {
+                robot.leftLight.setPosition(0.28);
+                robot.rightLight.setPosition(0.28);
+                throw new RuntimeException("The intake uses .setPower! Can not be above or below 1 or -1 Change to continue");
+            }
+            if (timeout <= 0) {
+                robot.leftLight.setPosition(0.28);
+                robot.rightLight.setPosition(0.28);
+                throw new RuntimeException("The intake timeout needs to be greater than 0!");
+            }
+            robot.intake.setPower(power);
+
+
+            if (timer.seconds() < timeout) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+    }
     public class RunShooter implements Action {
         double Top_Target_Speed;
         double Bottom_Target_Speed;
-        //        int spoolTime;
         double timeout;
         ElapsedTime timer;
 
         PIDFController topShooterController = new PIDFController(top_P, top_I, top_D, top_F);
         PIDFController bottomShooterController = new PIDFController(bottom_P, bottom_I, bottom_D, bottom_F);
 
-        double topOutput = topShooterController.calculate(robot.TopMotor.getVelocity(), Top_Target_Speed);
-        double bottomOutput = bottomShooterController.calculate(robot.BottomMotor.getVelocity(), Bottom_Target_Speed);
-
-        public RunShooter(double topPower, double bottomPower/*, int spoolTime*/, double timeout) {
+        public RunShooter(double topPower, double bottomPower, double timeout) {
             this.Top_Target_Speed = topPower;
             this.Bottom_Target_Speed = bottomPower;
-//            this.spoolTime = spoolTime;
             this.timeout = timeout;
         }
 
@@ -188,12 +232,15 @@ public class Blue_Far extends LinearOpMode {
                 robot.rightLight.setPosition(0.28);
                 throw new RuntimeException("The shooter timeout needs to be greater than 0!");
             }
+            double topOutput = topShooterController.calculate(robot.TopMotor.getVelocity(), Top_Target_Speed);
+            double bottomOutput = bottomShooterController.calculate(robot.BottomMotor.getVelocity(), Bottom_Target_Speed);
             robot.TopMotor.setVelocity(topOutput);
             robot.BottomMotor.setVelocity(bottomOutput);
 
-            if (robot.TopMotor.getVelocity() >= Top_Target_Speed && robot.BottomMotor.getVelocity() >= Top_Target_Speed) {
+            if(robot.TopMotor.getVelocity() >= Top_Target_Speed && robot.BottomMotor.getVelocity() >= Top_Target_Speed){
                 return true;
             }
+
             if (timer.seconds() < timeout) {
                 return true;
             } else {
