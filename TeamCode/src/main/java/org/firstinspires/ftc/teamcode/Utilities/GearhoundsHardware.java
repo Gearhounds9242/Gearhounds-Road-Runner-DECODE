@@ -72,7 +72,7 @@ public class GearhoundsHardware extends Hardware {
     static final double FEET_PER_METER = 3.28084;
 
     //Constructor
-    public GearhoundsHardware(){
+    public GearhoundsHardware() {
 
     }
 
