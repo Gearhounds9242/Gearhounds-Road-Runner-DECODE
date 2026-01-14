@@ -1,5 +1,6 @@
 package com.example.meepmeeptesting;
 
+import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.TranslationalVelConstraint;
 import com.acmerobotics.roadrunner.Vector2d;
@@ -20,12 +21,12 @@ public class MeepMeepTesting {
                 .waitSeconds(10)
                 .strafeToLinearHeading(new Vector2d(55,-15),Math.toRadians(-160))
                 .waitSeconds(3)
-
-                .waitSeconds(3)
-
-                .waitSeconds(3)
-
-                .waitSeconds(3)
+//                .stopAndAdd(
+//                        new ParallelAction(
+//                                new RunShooter(1400,1400,0.2),
+//                                new ShootBallRapid(3,1,4)
+//                        )
+//                )
                 .strafeToLinearHeading(new Vector2d(0,-15),Math.toRadians(180))
                 .build());
 

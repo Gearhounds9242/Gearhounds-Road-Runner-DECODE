@@ -37,7 +37,7 @@ public class Blue_Far extends LinearOpMode {
     private final GearhoundsHardware robot = new GearhoundsHardware();
 
     // Starting pose
-    Pose2d startPose = new Pose2d(new Vector2d(60, 15), Math.toRadians(180));
+    Pose2d startPose = new Pose2d(new Vector2d(60, -15), Math.toRadians(180));
 
 
     @Override
@@ -58,7 +58,7 @@ public class Blue_Far extends LinearOpMode {
                         .waitSeconds(3)
                         .stopAndAdd(
                                 new ParallelAction(
-                                        new RunShooter(1400,1400,0.2),
+                                        new RunShooter(1400,1400,4.2),
                                         new ShootBallRapid(3,1,4)
                                 )
                         )
@@ -103,6 +103,7 @@ public class Blue_Far extends LinearOpMode {
                 timer = new ElapsedTime();
                 currentPos = robot.transfer.getCurrentPosition();
                 targetPos = currentPos + (ballNumber * howMuchToSpinPerBall);
+                robot.transfer.setTargetPosition(targetPos);
                 robot.transfer.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             }
             if (transferPower > 1 || transferPower < -1 || transferPower == 0) {
