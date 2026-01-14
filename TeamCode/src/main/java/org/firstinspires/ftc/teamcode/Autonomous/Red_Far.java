@@ -58,7 +58,6 @@ public class Red_Far extends LinearOpMode {
                 )
         );
 
-
     }
 
 
