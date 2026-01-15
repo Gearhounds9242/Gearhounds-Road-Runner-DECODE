@@ -41,11 +41,16 @@ public class Run_Shooter extends LinearOpMode {
         waitForStart();
 
         if (isStopRequested()) return;
-        Action path = drive.actionBuilder(startPose)
-                .stopAndAdd(shooter.runShooter(800,800))
-                .build();
-        Actions.runBlocking(new SequentialAction(path));
+//        Action path = drive.actionBuilder(startPose)
+//                .stopAndAdd(shooter.runShooter(800,800))
+//                .build();
+//        Actions.runBlocking(new SequentialAction(path));
 
+
+        Actions.runBlocking(new SequentialAction(
+                shooter.runShooter(800, 800, 4)
+                )
+        ); // end Actions.runBlocking action sequence
 
     }
 

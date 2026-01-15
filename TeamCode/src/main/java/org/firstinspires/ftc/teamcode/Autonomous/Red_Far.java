@@ -68,7 +68,7 @@ public class Red_Far extends LinearOpMode {
         Actions.runBlocking(new SequentialAction(
                         gotoShootingPosition,
                         new SleepAction(3),
-                        shooter.runShooter(1400, 1400),
+                        shooter.runShooter(1400, 1400, 4),
                         shooter.shootBallRapid(1400, 1400, 3, 1.0, 4000), // timeout is in milliseconds
                         shooter.stopShooter(),
                         endGotoShootingPosition
