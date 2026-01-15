@@ -61,14 +61,28 @@ public class Blue_Far extends LinearOpMode {
                         .waitSeconds(1)
                         .strafeToLinearHeading(new Vector2d(55,-15),Math.toRadians(-160))
                         .waitSeconds(1)
-                        .stopAndAdd(
-                                new ParallelAction(
-                                        shooter.runShooter(1400,1400,0.1),
+                .stopAndAdd(
+                        new ParallelAction(
+                                shooter.runShooter(800,800),
+                                new SequentialAction(
+                                        new SleepAction(1),
                                         intake.runIntake(1,0.1),
-                                        new SleepAction(3),
+                                        new SleepAction(2),
                                         shooter.shootBallRapid(3,1,4)
                                 )
                         )
+                )
+//                        .stopAndAdd(
+//                                new SequentialAction(
+//                                        new ParallelAction(
+//                                        shooter.runShooter(1400,1400,0.1),
+//                                        intake.runIntake(1,0.1),
+//                                        new SleepAction(10),
+//                                        shooter.shootBallRapid(3,1,4)
+//                                        )
+//                                )
+//
+//                        )
                         .strafeToLinearHeading(new Vector2d(50,-20),Math.toRadians(180))
 
                         .build();

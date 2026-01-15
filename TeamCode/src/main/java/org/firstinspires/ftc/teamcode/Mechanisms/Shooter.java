@@ -28,15 +28,15 @@ public class Shooter {
         this.robot = robot;
     }
 
-    public Action runShooter(double topPower, double bottomPower, double timeout) {
-        return new RunShooter(topPower, bottomPower, timeout);
+    public Action runShooter(double topPower, double bottomPower) {
+        return new RunShooter(topPower, bottomPower);
     }
 
     public Action stopShooter() {
         return new StopShooter();
     }
 
-    public Action shootBallRapid(int ballCount, int power, int timeout) {
+    public Action shootBallRapid(int ballCount, double power, int timeout) {
         return new ShootBallRapid(ballCount, power, timeout);
     }
 
@@ -44,16 +44,15 @@ public class Shooter {
     public class RunShooter implements Action {
         double Top_Target_Speed;
         double Bottom_Target_Speed;
-        double timeout;
+
         ElapsedTime timer;
 
         PIDFController topShooterController = new PIDFController(top_P, top_I, top_D, top_F);
         PIDFController bottomShooterController = new PIDFController(bottom_P, bottom_I, bottom_D, bottom_F);
 
-        public RunShooter(double topPower, double bottomPower, double timeout) {
+        public RunShooter(double topPower, double bottomPower) {
             this.Top_Target_Speed = topPower;
             this.Bottom_Target_Speed = bottomPower;
-            this.timeout = timeout;
         }
 
         @Override
@@ -65,11 +64,11 @@ public class Shooter {
             if (Top_Target_Speed < 0 || Bottom_Target_Speed < 0) {
                 throw new RuntimeException("The shooter power needs to be a positive number! Change to continue");
             }
-            if (timeout <= 0) {
-                robot.leftLight.setPosition(0.28);
-                robot.rightLight.setPosition(0.28);
-                throw new RuntimeException("The shooter timeout needs to be greater than 0!");
-            }
+//            if (timeout <= 0) {
+//                robot.leftLight.setPosition(0.28);
+//                robot.rightLight.setPosition(0.28);
+//                throw new RuntimeException("The shooter timeout needs to be greater than 0!");
+//            }
             double topOutput = topShooterController.calculate(robot.TopMotor.getVelocity(), Top_Target_Speed);
             double bottomOutput = bottomShooterController.calculate(robot.BottomMotor.getVelocity(), Bottom_Target_Speed);
             robot.TopMotor.setVelocity(topOutput);
@@ -79,11 +78,7 @@ public class Shooter {
 //                return true;
 //            }
 
-            if (timer.seconds() < timeout) {
-                return true;
-            } else {
-                return false;
-            }
+            return false;
         }
     }
 
@@ -117,7 +112,7 @@ public class Shooter {
         int timeout;
         ElapsedTime timer;
 
-        public ShootBallRapid(int ballCount, int power, int timeout) {
+        public ShootBallRapid(int ballCount, double power, int timeout) {
             this.ballNumber = ballCount;
             this.transferPower = power;
             this.timeout = timeout;
