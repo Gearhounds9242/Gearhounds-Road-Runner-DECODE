@@ -1,8 +1,10 @@
 package org.firstinspires.ftc.teamcode.Autonomous;
 
 
+import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.InstantFunction;
 import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -20,7 +22,7 @@ public class Blue_Close_Just_Move extends LinearOpMode {
     private final GearhoundsHardware robot = new GearhoundsHardware();
     MecanumDrive drive;
     // Starting pose
-    Pose2d startPose = new Pose2d(new Vector2d(60, 15), Math.toRadians(180));
+    Pose2d startPose = new Pose2d(new Vector2d(60, -15), Math.toRadians(180));
 
 
     @Override
@@ -37,12 +39,11 @@ public class Blue_Close_Just_Move extends LinearOpMode {
         waitForStart();
 
         if (isStopRequested()) return;
-        Actions.runBlocking(
-                drive.actionBuilder(startPose)
-
-                        .stopAndAdd(new SavePose())
-                        .build());
-
+        Action path = drive.actionBuilder(startPose)
+                .strafeTo(new Vector2d(0,0))
+//                .stopAndAdd(new SavePose())
+                .build();
+        Actions.runBlocking(new SequentialAction(path));
 
     }
 

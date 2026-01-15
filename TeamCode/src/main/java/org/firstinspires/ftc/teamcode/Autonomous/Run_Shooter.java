@@ -3,8 +3,10 @@ package org.firstinspires.ftc.teamcode.Autonomous;
 
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.InstantFunction;
+import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
+import com.acmerobotics.roadrunner.SleepAction;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -16,8 +18,8 @@ import org.firstinspires.ftc.teamcode.Mechanisms.Shooter;
 import org.firstinspires.ftc.teamcode.Utilities.GearhoundsHardware;
 import org.firstinspires.ftc.teamcode.Utilities.PoseStorage;
 
-@Autonomous(name = "Blue_Close")
-public class Blue_Close extends LinearOpMode {
+@Autonomous(name = "Run_Shooter")
+public class Run_Shooter extends LinearOpMode {
 
     private final GearhoundsHardware robot = new GearhoundsHardware();
     MecanumDrive drive;
@@ -40,19 +42,8 @@ public class Blue_Close extends LinearOpMode {
 
         if (isStopRequested()) return;
         Action path = drive.actionBuilder(startPose)
-                        .splineToSplineHeading(new Pose2d(-16, -16, Math.toRadians(223.5)), Math.toRadians(25.5))
-                        .waitSeconds(1)
-                        //shoot preload3
-                        .splineToSplineHeading(new Pose2d(-11.5,-26, Math.toRadians(270)), Math.toRadians(-40))
-                        .waitSeconds(1)
-                        //turn on intake
-                        .splineToConstantHeading(new Vector2d(-11.5, -53.5),Math.toRadians(-90))
-                        .waitSeconds(1)
-                        //tap transfer
-                        .splineToConstantHeading(new Vector2d(-11.5, -45),Math.toRadians(90))
-                        .splineToSplineHeading(new Pose2d(-16, -16, Math.toRadians(223.5)), Math.toRadians(-40))
-                        .stopAndAdd(new SavePose())
-                        .build();
+                .stopAndAdd(shooter.runShooter(800,800))
+                .build();
         Actions.runBlocking(new SequentialAction(path));
 
 
