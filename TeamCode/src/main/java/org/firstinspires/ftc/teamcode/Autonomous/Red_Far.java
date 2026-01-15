@@ -69,7 +69,7 @@ public class Red_Far extends LinearOpMode {
                         gotoShootingPosition,
                         new SleepAction(3),
                         shooter.runShooter(1400, 1400),
-                        shooter.shootBallRapid(3, 1, 4),
+                        shooter.shootBallRapid(1400, 1400, 3, 1.0, 4000), // timeout is in milliseconds
                         shooter.stopShooter(),
                         endGotoShootingPosition
                 )
