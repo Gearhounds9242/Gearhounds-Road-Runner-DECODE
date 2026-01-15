@@ -86,10 +86,13 @@ public class Shooter {
             boolean bottomRollerReady = Math.abs(bottomRollerTargetVelocity - bottomRollerVelocity) < ROLLER_VELOCITY_TOLERANCE;
 
             // log some info to see what this code actually does 🤷🏻‍♂️
-            telemetryPacket.put("Top Velocity", topRollerVelocity);
-            telemetryPacket.put("Bottom Velocity", bottomRollerVelocity);
-            telemetryPacket.put("Top Ready", topRollerReady);
-            telemetryPacket.put("Bottom Ready", bottomRollerReady);
+            telemetryPacket.put("Top Target Velocity", topRollerVelocity);
+            telemetryPacket.put("  Top Velocity", topRollerVelocity);
+            telemetryPacket.put("  Top Ready", topRollerReady);
+            telemetryPacket.put("Bottom Target Velocity", topRollerVelocity);
+            telemetryPacket.put("  Bottom Velocity", bottomRollerVelocity);
+            telemetryPacket.put("  Bottom Ready", bottomRollerReady);
+            telemetryPacket.put("Stable Loops", stableRollerLoops);
 
             // only exit if rollers have been stable for STABLE_ROLLER_LOOPS_REQUIREMENT
             if (topRollerReady && bottomRollerReady) {
@@ -118,7 +121,7 @@ public class Shooter {
         int targetPos;
         ElapsedTime timer;
 
-        public ShootBallRapid(double topRollerTargetVelocity, double bottomRollerTargetVelocity, int ballCount, double transferBeltPower, int timeoutMs) {
+        public ShootBallRapid(double topRollerTargetVelocity, double bottomRollerTargetVelocity, int ballCount, double transferWheelPower, int timeoutMs) {
             // confirm velocity values top and bottom rollers
             if (topRollerTargetVelocity < 0 || bottomRollerTargetVelocity < 0) {
                 throw new IllegalArgumentException("The shooter power needs to be a positive number! Change to continue");
@@ -126,8 +129,8 @@ public class Shooter {
             this.topRollerTargetVelocity = topRollerTargetVelocity;
             this.bottomRollerTargetVelocity = bottomRollerTargetVelocity;
 
-            // confirm value input for transferBeltPower
-            if (transferBeltPower > 1 || transferBeltPower < -1 || transferBeltPower == 0) {
+            // confirm value input for transferWheelPower
+            if (transferWheelPower > 1 || transferWheelPower < -1 || transferWheelPower == 0) {
                 robot.leftLight.setPosition(0.28);
                 robot.rightLight.setPosition(0.28);
                 throw new RuntimeException("The transfer uses .setPower! The power must be less then 1, but not 0 or below (it can be a decimal). Change to continue");
@@ -141,7 +144,7 @@ public class Shooter {
             this.topRollerController = new PIDFController(top_P, top_I, top_D, top_F);
             this.bottomRollerController = new PIDFController(bottom_P, bottom_I, bottom_D, bottom_F);
             this.ballCount = ballCount;
-            this.transferBeltPower = transferBeltPower;
+            this.transferBeltPower = transferWheelPower;
             this.timeoutMs = timeoutMs;
         }
 
@@ -153,8 +156,10 @@ public class Shooter {
                 targetPos = currentPos + (ballCount * SPIN_PER_BALL);
                 robot.transfer.setTargetPosition(targetPos);
                 robot.transfer.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-/// The black belt that goes from the intake to the shooter is run off of the intake motor not the the transfer motor. That black belt may need to run to help shoot the balls.
-/// We may want to have the intake also run during this. I don't really understand how this new ShootBallRapid works. Dose it work by starting the shooter then calling ShootBallRapid and ShootBallRapid restarts the shooter or keeps it powered? "Respond bellow"
+/// The black belt that goes from the intake to the shooter is run off of the intake motor not the the transfer motor.
+/// That black belt may need to run to help shoot the balls.
+/// We may want to have the intake also run during this. I don't really understand how this new ShootBallRapid works.
+/// Dose it work by starting the shooter then calling ShootBallRapid and ShootBallRapid restarts the shooter or keeps it powered?
                 robot.transfer.setPower(transferBeltPower);
             }
 
