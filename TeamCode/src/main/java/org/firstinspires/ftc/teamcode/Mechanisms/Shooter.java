@@ -23,6 +23,7 @@ import static org.firstinspires.ftc.teamcode.TeleOp.Mechanum.top_P;
 public class Shooter {
 
     private final GearhoundsHardware robot;
+//    private boolean shooterRunning = false;
 
     public Shooter(GearhoundsHardware robot) {
         this.robot = robot;
@@ -42,35 +43,25 @@ public class Shooter {
 
 
     public class RunShooter implements Action {
-        double Top_Target_Speed;
-        double Bottom_Target_Speed;
-
-        ElapsedTime timer;
+        double topRollerTargetVelocity;
+        double bottomRollerTargetVelocity;
 
         PIDFController topShooterController = new PIDFController(top_P, top_I, top_D, top_F);
         PIDFController bottomShooterController = new PIDFController(bottom_P, bottom_I, bottom_D, bottom_F);
 
-        public RunShooter(double topPower, double bottomPower) {
-            this.Top_Target_Speed = topPower;
-            this.Bottom_Target_Speed = bottomPower;
+        public RunShooter(double topRollerTargetVelocity, double bottomRollerTargetVelocity) {
+            this.topRollerTargetVelocity = topRollerTargetVelocity;
+            this.bottomRollerTargetVelocity = bottomRollerTargetVelocity;
         }
 
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-            if (timer == null) {
-                timer = new ElapsedTime();
-                //put code to initialize here per action
-            }
-            if (Top_Target_Speed < 0 || Bottom_Target_Speed < 0) {
+            if (topRollerTargetVelocity < 0 || bottomRollerTargetVelocity < 0) {
                 throw new RuntimeException("The shooter power needs to be a positive number! Change to continue");
             }
-//            if (timeout <= 0) {
-//                robot.leftLight.setPosition(0.28);
-//                robot.rightLight.setPosition(0.28);
-//                throw new RuntimeException("The shooter timeout needs to be greater than 0!");
-//            }
-            double topOutput = topShooterController.calculate(robot.TopMotor.getVelocity(), Top_Target_Speed);
-            double bottomOutput = bottomShooterController.calculate(robot.BottomMotor.getVelocity(), Bottom_Target_Speed);
+
+            double topOutput = topShooterController.calculate(robot.TopMotor.getVelocity(), topRollerTargetVelocity);
+            double bottomOutput = bottomShooterController.calculate(robot.BottomMotor.getVelocity(), bottomRollerTargetVelocity);
             robot.TopMotor.setVelocity(topOutput);
             robot.BottomMotor.setVelocity(bottomOutput);
 
@@ -78,26 +69,26 @@ public class Shooter {
 //                return true;
 //            }
 
-            return false;
+            return true;
         }
     }
 
 
     public class StopShooter implements Action {
-        double Top_Target_Speed = 0;
-        double Bottom_Target_Speed = 0;
-        ElapsedTime timer;
+        double topRollerTargetVelocity = 0;
+        double bottomRollerTargetVelocity = 0;
 
         PIDFController topShooterController = new PIDFController(top_P, top_I, top_D, top_F);
         PIDFController bottomShooterController = new PIDFController(bottom_P, bottom_I, bottom_D, bottom_F);
 
-        double topOutput = topShooterController.calculate(robot.TopMotor.getVelocity(), Top_Target_Speed);
-        double bottomOutput = bottomShooterController.calculate(robot.BottomMotor.getVelocity(), Bottom_Target_Speed);
+        double topRollerVelocity = topShooterController.calculate(robot.TopMotor.getVelocity(), topRollerTargetVelocity);
+        double bottomRollerVelocity = bottomShooterController.calculate(robot.BottomMotor.getVelocity(), bottomRollerTargetVelocity);
 
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-            robot.TopMotor.setVelocity(topOutput);
-            robot.BottomMotor.setVelocity(bottomOutput);
+            robot.TopMotor.setVelocity(topRollerVelocity);
+            robot.BottomMotor.setVelocity(bottomRollerVelocity);
+//            shooterRunning = false;
             return false;
         }
     }
