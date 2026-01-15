@@ -68,7 +68,7 @@ public class Blue_Far extends LinearOpMode {
                                         new SleepAction(1),
                                         intake.runIntake(1,0.1),
                                         new SleepAction(2),
-                                        shooter.shootBallRapid(3,1,4)
+                                        shooter.shootBallRapid(800, 800, 3,1,4)
                                 )
                         )
                 )
