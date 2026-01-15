@@ -9,6 +9,8 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.MecanumDrive;
+import org.firstinspires.ftc.teamcode.Mechanisms.Intake;
+import org.firstinspires.ftc.teamcode.Mechanisms.Shooter;
 import org.firstinspires.ftc.teamcode.Utilities.GearhoundsHardware;
 import org.firstinspires.ftc.teamcode.Utilities.PoseStorage;
 
@@ -29,6 +31,8 @@ public class Blue_Close extends LinearOpMode {
 
         // Create drive AFTER hardwareMap is ready
         drive = new MecanumDrive(hardwareMap, startPose);
+        Shooter shooter = new Shooter(robot);
+        Intake intake = new Intake(robot);
 
         waitForStart();
 

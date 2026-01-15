@@ -25,7 +25,7 @@ public class Shooter {
     private static final double ROLLER_VELOCITY_TOLERANCE = 50;  // this is ticks/sec
     private static final int STABLE_ROLLER_LOOPS_REQUIREMENT = 5; // how many passes through 'run' must rollers READY before completing Action
     private static final int SPIN_PER_BALL = 10000; // no idea what these units are ... some made-up Harry unit
-
+/// Answer: Ticks of the motor
     private final GearhoundsHardware robot;
 
     public Shooter(GearhoundsHardware robot) {
@@ -153,6 +153,8 @@ public class Shooter {
                 targetPos = currentPos + (ballCount * SPIN_PER_BALL);
                 robot.transfer.setTargetPosition(targetPos);
                 robot.transfer.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+/// The black belt that goes from the intake to the shooter is run off of the intake motor not the the transfer motor. That black belt may need to run to help shoot the balls.
+/// We may want to have the intake also run during this. I don't really understand how this new ShootBallRapid works. Dose it work by starting the shooter then calling ShootBallRapid and ShootBallRapid restarts the shooter or keeps it powered? "Respond bellow"
                 robot.transfer.setPower(transferBeltPower);
             }
 
