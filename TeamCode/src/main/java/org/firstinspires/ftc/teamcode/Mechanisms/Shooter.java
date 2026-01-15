@@ -52,19 +52,23 @@ public class Shooter {
     //
     // **************************************************
     public class RunShooter implements Action {
-        private final PIDFController topRollerController;
-        private final PIDFController bottomRollerController;
+//        private final PIDFController topRollerController;
+//        private final PIDFController bottomRollerController;
         private final double topRollerTargetVelocity;
         private final double bottomRollerTargetVelocity;
         private int stableRollerLoops = 0;
+
+        PIDFController topRollerController = new PIDFController(top_P, top_I, top_D, top_F);
+        PIDFController bottomRollerController = new PIDFController(bottom_P, bottom_I, bottom_D, bottom_F);
+
 
         public RunShooter(double topRollerTargetVelocity, double bottomRollerTargetVelocity) {
             // confirm velocity values top and bottom rollers
             if (topRollerTargetVelocity < 0 || bottomRollerTargetVelocity < 0) {
                 throw new IllegalArgumentException("The shooter power needs to be a positive number! Change to continue");
             }
-            this.topRollerController = new PIDFController(top_P, top_I, top_D, top_F);
-            this.bottomRollerController = new PIDFController(bottom_P, bottom_I, bottom_D, bottom_F);
+//            this.topRollerController = new PIDFController(top_P, top_I, top_D, top_F);
+//            this.bottomRollerController = new PIDFController(bottom_P, bottom_I, bottom_D, bottom_F);
             this.topRollerTargetVelocity = topRollerTargetVelocity;
             this.bottomRollerTargetVelocity = bottomRollerTargetVelocity;
         }
@@ -85,21 +89,22 @@ public class Shooter {
             boolean topRollerReady = Math.abs(topRollerTargetVelocity - topRollerVelocity) < ROLLER_VELOCITY_TOLERANCE;
             boolean bottomRollerReady = Math.abs(bottomRollerTargetVelocity - bottomRollerVelocity) < ROLLER_VELOCITY_TOLERANCE;
 
-            // log some info to see what this code actually does 🤷🏻‍♂️
-            telemetryPacket.put("Top Target Velocity", topRollerVelocity);
-            telemetryPacket.put("  Top Velocity", topRollerVelocity);
-            telemetryPacket.put("  Top Ready", topRollerReady);
-            telemetryPacket.put("Bottom Target Velocity", topRollerVelocity);
-            telemetryPacket.put("  Bottom Velocity", bottomRollerVelocity);
-            telemetryPacket.put("  Bottom Ready", bottomRollerReady);
-            telemetryPacket.put("Stable Loops", stableRollerLoops);
-
             // only exit if rollers have been stable for STABLE_ROLLER_LOOPS_REQUIREMENT
             if (topRollerReady && bottomRollerReady) {
                 stableRollerLoops++;
             } else {
                 stableRollerLoops = 0;
             }
+
+            // log some info to see what this code actually does 🤷🏻‍♂️
+//            telemetryPacket.put("Top Target Velocity", topRollerVelocity);
+//            telemetryPacket.put("  Top Velocity", topRollerVelocity);
+//            telemetryPacket.put("  Top Ready", topRollerReady);
+//            telemetryPacket.put("Bottom Target Velocity", topRollerVelocity);
+//            telemetryPacket.put("  Bottom Velocity", bottomRollerVelocity);
+//            telemetryPacket.put("  Bottom Ready", bottomRollerReady);
+//            telemetryPacket.put("Stable Loops", stableRollerLoops);
+
             return stableRollerLoops < STABLE_ROLLER_LOOPS_REQUIREMENT;
         }
     }
