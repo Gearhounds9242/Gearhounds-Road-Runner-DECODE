@@ -23,7 +23,6 @@ import static org.firstinspires.ftc.teamcode.TeleOp.Mechanum.top_P;
 public class Shooter {
 
     private final GearhoundsHardware robot;
-//    private boolean shooterRunning = false;
 
     public Shooter(GearhoundsHardware robot) {
         this.robot = robot;
@@ -43,9 +42,9 @@ public class Shooter {
 
 
     public class RunShooter implements Action {
+        private boolean initialized = false;
         double topRollerTargetVelocity;
         double bottomRollerTargetVelocity;
-
         PIDFController topShooterController = new PIDFController(top_P, top_I, top_D, top_F);
         PIDFController bottomShooterController = new PIDFController(bottom_P, bottom_I, bottom_D, bottom_F);
 
@@ -65,11 +64,14 @@ public class Shooter {
             robot.TopMotor.setVelocity(topOutput);
             robot.BottomMotor.setVelocity(bottomOutput);
 
-//            if(robot.TopMotor.getVelocity() >= Top_Target_Speed && robot.BottomMotor.getVelocity() >= Top_Target_Speed){
-//                return true;
-//            }
+            double topMotorVelocityCurrentVelocity = robot.TopMotor.getVelocity();
+            double bottomMotorVelocityCurrentVelocity = robot.BottomMotor.getVelocity();
 
-            return true;
+            if (topMotorVelocityCurrentVelocity >= topRollerTargetVelocity && bottomMotorVelocityCurrentVelocity >= bottomRollerTargetVelocity) {
+                return false;
+            } else {
+                return true;
+            }
         }
     }
 
@@ -88,7 +90,6 @@ public class Shooter {
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
             robot.TopMotor.setVelocity(topRollerVelocity);
             robot.BottomMotor.setVelocity(bottomRollerVelocity);
-//            shooterRunning = false;
             return false;
         }
     }

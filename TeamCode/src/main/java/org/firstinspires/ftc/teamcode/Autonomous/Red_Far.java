@@ -70,6 +70,7 @@ public class Red_Far extends LinearOpMode {
                         new SleepAction(3),
                         shooter.runShooter(1400, 1400),
                         shooter.shootBallRapid(3, 1, 4),
+                        shooter.stopShooter(),
                         endGotoShootingPosition
                 )
         ); // end Actions.runBlocking action sequence
