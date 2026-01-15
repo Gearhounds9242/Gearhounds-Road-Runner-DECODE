@@ -21,17 +21,15 @@ import static org.firstinspires.ftc.teamcode.TeleOp.Mechanum.top_P;
 
 
 public class Shooter {
+    // CONSTANTS
     private static final double ROLLER_VELOCITY_TOLERANCE = 50;  // this is ticks/sec
     private static final int STABLE_ROLLER_LOOPS_REQUIREMENT = 5; // how many passes through 'run' must rollers READY before completing Action
     private static final int SPIN_PER_BALL = 10000; // no idea what these units are ... some made-up Harry unit
+
     private final GearhoundsHardware robot;
-    private final PIDFController topRollerController;
-    private final PIDFController bottomRollerController;
 
     public Shooter(GearhoundsHardware robot) {
         this.robot = robot;
-        topRollerController = new PIDFController(top_P, top_I, top_D, top_F);
-        bottomRollerController = new PIDFController(bottom_P, bottom_I, bottom_D, bottom_F);
     }
 
     // **************************************************
@@ -54,6 +52,8 @@ public class Shooter {
     //
     // **************************************************
     public class RunShooter implements Action {
+        private final PIDFController topRollerController;
+        private final PIDFController bottomRollerController;
         private final double topRollerTargetVelocity;
         private final double bottomRollerTargetVelocity;
         private int stableRollerLoops = 0;
@@ -63,6 +63,8 @@ public class Shooter {
             if (topRollerTargetVelocity < 0 || bottomRollerTargetVelocity < 0) {
                 throw new IllegalArgumentException("The shooter power needs to be a positive number! Change to continue");
             }
+            this.topRollerController = new PIDFController(top_P, top_I, top_D, top_F);
+            this.bottomRollerController = new PIDFController(bottom_P, bottom_I, bottom_D, bottom_F);
             this.topRollerTargetVelocity = topRollerTargetVelocity;
             this.bottomRollerTargetVelocity = bottomRollerTargetVelocity;
         }
@@ -105,6 +107,8 @@ public class Shooter {
     //
     // **************************************************
     public class ShootBallRapid implements Action {
+        private final PIDFController topRollerController;
+        private final PIDFController bottomRollerController;
         private final double topRollerTargetVelocity;
         private final double bottomRollerTargetVelocity;
         private final int ballCount;
@@ -134,6 +138,8 @@ public class Shooter {
                 robot.rightLight.setPosition(0.28);
                 throw new RuntimeException("The transfer timeout needs to be greater than 0!");
             }
+            this.topRollerController = new PIDFController(top_P, top_I, top_D, top_F);
+            this.bottomRollerController = new PIDFController(bottom_P, bottom_I, bottom_D, bottom_F);
             this.ballCount = ballCount;
             this.transferBeltPower = transferBeltPower;
             this.timeoutMs = timeoutMs;
@@ -143,8 +149,6 @@ public class Shooter {
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
             if (timer == null) {
                 timer = new ElapsedTime();
-                topRollerController.reset(); // ensure that controllers are not affected by previous Actions
-                bottomRollerController.reset();
                 currentPos = robot.transfer.getCurrentPosition();
                 targetPos = currentPos + (ballCount * SPIN_PER_BALL);
                 robot.transfer.setTargetPosition(targetPos);
