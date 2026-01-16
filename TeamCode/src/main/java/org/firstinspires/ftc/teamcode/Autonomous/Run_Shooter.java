@@ -48,7 +48,7 @@ public class Run_Shooter extends LinearOpMode {
 
 
         Actions.runBlocking(new SequentialAction(
-                shooter.runShooter(800, 800, 4)
+                shooter.runShooter(800, 800)
                 )
         ); // end Actions.runBlocking action sequence
 

@@ -63,7 +63,7 @@ public class Blue_Far extends LinearOpMode {
                         .waitSeconds(1)
                 .stopAndAdd(
                         new ParallelAction(
-                                shooter.runShooter(800,800, 4),
+                                shooter.runShooter(800,800),
                                 new SequentialAction(
                                         new SleepAction(1),
                                         intake.runIntake(1,0.1),
