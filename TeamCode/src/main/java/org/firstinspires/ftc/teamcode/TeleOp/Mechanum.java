@@ -54,9 +54,9 @@ public class Mechanum extends OpMode {
     public static double top_I = 0;
     public static double top_D = 0.3;
     public static double top_F = 2.8;
-    public static double bottom_P = 1;
+    public static double bottom_P = 3;
     public static double bottom_I = 0;
-    public static double bottom_D = 3;
+    public static double bottom_D = 0.14;
     public static double bottom_F = 1;
     public static double rightLightColor = 0;
     public static double leftLightColor = 0;
@@ -68,6 +68,7 @@ public class Mechanum extends OpMode {
     public static double bearing = 0;
     public static double shooterTolerance;
     private static final double interval = 10;
+    public static double transfer_velocity = 4000;
     private final GearhoundsHardware robot = new GearhoundsHardware();
     private final ElapsedTime runtime = new ElapsedTime();
     public boolean canSeeTag;
@@ -101,25 +102,30 @@ public class Mechanum extends OpMode {
 
         velocityTopLut.add(-1, 0);
         velocityTopLut.add(0, 0);
-        velocityTopLut.add(1, 0);
-        velocityTopLut.add(46, 1400);
-        velocityTopLut.add(53, 1300);
-        velocityTopLut.add(70, 1270);
-        velocityTopLut.add(118, 1400);
+//        velocityTopLut.add(1, 0);
+//        velocityTopLut.add(46, 1400);
+//        velocityTopLut.add(53, 1300);
+//        velocityTopLut.add(70, 1270);
+//        velocityTopLut.add(118, 1400);
+        velocityTopLut.add(53,1310);
+        velocityTopLut.add(69,1050);
+
         velocityTopLut.add(140, 1400);
         velocityTopLut.createLUT();
 
         velocityBottomLut.add(-1, 0);
         velocityBottomLut.add(0, 0);
-        velocityBottomLut.add(1, 0);
-        velocityBottomLut.add(46, 1400);
-        velocityBottomLut.add(53, 1300);
-        velocityBottomLut.add(70, 1270);
+//        velocityBottomLut.add(1, 0);
+//        velocityBottomLut.add(46, 1400);
+//        velocityBottomLut.add(53, 1300);
+//        velocityBottomLut.add(70, 1270);
+//
+//        velocityBottomLut.add(118, 1400);
 
-        velocityBottomLut.add(118, 1400);
+        velocityBottomLut.add(53,1310);
+        velocityBottomLut.add(69,1050);
+
         velocityBottomLut.add(140, 1400);
-
-
         velocityBottomLut.createLUT();
 
         tagProcessor = new AprilTagProcessor.Builder()
@@ -167,7 +173,8 @@ public class Mechanum extends OpMode {
 //        PIDFController topShooterController = new PIDFController(top_P, top_I, top_D, top_F);
 //        PIDFController bottomShooterController = new PIDFController(bottom_P, bottom_I, bottom_D, bottom_F);
 
-//        pidf.setPIDF(kP, KI, kD, 0.7);
+        topShooterController.setPIDF(top_P, top_I, top_D, top_F);
+        bottomShooterController.setPIDF(bottom_P, bottom_I, bottom_D, bottom_F);
 
 
         double topOutput = topShooterController.calculate(robot.TopMotor.getVelocity(), Top_Target_Speed);
@@ -266,10 +273,11 @@ public class Mechanum extends OpMode {
 
 
         if (gamepad2.right_bumper || gamepad1.right_bumper) {
-            robot.transfer.setPower(1);
+            robot.transfer.setVelocity(transfer_velocity);
+            robot.intake.setPower(1);
         }
         if (gamepad2.left_bumper || gamepad2.a) {
-            robot.transfer.setPower(-1);
+            robot.transfer.setPower(-transfer_velocity);
         } else {
             robot.transfer.setPower(0);
         }
