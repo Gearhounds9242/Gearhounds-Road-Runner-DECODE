@@ -140,7 +140,7 @@ public class Mechanum extends OpMode {
                 .addProcessor(tagProcessor)
                 .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
                 .setCameraResolution(new Size(640, 480))
-                .enableLiveView(true)
+//                .enableLiveView(true)
                 .build();
 
         robot.init(hardwareMap);             // motors/servos/IMU setup// webcam + AprilTag setup
@@ -182,16 +182,16 @@ public class Mechanum extends OpMode {
 
         double autoTurn = 0;
 
-        TelemetryPacket packet = new TelemetryPacket();
-        packet.put("TopMotorRPM", (robot.TopMotor.getVelocity() / 28.0) * 60.0);
-        packet.put("BottomMotorRPM", (robot.BottomMotor.getVelocity() / 28.0) * 60.0);
-        packet.put("TopCurrentA", robot.TopMotor.getCurrent(CurrentUnit.AMPS));
-        packet.put("BottomCurrentA", robot.BottomMotor.getCurrent(CurrentUnit.AMPS));
-        packet.put("BottomVelocity", robot.BottomMotor.getVelocity());
-        packet.put("TopVelocity", robot.TopMotor.getVelocity());
-        packet.put("TopTarget", Top_Target_Speed);
-        packet.put("BottomTarget", Bottom_Target_Speed);
-        dashboard.sendTelemetryPacket(packet);
+//        TelemetryPacket packet = new TelemetryPacket();
+//        packet.put("TopMotorRPM", (robot.TopMotor.getVelocity() / 28.0) * 60.0);
+//        packet.put("BottomMotorRPM", (robot.BottomMotor.getVelocity() / 28.0) * 60.0);
+//        packet.put("TopCurrentA", robot.TopMotor.getCurrent(CurrentUnit.AMPS));
+//        packet.put("BottomCurrentA", robot.BottomMotor.getCurrent(CurrentUnit.AMPS));
+//        packet.put("BottomVelocity", robot.BottomMotor.getVelocity());
+//        packet.put("TopVelocity", robot.TopMotor.getVelocity());
+//        packet.put("TopTarget", Top_Target_Speed);
+//        packet.put("BottomTarget", Bottom_Target_Speed);
+//        dashboard.sendTelemetryPacket(packet);
 
 //        if (gamepad1.left_bumper) shift = 0.3; // slow mode
 //        if (gamepad1.right_bumper) shift = 1.0; // full speed
@@ -307,52 +307,52 @@ CAMERA STUFF
             offset = -3;
         }
         // Get detections
-        List<AprilTagDetection> detections = tagProcessor.getDetections();
-
-        // Find ONLY the target ID
-        AprilTagDetection targetTag = null;
-
-        for (AprilTagDetection goalTag : detections) {
-            if (goalTag.id == TARGET_ID) {
-                targetTag = goalTag;
-                break;
-            }
-        }
-        if (targetTag != null) {
-            range = targetTag.ftcPose.range;
-            bearing = targetTag.ftcPose.bearing;
-        } else {
-            range = -1;
-            bearing = 0;
-            canSeeTag = false;
-        }
-
-
-//        if (targetTag == null) {
+//        List<AprilTagDetection> detections = tagProcessor.getDetections();
+//
+//        // Find ONLY the target ID
+//        AprilTagDetection targetTag = null;
+//
+//        for (AprilTagDetection goalTag : detections) {
+//            if (goalTag.id == TARGET_ID) {
+//                targetTag = goalTag;
+//                break;
+//            }
+//        }
+//        if (targetTag != null) {
 //            range = targetTag.ftcPose.range;
 //            bearing = targetTag.ftcPose.bearing;
+//        } else {
+//            range = -1;
+//            bearing = 0;
+//            canSeeTag = false;
 //        }
-        if (gamepad1.left_trigger > 0.9 && targetTag != null) {
-
-            double bearing = targetTag.ftcPose.bearing;
-
-            if (Math.abs(bearing) > aimTolorance) {    // 5-degree tolerance
-                autoTurn = (bearing + offset) * rotationFactor;// proportional turn
-            }
-            telemetry.addData("range", targetTag.ftcPose.range);
-////            drive.setDrivePowers(
-////                    new PoseVelocity2d(
-////                            new Vector2d(0, 0),   // no translation
-////                            turnPower             // rotation
-////                    )
-////            );
-        }
-        if (gamepad1.left_trigger > 0.9 && targetTag == null) {
-            gamepad1.runRumbleEffect(noEffect);
-        }
-
-
-        Pose2d pose = drive.localizer.getPose();// radians
+//
+//
+////        if (targetTag == null) {
+////            range = targetTag.ftcPose.range;
+////            bearing = targetTag.ftcPose.bearing;
+////        }
+//        if (gamepad1.left_trigger > 0.9 && targetTag != null) {
+//
+//            double bearing = targetTag.ftcPose.bearing;
+//
+//            if (Math.abs(bearing) > aimTolorance) {    // 5-degree tolerance
+//                autoTurn = (bearing + offset) * rotationFactor;// proportional turn
+//            }
+//            telemetry.addData("range", targetTag.ftcPose.range);
+//////            drive.setDrivePowers(
+//////                    new PoseVelocity2d(
+//////                            new Vector2d(0, 0),   // no translation
+//////                            turnPower             // rotation
+//////                    )
+//////            );
+//        }
+//        if (gamepad1.left_trigger > 0.9 && targetTag == null) {
+//            gamepad1.runRumbleEffect(noEffect);
+//        }
+//
+//
+//        Pose2d pose = drive.localizer.getPose();// radians
 
 
 //TODO: Combine joystick movement and camera auto centering movement
