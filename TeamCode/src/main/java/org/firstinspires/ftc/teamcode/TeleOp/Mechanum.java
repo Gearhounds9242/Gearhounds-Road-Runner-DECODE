@@ -87,6 +87,9 @@ public class Mechanum extends OpMode {
     private AprilTagProcessor tagProcessor;
     private VisionPortal visionPortal;
     private MecanumDrive drive;
+    PIDFController topShooterController;
+    PIDFController bottomShooterController;
+
 
     @Override
     public void init() {
@@ -139,6 +142,8 @@ public class Mechanum extends OpMode {
         telemetry.addData("Status", "Initialized");
         telemetry.update();
 
+        topShooterController = new PIDFController(top_P, top_I, top_D, top_F);
+        bottomShooterController = new PIDFController(bottom_P, bottom_I, bottom_D, bottom_F);
     }
 
     @Override
@@ -159,8 +164,11 @@ public class Mechanum extends OpMode {
 
         robotRange = range;
 
-        PIDFController topShooterController = new PIDFController(top_P, top_I, top_D, top_F);
-        PIDFController bottomShooterController = new PIDFController(bottom_P, bottom_I, bottom_D, bottom_F);
+//        PIDFController topShooterController = new PIDFController(top_P, top_I, top_D, top_F);
+//        PIDFController bottomShooterController = new PIDFController(bottom_P, bottom_I, bottom_D, bottom_F);
+
+//        pidf.setPIDF(kP, KI, kD, 0.7);
+
 
         double topOutput = topShooterController.calculate(robot.TopMotor.getVelocity(), Top_Target_Speed);
         double bottomOutput = bottomShooterController.calculate(robot.BottomMotor.getVelocity(), Bottom_Target_Speed);
