@@ -58,7 +58,6 @@ public class Blue_Far extends LinearOpMode {
 
         if (isStopRequested()) return;
         Action path = drive.actionBuilder(startPose)
-                        .waitSeconds(1)
                         .strafeToLinearHeading(new Vector2d(55,-15),Math.toRadians(-160))
                         .waitSeconds(1)
                 .stopAndAdd(

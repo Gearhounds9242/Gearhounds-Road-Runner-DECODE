@@ -65,25 +65,27 @@ public class Mechanum extends OpMode {
     public static double range;
     public static double robotRange;
     public static boolean autoPower = true;
+    public static double farOffset = 0;
+    public static double closeOffset = 0;
     public static double bearing = 0;
     public static double shooterTolerance;
     private static final double interval = 10;
-    public static double transfer_velocity = 4000;
+    public static double transfer_velocity = 2000;
     private final GearhoundsHardware robot = new GearhoundsHardware();
     private final ElapsedTime runtime = new ElapsedTime();
     public boolean canSeeTag;
     InterpLUT velocityTopLut = new InterpLUT();
     InterpLUT velocityBottomLut = new InterpLUT();
-    Gamepad.RumbleEffect yesEffect = new Gamepad.RumbleEffect.Builder()
-            .addStep(10.0, 0.0, 300)   // strong rumble for 0.3 sec
-            .addStep(0.0, 0.0, 150)   // pause for 0.15 sec
-            .addStep(0.0, 10.0, 300)   // strong rumble
-            .build();
-    Gamepad.RumbleEffect noEffect = new Gamepad.RumbleEffect.Builder()
-            .addStep(5.0, 0.0, 80)   // strong rumble for 0.3 sec
-            .addStep(0.0, 0.0, 150)   // pause for 0.15 sec
-            .addStep(0.0, 5.0, 100)   // strong rumble
-            .build();
+//    Gamepad.RumbleEffect yesEffect = new Gamepad.RumbleEffect.Builder()
+//            .addStep(10.0, 0.0, 300)   // strong rumble for 0.3 sec
+//            .addStep(0.0, 0.0, 150)   // pause for 0.15 sec
+//            .addStep(0.0, 10.0, 300)   // strong rumble
+//            .build();
+//    Gamepad.RumbleEffect noEffect = new Gamepad.RumbleEffect.Builder()
+//            .addStep(5.0, 0.0, 80)   // strong rumble for 0.3 sec
+//            .addStep(0.0, 0.0, 150)   // pause for 0.15 sec
+//            .addStep(0.0, 5.0, 100)   // strong rumble
+//            .build();
     private FtcDashboard dashboard;
     private AprilTagProcessor tagProcessor;
     private VisionPortal visionPortal;
@@ -102,30 +104,32 @@ public class Mechanum extends OpMode {
 
         velocityTopLut.add(-1, 0);
         velocityTopLut.add(0, 0);
-//        velocityTopLut.add(1, 0);
-//        velocityTopLut.add(46, 1400);
-//        velocityTopLut.add(53, 1300);
+        velocityTopLut.add(46, 1400);
+        velocityTopLut.add(53, 1300);
 //        velocityTopLut.add(70, 1270);
 //        velocityTopLut.add(118, 1400);
-        velocityTopLut.add(53,1310);
-        velocityTopLut.add(69,1050);
+//        velocityTopLut.add(53,1310);
+        velocityTopLut.add(70,1250);
+//        velocityTopLut.add(69,1050);
 
         velocityTopLut.add(140, 1400);
+        velocityTopLut.add(190,1400);
         velocityTopLut.createLUT();
-
+//
         velocityBottomLut.add(-1, 0);
         velocityBottomLut.add(0, 0);
-//        velocityBottomLut.add(1, 0);
-//        velocityBottomLut.add(46, 1400);
-//        velocityBottomLut.add(53, 1300);
+        velocityBottomLut.add(46, 1400);
+        velocityBottomLut.add(53, 1300);
 //        velocityBottomLut.add(70, 1270);
 //
 //        velocityBottomLut.add(118, 1400);
 
-        velocityBottomLut.add(53,1310);
-        velocityBottomLut.add(69,1050);
+//        velocityBottomLut.add(53,1310);
+        velocityBottomLut.add(70,1250);
+//        velocityBottomLut.add(69,1050);
 
         velocityBottomLut.add(140, 1400);
+        velocityBottomLut.add(190,1400);
         velocityBottomLut.createLUT();
 
         tagProcessor = new AprilTagProcessor.Builder()
@@ -170,11 +174,11 @@ public class Mechanum extends OpMode {
 
         robotRange = range;
 
-//        PIDFController topShooterController = new PIDFController(top_P, top_I, top_D, top_F);
-//        PIDFController bottomShooterController = new PIDFController(bottom_P, bottom_I, bottom_D, bottom_F);
+        PIDFController topShooterController = new PIDFController(top_P, top_I, top_D, top_F);
+        PIDFController bottomShooterController = new PIDFController(bottom_P, bottom_I, bottom_D, bottom_F);
 
-        topShooterController.setPIDF(top_P, top_I, top_D, top_F);
-        bottomShooterController.setPIDF(bottom_P, bottom_I, bottom_D, bottom_F);
+//        topShooterController.setPIDF(top_P, top_I, top_D, top_F);
+//        bottomShooterController.setPIDF(bottom_P, bottom_I, bottom_D, bottom_F);
 
 
         double topOutput = topShooterController.calculate(robot.TopMotor.getVelocity(), Top_Target_Speed);
@@ -182,34 +186,34 @@ public class Mechanum extends OpMode {
 
         double autoTurn = 0;
 
-//        TelemetryPacket packet = new TelemetryPacket();
+        TelemetryPacket packet = new TelemetryPacket();
 //        packet.put("TopMotorRPM", (robot.TopMotor.getVelocity() / 28.0) * 60.0);
 //        packet.put("BottomMotorRPM", (robot.BottomMotor.getVelocity() / 28.0) * 60.0);
 //        packet.put("TopCurrentA", robot.TopMotor.getCurrent(CurrentUnit.AMPS));
 //        packet.put("BottomCurrentA", robot.BottomMotor.getCurrent(CurrentUnit.AMPS));
-//        packet.put("BottomVelocity", robot.BottomMotor.getVelocity());
-//        packet.put("TopVelocity", robot.TopMotor.getVelocity());
-//        packet.put("TopTarget", Top_Target_Speed);
-//        packet.put("BottomTarget", Bottom_Target_Speed);
-//        dashboard.sendTelemetryPacket(packet);
+        packet.put("BottomVelocity", robot.BottomMotor.getVelocity());
+        packet.put("TopVelocity", robot.TopMotor.getVelocity());
+        packet.put("TopTarget", Top_Target_Speed);
+        packet.put("BottomTarget", Bottom_Target_Speed);
+        dashboard.sendTelemetryPacket(packet);
 
 //        if (gamepad1.left_bumper) shift = 0.3; // slow mode
 //        if (gamepad1.right_bumper) shift = 1.0; // full speed
 
-        if (((robot.TopMotor.getVelocity() == topOutput) && (bearing < 3 || bearing > -3) && (robot.BottomMotor.getVelocity() == bottomOutput))) {
-            leftLightColor = 0.5;
-            rightLightColor = 0.5;
-        } else {
-            leftLightColor = 0;
-            rightLightColor = 0;
-        }
-        if (((robot.TopMotor.getVelocity() == topOutput) && (robot.BottomMotor.getVelocity() == bottomOutput))) {
-            leftLightColor = 0.388;
-            rightLightColor = 0.388;
-        } else {
-            leftLightColor = 0;
-            rightLightColor = 0;
-        }
+//        if (((robot.TopMotor.getVelocity() == topOutput) && (bearing < 3 || bearing > -3) && (robot.BottomMotor.getVelocity() == bottomOutput))) {
+//            leftLightColor = 0.5;
+//            rightLightColor = 0.5;
+//        } else {
+//            leftLightColor = 0;
+//            rightLightColor = 0;
+//        }
+//        if (((robot.TopMotor.getVelocity() == topOutput) && (robot.BottomMotor.getVelocity() == bottomOutput))) {
+//            leftLightColor = 0.388;
+//            rightLightColor = 0.388;
+//        } else {
+//            leftLightColor = 0;
+//            rightLightColor = 0;
+//        }
 
 
         if (leftLightColor >= 0.001) {
@@ -272,9 +276,20 @@ public class Mechanum extends OpMode {
         }
 
 
-        if (gamepad2.right_bumper || gamepad1.right_bumper) {
+//        if(gamepad2.b && autoPower == true){
+//            offset = farOffset;
+//        }
+//        if(gamepad2.b && autoPower == true){
+//            offset = closeOffset;
+//
+//        }
+        if (gamepad2.right_bumper) {
             robot.transfer.setVelocity(transfer_velocity);
             robot.intake.setPower(1);
+        }
+        if (gamepad1.right_bumper){
+            robot.transfer.setVelocity(transfer_velocity);
+
         }
         if (gamepad2.left_bumper || gamepad2.a) {
             robot.transfer.setPower(-transfer_velocity);
@@ -300,59 +315,59 @@ CAMERA STUFF
  */
         if (gamepad1.dpadRightWasPressed() /*|| gamepad2.dpadRightWasPressed()*/) {
             TARGET_ID = 24;
-            offset = -5;
+            offset = -3;
         }
         if (gamepad1.dpadLeftWasPressed()/* || gamepad2.dpadLeftWasPressed()*/) {
             TARGET_ID = 20;
-            offset = -3;
+            offset = 2;
         }
         // Get detections
-//        List<AprilTagDetection> detections = tagProcessor.getDetections();
-//
-//        // Find ONLY the target ID
-//        AprilTagDetection targetTag = null;
-//
-//        for (AprilTagDetection goalTag : detections) {
-//            if (goalTag.id == TARGET_ID) {
-//                targetTag = goalTag;
-//                break;
-//            }
-//        }
-//        if (targetTag != null) {
+        List<AprilTagDetection> detections = tagProcessor.getDetections();
+
+        // Find ONLY the target ID
+        AprilTagDetection targetTag = null;
+
+        for (AprilTagDetection goalTag : detections) {
+            if (goalTag.id == TARGET_ID) {
+                targetTag = goalTag;
+                break;
+            }
+        }
+        if (targetTag != null) {
+            range = targetTag.ftcPose.range;
+            bearing = targetTag.ftcPose.bearing;
+        } else {
+            range = -1;
+            bearing = 0;
+            canSeeTag = false;
+        }
+
+
+//        if (targetTag == null) {
 //            range = targetTag.ftcPose.range;
 //            bearing = targetTag.ftcPose.bearing;
-//        } else {
-//            range = -1;
-//            bearing = 0;
-//            canSeeTag = false;
 //        }
-//
-//
-////        if (targetTag == null) {
-////            range = targetTag.ftcPose.range;
-////            bearing = targetTag.ftcPose.bearing;
-////        }
-//        if (gamepad1.left_trigger > 0.9 && targetTag != null) {
-//
-//            double bearing = targetTag.ftcPose.bearing;
-//
-//            if (Math.abs(bearing) > aimTolorance) {    // 5-degree tolerance
-//                autoTurn = (bearing + offset) * rotationFactor;// proportional turn
-//            }
-//            telemetry.addData("range", targetTag.ftcPose.range);
-//////            drive.setDrivePowers(
-//////                    new PoseVelocity2d(
-//////                            new Vector2d(0, 0),   // no translation
-//////                            turnPower             // rotation
-//////                    )
-//////            );
-//        }
-//        if (gamepad1.left_trigger > 0.9 && targetTag == null) {
+        if (gamepad1.left_trigger > 0.9 && targetTag != null) {
+
+            double bearing = targetTag.ftcPose.bearing;
+
+            if (Math.abs(bearing) > aimTolorance) {    // 5-degree tolerance
+                autoTurn = (bearing + offset) * rotationFactor;// proportional turn
+            }
+            telemetry.addData("range", targetTag.ftcPose.range);
+////            drive.setDrivePowers(
+////                    new PoseVelocity2d(
+////                            new Vector2d(0, 0),   // no translation
+////                            turnPower             // rotation
+////                    )
+////            );
+        }
+        if (gamepad1.left_trigger > 0.9 && targetTag == null) {
 //            gamepad1.runRumbleEffect(noEffect);
-//        }
-//
-//
-//        Pose2d pose = drive.localizer.getPose();// radians
+        }
+
+
+        Pose2d pose = drive.localizer.getPose();// radians
 
 
 //TODO: Combine joystick movement and camera auto centering movement
@@ -383,14 +398,14 @@ CAMERA STUFF
         // Update Road Runner’s localization
         drive.localizer.update();
 
-        telemetry.addData("Intake Power", Intake_Speed);
+//        telemetry.addData("Intake Power", Intake_Speed);
         telemetry.addData("Top Shooter Target Speed", Top_Target_Speed);
         telemetry.addData("Bottom Shooter Target Speed", Bottom_Target_Speed);
-        telemetry.addData("Ball Count", ballNumber);
+//        telemetry.addData("Ball Count", ballNumber);
         telemetry.addData("Selected Id", TARGET_ID);
-        telemetry.addData("bearing", bearing);
-        telemetry.addData("range", range);
-        telemetry.addData("robotRange", robotRange);
+//        telemetry.addData("bearing", bearing);
+//        telemetry.addData("range", range);
+//        telemetry.addData("robotRange", robotRange);
         telemetry.addData("autopower", autoPower);
         telemetry.update();
     }

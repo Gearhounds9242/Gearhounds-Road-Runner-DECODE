@@ -22,7 +22,7 @@ public class Blue_Close_Just_Move extends LinearOpMode {
     private final GearhoundsHardware robot = new GearhoundsHardware();
     MecanumDrive drive;
     // Starting pose
-    Pose2d startPose = new Pose2d(new Vector2d(60, -15), Math.toRadians(180));
+    Pose2d startPose = new Pose2d(new Vector2d(-50, -50), Math.toRadians(146.25));
 
 
     @Override
@@ -40,8 +40,10 @@ public class Blue_Close_Just_Move extends LinearOpMode {
 
         if (isStopRequested()) return;
         Action path = drive.actionBuilder(startPose)
-                .strafeTo(new Vector2d(0,0))
-//                .stopAndAdd(new SavePose())
+                .strafeTo(new Vector2d(-45,-45))
+                .strafeToLinearHeading(new Vector2d(-25,-50), Math.toRadians(270))
+                .strafeTo(new Vector2d(-25,-53))
+                .stopAndAdd(new SavePose())
                 .build();
         Actions.runBlocking(new SequentialAction(path));
 

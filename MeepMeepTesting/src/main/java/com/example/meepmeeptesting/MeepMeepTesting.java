@@ -17,19 +17,8 @@ public class MeepMeepTesting {
                 .setConstraints(120, 120, Math.toRadians(180), Math.toRadians(130), 15.5)
                 .build();
 //        myBot.setDimensions()
-        myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(-50, -50, Math.toRadians(146.25)))
-                        .splineToConstantHeading(new Vector2d(-45,-45),Math.toRadians(50))
-                .splineToSplineHeading(new Pose2d(-16, -16, Math.toRadians(223.5)), Math.toRadians(25.5))
-                                .waitSeconds(1)
-                //shoot preload3
-                        .splineToSplineHeading(new Pose2d(-11.5,-26, Math.toRadians(270)), Math.toRadians(-40))
-                                .waitSeconds(1)
-                //turn on intake
-                        .splineToConstantHeading(new Vector2d(-11.5, -53.5),Math.toRadians(-90))
-                                .waitSeconds(1)
-                //tap transfer
-                .splineToConstantHeading(new Vector2d(-11.5, -45),Math.toRadians(90))
-                .splineToSplineHeading(new Pose2d(-16, -16, Math.toRadians(223.5)), Math.toRadians(-40))
+        myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(60, 15, Math.toRadians(180)))
+                .strafeToLinearHeading(new Vector2d(55,-15),Math.toRadians(-160))
                 .build());
 
 
