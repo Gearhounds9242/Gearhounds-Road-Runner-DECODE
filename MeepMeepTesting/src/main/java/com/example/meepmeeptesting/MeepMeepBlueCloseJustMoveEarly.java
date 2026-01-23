@@ -6,7 +6,7 @@ import com.noahbres.meepmeep.MeepMeep;
 import com.noahbres.meepmeep.roadrunner.DefaultBotBuilder;
 import com.noahbres.meepmeep.roadrunner.entity.RoadRunnerBotEntity;
 
-public class MeepMeepBlueFar {
+public class MeepMeepBlueCloseJustMoveEarly {
     public static void main(String[] args) {
         MeepMeep meepMeep = new MeepMeep(900);
 
@@ -16,7 +16,9 @@ public class MeepMeepBlueFar {
                 .build();
         myBot.setDimensions(18,18);
         myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(-50, -50, Math.toRadians(146.25)))
-
+                .strafeTo(new Vector2d(-45,-45))
+                .strafeToLinearHeading(new Vector2d(-25,-50), Math.toRadians(270))
+                .strafeTo(new Vector2d(-25,-53))
                 .build());
 
 
