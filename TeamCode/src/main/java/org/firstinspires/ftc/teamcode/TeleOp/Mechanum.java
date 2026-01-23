@@ -53,10 +53,10 @@ public class Mechanum extends OpMode {
     public static double top_P = 3;
     public static double top_I = 0;
     public static double top_D = 0.3;
-    public static double top_F = 2.8;
-    public static double bottom_P = 3;
+    public static double top_F = 2.875;
+    public static double bottom_P = 4;
     public static double bottom_I = 0;
-    public static double bottom_D = 0.14;
+    public static double bottom_D = 3;
     public static double bottom_F = 1;
     public static double rightLightColor = 0;
     public static double leftLightColor = 0;
@@ -171,14 +171,12 @@ public class Mechanum extends OpMode {
             Top_Target_Speed = velocityTopLut.get(robotRange);
             Bottom_Target_Speed = velocityBottomLut.get(robotRange);
         }
-
         robotRange = range;
 
-        PIDFController topShooterController = new PIDFController(top_P, top_I, top_D, top_F);
-        PIDFController bottomShooterController = new PIDFController(bottom_P, bottom_I, bottom_D, bottom_F);
 
-//        topShooterController.setPIDF(top_P, top_I, top_D, top_F);
-//        bottomShooterController.setPIDF(bottom_P, bottom_I, bottom_D, bottom_F);
+
+        topShooterController.setPIDF(top_P, top_I, top_D, top_F);
+        bottomShooterController.setPIDF(bottom_P, bottom_I, bottom_D, bottom_F);
 
 
         double topOutput = topShooterController.calculate(robot.TopMotor.getVelocity(), Top_Target_Speed);
@@ -234,7 +232,7 @@ public class Mechanum extends OpMode {
         if (gamepad1.y) {
             robot.intake.setVelocity(-Intake_Speed);
         } else {
-            robot.intake.setPower(0.1);
+            robot.intake.setPower(0.3);
         }
 
 
