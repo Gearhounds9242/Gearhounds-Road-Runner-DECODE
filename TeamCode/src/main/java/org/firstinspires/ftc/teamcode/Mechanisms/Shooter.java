@@ -23,7 +23,7 @@ import static org.firstinspires.ftc.teamcode.TeleOp.Mechanum.top_P;
 public class Shooter {
     // CONSTANTS
     private static final double ROLLER_VELOCITY_TOLERANCE = 50;  // this is ticks/sec
-    private static final int STABLE_ROLLER_LOOPS_REQUIREMENT = 5; // how many passes through 'run' must rollers READY before completing Action
+    private static final int STABLE_ROLLER_LOOPS_REQUIREMENT = 300; // how many passes through 'run' must rollers READY before completing Action
     private static final int SPIN_PER_BALL = 10000; // no idea what these units are ... some made-up Harry unit
     private final GearhoundsHardware robot;
 
@@ -85,13 +85,13 @@ public class Shooter {
             boolean bottomRollerReady = Math.abs(bottomRollerTargetVelocity - bottomRollerVelocity) < ROLLER_VELOCITY_TOLERANCE;
 
             // log some info to see what this code actually does 🤷🏻‍♂️
-//            telemetryPacket.put("Top Target Velocity", topRollerVelocity);
-//            telemetryPacket.put("  Top Velocity", topRollerVelocity);
-//            telemetryPacket.put("  Top Ready", topRollerReady);
-//            telemetryPacket.put("Bottom Target Velocity", topRollerVelocity);
-//            telemetryPacket.put("  Bottom Velocity", bottomRollerVelocity);
-//            telemetryPacket.put("  Bottom Ready", bottomRollerReady);
-//            telemetryPacket.put("Stable Loops", stableRollerLoops);
+            telemetryPacket.put("Top Target Velocity", topRollerVelocity);
+            telemetryPacket.put("  Top Velocity", topRollerVelocity);
+            telemetryPacket.put("  Top Ready", topRollerReady);
+            telemetryPacket.put("Bottom Target Velocity", topRollerVelocity);
+            telemetryPacket.put("  Bottom Velocity", bottomRollerVelocity);
+            telemetryPacket.put("  Bottom Ready", bottomRollerReady);
+            telemetryPacket.put("Stable Loops", stableRollerLoops);
 
             // only exit if rollers have been stable for STABLE_ROLLER_LOOPS_REQUIREMENT
             if (topRollerReady && bottomRollerReady) {

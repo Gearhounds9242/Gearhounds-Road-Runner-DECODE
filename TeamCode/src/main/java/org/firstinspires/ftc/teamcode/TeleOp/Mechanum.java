@@ -54,9 +54,9 @@ public class Mechanum extends OpMode {
     public static double top_I = 0;
     public static double top_D = 0.3;
     public static double top_F = 2.875;
-    public static double bottom_P = 4;
+    public static double bottom_P = 3;
     public static double bottom_I = 0;
-    public static double bottom_D = 3;
+    public static double bottom_D = 0.3;
     public static double bottom_F = 1;
     public static double rightLightColor = 0;
     public static double leftLightColor = 0;
@@ -137,6 +137,7 @@ public class Mechanum extends OpMode {
                 .setDrawCubeProjection(true)
                 .setDrawTagID(true)
                 .setDrawTagOutline(true)
+                .setLensIntrinsics(539.0239404,539.0239404,316.450283269,236.36479005)
                 .build();
 
         // Vision portal
@@ -144,6 +145,7 @@ public class Mechanum extends OpMode {
                 .addProcessor(tagProcessor)
                 .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
                 .setCameraResolution(new Size(640, 480))
+                .setStreamFormat(VisionPortal.StreamFormat.MJPEG)
 //                .enableLiveView(true)
                 .build();
 
@@ -189,10 +191,11 @@ public class Mechanum extends OpMode {
 //        packet.put("BottomMotorRPM", (robot.BottomMotor.getVelocity() / 28.0) * 60.0);
 //        packet.put("TopCurrentA", robot.TopMotor.getCurrent(CurrentUnit.AMPS));
 //        packet.put("BottomCurrentA", robot.BottomMotor.getCurrent(CurrentUnit.AMPS));
-        packet.put("BottomVelocity", robot.BottomMotor.getVelocity());
-        packet.put("TopVelocity", robot.TopMotor.getVelocity());
-        packet.put("TopTarget", Top_Target_Speed);
-        packet.put("BottomTarget", Bottom_Target_Speed);
+//        packet.put("IntakeRPM", (robot.intake.getVelocity() / 28) * 60);
+//        packet.put("BottomVelocity", robot.BottomMotor.getVelocity());
+//        packet.put("TopVelocity", robot.TopMotor.getVelocity());
+//        packet.put("TopTarget", Top_Target_Speed);
+//        packet.put("BottomTarget", Bottom_Target_Speed);
         dashboard.sendTelemetryPacket(packet);
 
 //        if (gamepad1.left_bumper) shift = 0.3; // slow mode
@@ -227,7 +230,7 @@ public class Mechanum extends OpMode {
 
 
         if (gamepad1.right_trigger > 0.1) {
-            robot.intake.setVelocity(Intake_Speed);
+            robot.intake.setPower(1);
         }
         if (gamepad1.y) {
             robot.intake.setVelocity(-Intake_Speed);
@@ -397,12 +400,12 @@ CAMERA STUFF
         drive.localizer.update();
 
 //        telemetry.addData("Intake Power", Intake_Speed);
-        telemetry.addData("Top Shooter Target Speed", Top_Target_Speed);
-        telemetry.addData("Bottom Shooter Target Speed", Bottom_Target_Speed);
+//        telemetry.addData("Top Shooter Target Speed", Top_Target_Speed);
+//        telemetry.addData("Bottom Shooter Target Speed", Bottom_Target_Speed);
 //        telemetry.addData("Ball Count", ballNumber);
         telemetry.addData("Selected Id", TARGET_ID);
 //        telemetry.addData("bearing", bearing);
-//        telemetry.addData("range", range);
+        telemetry.addData("range", range);
 //        telemetry.addData("robotRange", robotRange);
         telemetry.addData("autopower", autoPower);
         telemetry.update();
