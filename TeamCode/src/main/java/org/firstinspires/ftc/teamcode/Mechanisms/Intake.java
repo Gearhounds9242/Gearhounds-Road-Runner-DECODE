@@ -21,8 +21,8 @@ public class Intake {
         return new RunIntake(power, timeout);
     }
 
-    public Action stopShooter() {
-        return new StopIntake();
+    public Action stopIntake() {
+        return new Intake.stopIntake();
     }
 
 
@@ -71,14 +71,13 @@ public class Intake {
     }
 
 
-    public class StopIntake implements Action {
+    public class stopIntake implements Action {
         double power = 0;
-        ElapsedTime timer;
 
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
             robot.intake.setPower(power);
-            return false;
+            return true;
         }
     }
 }
