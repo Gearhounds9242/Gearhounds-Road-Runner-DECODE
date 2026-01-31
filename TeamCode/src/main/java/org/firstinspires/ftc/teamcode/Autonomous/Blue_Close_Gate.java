@@ -25,8 +25,8 @@ import org.firstinspires.ftc.teamcode.Utilities.PoseStorage;
 public class Blue_Close_Gate extends LinearOpMode {
 
     private final GearhoundsHardware robot = new GearhoundsHardware();
-    int topVelocity = 800;
-    int bottomVelocity = 800;
+    int topVelocity = 1100;
+    int bottomVelocity = 1100;
     MecanumDrive drive;
     // Starting pose
     Pose2d startPose = new Pose2d(new Vector2d(-50, -50), Math.toRadians(146.25));
@@ -61,7 +61,7 @@ public class Blue_Close_Gate extends LinearOpMode {
                                 intake.runIntake(1, 0.1),
                                 new SequentialAction(
                                         new SleepAction(2),
-                                        shooter.shootBallRapid(3, 1, 4)
+                                        shooter.shootBallRapid(topVelocity, bottomVelocity, 3,0.8,20)
                                 )
                         )
                 )
@@ -89,7 +89,7 @@ public class Blue_Close_Gate extends LinearOpMode {
                                 intake.runIntake(1, 0.1),
                                 new SequentialAction(
                                         new SleepAction(2),
-                                        shooter.shootBallRapid(3, 1, 4)
+                                        shooter.shootBallRapid(topVelocity, bottomVelocity, 3,1,10)
                                 )
                         )
                 )
@@ -117,7 +117,7 @@ public class Blue_Close_Gate extends LinearOpMode {
                                 intake.runIntake(1, 0.1),
                                 new SequentialAction(
                                         new SleepAction(2),
-                                        shooter.shootBallRapid(3, 1, 4)
+                                        shooter.shootBallRapid(topVelocity, bottomVelocity, 3,0.9,10)
                                 )
                         )
                 )

@@ -61,7 +61,7 @@ public class Red_Close_Gate extends LinearOpMode {
                                 intake.runIntake(1, 0.1),
                                 new SequentialAction(
                                         new SleepAction(2),
-                                        shooter.shootBallRapid(3, 1, 4)
+                                        shooter.shootBallRapid(topVelocity, bottomVelocity, 3,1,10)
                                 )
                         )
                 )
@@ -89,7 +89,7 @@ public class Red_Close_Gate extends LinearOpMode {
                                 intake.runIntake(1, 0.1),
                                 new SequentialAction(
                                         new SleepAction(2),
-                                        shooter.shootBallRapid(3, 1, 4)
+                                        shooter.shootBallRapid(topVelocity, bottomVelocity, 3,1,10)
                                 )
                         )
                 )
@@ -117,7 +117,7 @@ public class Red_Close_Gate extends LinearOpMode {
                                 intake.runIntake(1, 0.1),
                                 new SequentialAction(
                                         new SleepAction(2),
-                                        shooter.shootBallRapid(3, 1, 4)
+                                        shooter.shootBallRapid(topVelocity, bottomVelocity, 3,1,10)
                                 )
                         )
                 )

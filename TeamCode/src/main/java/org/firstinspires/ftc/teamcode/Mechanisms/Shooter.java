@@ -23,7 +23,7 @@ import static org.firstinspires.ftc.teamcode.TeleOp.Mechanum.top_P;
 public class Shooter {
     // CONSTANTS
     private static final double ROLLER_VELOCITY_TOLERANCE = 50;  // this is ticks/sec
-    private static final int STABLE_ROLLER_LOOPS_REQUIREMENT = 300; // how many passes through 'run' must rollers READY before completing Action
+    private static final int STABLE_ROLLER_LOOPS_REQUIREMENT = 3; // how many passes through 'run' must rollers READY before completing Action
     private static final int SPIN_PER_BALL = 10000; // no idea what these units are ... some made-up Harry unit
     private final GearhoundsHardware robot;
 
@@ -38,8 +38,8 @@ public class Shooter {
         return new RunShooter(topRollerTargetVelocity, bottomRollerTargetVelocity);
     }
 
-    public Action shootBallRapid(int ballCount, double transferWheelPower, int timeoutMs) {
-        return new ShootBallRapid( ballCount, transferWheelPower, timeoutMs);
+    public Action shootBallRapid(double topRollerTargetVelocity, double bottomRollerTargetVelocity, int ballCount, double transferBeltPower, int timeoutMs) {
+        return new ShootBallRapid(topRollerTargetVelocity, bottomRollerTargetVelocity, ballCount, transferBeltPower, timeoutMs);
     }
 
     public Action stopShooter() {
@@ -109,6 +109,10 @@ public class Shooter {
     //
     // **************************************************
     public class ShootBallRapid implements Action {
+        private final PIDFController topRollerController;
+        private final PIDFController bottomRollerController;
+        private final double topRollerTargetVelocity;
+        private final double bottomRollerTargetVelocity;
         private final int ballCount;
         private final double transferWheelPower;
         private final int timeoutMs;
@@ -116,7 +120,13 @@ public class Shooter {
         int targetPos;
         ElapsedTime timer;
 
-        public ShootBallRapid( int ballCount, double transferWheelPower, int timeoutMs) {
+        public ShootBallRapid(double topRollerTargetVelocity, double bottomRollerTargetVelocity, int ballCount, double transferWheelPower, int timeoutMs) {
+            // confirm velocity values top and bottom rollers
+            if (topRollerTargetVelocity < 0 || bottomRollerTargetVelocity < 0) {
+                throw new IllegalArgumentException("The shooter power needs to be a positive number! Change to continue");
+            }
+            this.topRollerTargetVelocity = topRollerTargetVelocity;
+            this.bottomRollerTargetVelocity = bottomRollerTargetVelocity;
 
             // confirm value input for transferWheelPower
             if (transferWheelPower > 1 || transferWheelPower < -1 || transferWheelPower == 0) {
@@ -130,6 +140,8 @@ public class Shooter {
                 robot.rightLight.setPosition(0.28);
                 throw new RuntimeException("The transfer timeout needs to be greater than 0!");
             }
+            this.topRollerController = new PIDFController(top_P, top_I, top_D, top_F);
+            this.bottomRollerController = new PIDFController(bottom_P, bottom_I, bottom_D, bottom_F);
             this.ballCount = ballCount;
             this.transferWheelPower = transferWheelPower;
             this.timeoutMs = timeoutMs;
@@ -145,16 +157,17 @@ public class Shooter {
                 robot.transfer.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 robot.transfer.setPower(transferWheelPower);
             }
-/// Temporarily commented this out because I dont think we need this as Dr.M says the shoot should only shoot
-//            // get roller velocities
-//            double topRollerVelocity = robot.TopMotor.getVelocity();
-//            double bottomRollerVelocity = robot.BottomMotor.getVelocity();
-//
-//            // update motor speeds with PIDF
-//            double topOutput = topRollerController.calculate(topRollerVelocity, topRollerTargetVelocity);
-//            double bottomOutput = bottomRollerController.calculate(bottomRollerVelocity, bottomRollerTargetVelocity);
-//            robot.TopMotor.setVelocity(topOutput);
-//            robot.BottomMotor.setVelocity(bottomOutput);
+
+            // get roller velocities
+            double topRollerVelocity = robot.TopMotor.getVelocity();
+            double bottomRollerVelocity = robot.BottomMotor.getVelocity();
+
+            // update motor speeds with PIDF
+            double topOutput = topRollerController.calculate(topRollerVelocity, topRollerTargetVelocity);
+            double bottomOutput = bottomRollerController.calculate(bottomRollerVelocity, bottomRollerTargetVelocity);
+            robot.TopMotor.setVelocity(topOutput);
+            robot.BottomMotor.setVelocity(bottomOutput);
+            robot.transfer.setPower(transferWheelPower);
 
             // log some info to see what this code actually does 🤷🏻‍♂️
 //            telemetryPacket.put("Top Velocity", topRollerVelocity);
@@ -163,14 +176,20 @@ public class Shooter {
 
             // exit when robot.transfer reaches correct position
             // or when the timer exceeds the timeout
-            if (!robot.transfer.isBusy() || timer.milliseconds() > timeoutMs) {
+            if (!robot.transfer.isBusy() || timer.seconds() > timeoutMs) {
                 robot.transfer.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
                 robot.transfer.setPower(0); // shut down transfer on exit
-                robot.leftLight.setPosition(0.28);
-                robot.rightLight.setPosition(0.28);
                 return false;
+            } else {
+                return true;
             }
-            return true;
+//            if (!robot.transfer.isBusy() || timer.milliseconds() > timeoutMs) {
+//                robot.transfer.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//                robot.transfer.setPower(0); // shut down transfer on exit
+//                robot.leftLight.setPosition(0.28);
+//                robot.rightLight.setPosition(0.28);
+//                return false;
+//            }
         }
     }
 
