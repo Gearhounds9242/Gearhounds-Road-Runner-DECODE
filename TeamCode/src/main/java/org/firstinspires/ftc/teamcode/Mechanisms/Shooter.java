@@ -38,8 +38,8 @@ public class Shooter {
         return new RunShooter(topRollerTargetVelocity, bottomRollerTargetVelocity);
     }
 
-    public Action shootBallRapid(double topRollerTargetVelocity, double bottomRollerTargetVelocity, int ballCount, double transferBeltPower, int timeoutMs) {
-        return new ShootBallRapid(topRollerTargetVelocity, bottomRollerTargetVelocity, ballCount, transferBeltPower, timeoutMs);
+    public Action shootBallRapid(int ballCount, double transferWheelPower, int timeoutMs) {
+        return new ShootBallRapid( ballCount, transferWheelPower, timeoutMs);
     }
 
     public Action stopShooter() {
@@ -85,13 +85,13 @@ public class Shooter {
             boolean bottomRollerReady = Math.abs(bottomRollerTargetVelocity - bottomRollerVelocity) < ROLLER_VELOCITY_TOLERANCE;
 
             // log some info to see what this code actually does 🤷🏻‍♂️
-            telemetryPacket.put("Top Target Velocity", topRollerVelocity);
-            telemetryPacket.put("  Top Velocity", topRollerVelocity);
-            telemetryPacket.put("  Top Ready", topRollerReady);
-            telemetryPacket.put("Bottom Target Velocity", topRollerVelocity);
-            telemetryPacket.put("  Bottom Velocity", bottomRollerVelocity);
-            telemetryPacket.put("  Bottom Ready", bottomRollerReady);
-            telemetryPacket.put("Stable Loops", stableRollerLoops);
+//            telemetryPacket.put("Top Target Velocity", topRollerVelocity);
+//            telemetryPacket.put("  Top Velocity", topRollerVelocity);
+//            telemetryPacket.put("  Top Ready", topRollerReady);
+//            telemetryPacket.put("Bottom Target Velocity", topRollerVelocity);
+//            telemetryPacket.put("  Bottom Velocity", bottomRollerVelocity);
+//            telemetryPacket.put("  Bottom Ready", bottomRollerReady);
+//            telemetryPacket.put("Stable Loops", stableRollerLoops);
 
             // only exit if rollers have been stable for STABLE_ROLLER_LOOPS_REQUIREMENT
             if (topRollerReady && bottomRollerReady) {
@@ -109,10 +109,6 @@ public class Shooter {
     //
     // **************************************************
     public class ShootBallRapid implements Action {
-        private final PIDFController topRollerController;
-        private final PIDFController bottomRollerController;
-        private final double topRollerTargetVelocity;
-        private final double bottomRollerTargetVelocity;
         private final int ballCount;
         private final double transferWheelPower;
         private final int timeoutMs;
@@ -120,13 +116,7 @@ public class Shooter {
         int targetPos;
         ElapsedTime timer;
 
-        public ShootBallRapid(double topRollerTargetVelocity, double bottomRollerTargetVelocity, int ballCount, double transferWheelPower, int timeoutMs) {
-            // confirm velocity values top and bottom rollers
-            if (topRollerTargetVelocity < 0 || bottomRollerTargetVelocity < 0) {
-                throw new IllegalArgumentException("The shooter power needs to be a positive number! Change to continue");
-            }
-            this.topRollerTargetVelocity = topRollerTargetVelocity;
-            this.bottomRollerTargetVelocity = bottomRollerTargetVelocity;
+        public ShootBallRapid( int ballCount, double transferWheelPower, int timeoutMs) {
 
             // confirm value input for transferWheelPower
             if (transferWheelPower > 1 || transferWheelPower < -1 || transferWheelPower == 0) {
@@ -140,8 +130,6 @@ public class Shooter {
                 robot.rightLight.setPosition(0.28);
                 throw new RuntimeException("The transfer timeout needs to be greater than 0!");
             }
-            this.topRollerController = new PIDFController(top_P, top_I, top_D, top_F);
-            this.bottomRollerController = new PIDFController(bottom_P, bottom_I, bottom_D, bottom_F);
             this.ballCount = ballCount;
             this.transferWheelPower = transferWheelPower;
             this.timeoutMs = timeoutMs;
@@ -157,16 +145,16 @@ public class Shooter {
                 robot.transfer.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 robot.transfer.setPower(transferWheelPower);
             }
-
-            // get roller velocities
-            double topRollerVelocity = robot.TopMotor.getVelocity();
-            double bottomRollerVelocity = robot.BottomMotor.getVelocity();
-
-            // update motor speeds with PIDF
-            double topOutput = topRollerController.calculate(topRollerVelocity, topRollerTargetVelocity);
-            double bottomOutput = bottomRollerController.calculate(bottomRollerVelocity, bottomRollerTargetVelocity);
-            robot.TopMotor.setVelocity(topOutput);
-            robot.BottomMotor.setVelocity(bottomOutput);
+/// Temporarily commented this out because I dont think we need this as Dr.M says the shoot should only shoot
+//            // get roller velocities
+//            double topRollerVelocity = robot.TopMotor.getVelocity();
+//            double bottomRollerVelocity = robot.BottomMotor.getVelocity();
+//
+//            // update motor speeds with PIDF
+//            double topOutput = topRollerController.calculate(topRollerVelocity, topRollerTargetVelocity);
+//            double bottomOutput = bottomRollerController.calculate(bottomRollerVelocity, bottomRollerTargetVelocity);
+//            robot.TopMotor.setVelocity(topOutput);
+//            robot.BottomMotor.setVelocity(bottomOutput);
 
             // log some info to see what this code actually does 🤷🏻‍♂️
 //            telemetryPacket.put("Top Velocity", topRollerVelocity);

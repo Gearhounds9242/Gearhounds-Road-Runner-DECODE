@@ -1,46 +1,38 @@
 package org.firstinspires.ftc.teamcode.Autonomous;
 
 
-import static org.firstinspires.ftc.teamcode.TeleOp.Mechanum.bottom_D;
-import static org.firstinspires.ftc.teamcode.TeleOp.Mechanum.bottom_F;
-import static org.firstinspires.ftc.teamcode.TeleOp.Mechanum.bottom_I;
-import static org.firstinspires.ftc.teamcode.TeleOp.Mechanum.bottom_P;
-import static org.firstinspires.ftc.teamcode.TeleOp.Mechanum.top_D;
-import static org.firstinspires.ftc.teamcode.TeleOp.Mechanum.top_F;
-import static org.firstinspires.ftc.teamcode.TeleOp.Mechanum.top_I;
-import static org.firstinspires.ftc.teamcode.TeleOp.Mechanum.top_P;
-
-import androidx.annotation.NonNull;
-
-import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
-import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.InstantFunction;
 import com.acmerobotics.roadrunner.Pose2d;
-import com.acmerobotics.roadrunner.SequentialAction;
+import com.acmerobotics.roadrunner.Pose2dDual;
+import com.acmerobotics.roadrunner.PoseMap;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.util.ElapsedTime;
-import com.seattlesolvers.solverslib.controller.PIDFController;
 
 import org.firstinspires.ftc.teamcode.MecanumDrive;
+import org.firstinspires.ftc.teamcode.Mechanisms.Intake;
+import org.firstinspires.ftc.teamcode.Mechanisms.Shooter;
+import org.firstinspires.ftc.teamcode.Mechanisms.Transfer;
 import org.firstinspires.ftc.teamcode.Utilities.GearhoundsHardware;
 import org.firstinspires.ftc.teamcode.Utilities.PoseStorage;
 
-@Disabled/// ATTENTION IF YOU ARE GOING TO COPY THIS FILE @Disabled MUST BE REMOVED FOR IT TO SHOW UP ON THE DRIVER STATION
-@Autonomous(name = "Autonomous_Example")///  ATTENTION IF YOU ARE GOING TO COPY THIS FILE BOTH OF THE NAMES SHOWN HERE AND ON THE LINE BELOW MUST MATCH YOUR FILE NAME
+@Disabled
+/// ATTENTION IF YOU ARE GOING TO COPY THIS FILE @Disabled MUST BE REMOVED FOR IT TO SHOW UP ON THE DRIVER STATION
+@Autonomous(name = "Autonomous_Example")
+///  ATTENTION IF YOU ARE GOING TO COPY THIS FILE BOTH OF THE NAMES SHOWN HERE AND ON THE LINE BELOW MUST MATCH YOUR FILE NAME
 public class Autonomous_Example extends LinearOpMode {
 
-MecanumDrive drive;
-private final GearhoundsHardware robot = new GearhoundsHardware();
-
-/// ********************************************
-///This is your starting position. It is important to get this correct as it is one of the main ways autonomous gets messed up
+    private final GearhoundsHardware robot = new GearhoundsHardware();
+    MecanumDrive drive;
+    /// ********************************************
+    /// This is your starting position. It is important to get this correct as it is one of the main ways autonomous gets messed up
     // Starting pose
     Pose2d startPose = new Pose2d(new Vector2d(60, 15), Math.toRadians(180));
+
+    /// When you type this next to the startPose in "drive.actionBuilder(startPose "RIGHT HERE")" it will flip all the paths so it will work on the other side the only thing you have to change is the start pose otherwise it thinks its in timbucktoo
+    PoseMap mirrorPoseMap = pose -> new Pose2dDual<>(pose.position.x, pose.position.y.unaryMinus(), pose.heading.inverse());
 
 /*
 You may see the word "Pose thrown around a lot. Pose is essentially just a way of explaining a point in space using coordinates like X and Y
@@ -49,11 +41,30 @@ You may see the word "Pose thrown around a lot. Pose is essentially just a way o
 /// Some of the Autonomous commands include (these may change as time goes on will be updated here)
 /*
 .stopAndAdd(new SavePose())
-.stopAndAdd(new ShootBallRapid("ballCount","power","timeout")
-.stopAndAdd(new RunShooter("topPower","bottomPower", "timeout"))
-.stopAndAdd(new StopShooter())
+
+.stopAndAdd(shooter.shootBallRapid("ballCount","transferWheelPower","timeout")
+.stopAndAdd(shooter.runShooter("topPower","bottomPower", "timeout"))
+.stopAndAdd(shooter.stopShooter())
+
+.stopAndAdd(intake.runIntake("power","timeout"))
+.stopAndAdd(intake.stopIntake())
+
+.stopAndAdd(transfer.tapTransfer())
  */
-/// ********************************************
+
+/// On of the main commands you may want to use is to shoot. Here is the current code to shoot 3 balls.
+//.stopAndAdd(
+//         new ParallelAction(
+//                 shooter.runShooter(800, 800),
+//                 intake.runIntake(1, 0.1),
+//                 new SequentialAction(
+//                         new SleepAction(2),
+//                         shooter.shootBallRapid(3, 1, 4)
+//                 )
+//         )
+//)
+
+    /// ********************************************
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -63,6 +74,9 @@ You may see the word "Pose thrown around a lot. Pose is essentially just a way o
 
         // Create drive AFTER hardwareMap is ready
         drive = new MecanumDrive(hardwareMap, startPose);
+        Shooter shooter = new Shooter(robot);
+        Intake intake = new Intake(robot);
+        Transfer transfer = new Transfer(robot);
 
         waitForStart();
 
@@ -77,8 +91,9 @@ You may see the word "Pose thrown around a lot. Pose is essentially just a way o
     }
 
 
-    /// Here are all of your Autonomous commands. you can use these by typing .stopAndAdd(new "command name here")
-    /// Please don't go messing around in here if you don't know what you are doing proceed with CAUTION
+    /// Here are is the "SavePose" command, this command allows for the robot to remember where it is after auto ends.
+    /// For the rest of the commands look inside the folder org.firstin...teamcode/Mechanisms
+// TODO: 1/30/2026 eventually there needs to be an example file for creating mechanisms
 
 
     public class SavePose implements InstantFunction {
@@ -87,123 +102,4 @@ You may see the word "Pose thrown around a lot. Pose is essentially just a way o
             PoseStorage.currentPose = drive.localizer.getPose();
         }
     }
-
-
-    public class ShootBallRapid implements Action{
-        int ballNumber;
-        double transferPower;
-        int currentPos;
-        int howMuchToSpinPerBall = 100;
-        int targetPos;
-        int timeout;
-        ElapsedTime timer;
-
-        public ShootBallRapid(int ballCount, int power, int timeout){
-            this.ballNumber = ballCount;
-            this.transferPower = power;
-            this.timeout = timeout;
-        }
-        @Override
-        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-            if (timer == null){
-                timer = new ElapsedTime();
-                currentPos = robot.transfer.getCurrentPosition();
-                robot.transfer.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                targetPos = currentPos + (ballNumber * howMuchToSpinPerBall);
-            }
-            if (transferPower > 1 || transferPower < -1 || transferPower == 0){
-                robot.leftLight.setPosition(0.28);
-                robot.rightLight.setPosition(0.28);
-                throw new RuntimeException("The transfer uses .setPower! The power must be less then 1, but not 0 or below (it can be a decimal). Change to continue");
-            }
-            if(timeout <= 0){
-                robot.leftLight.setPosition(0.28);
-                robot.rightLight.setPosition(0.28);
-                throw new RuntimeException("The transfer timeout needs to be greater than 0!");
-            }
-
-            robot.transfer.setTargetPosition(targetPos);
-            robot.transfer.setPower(transferPower);
-
-            if(robot.transfer.getCurrentPosition() >= targetPos){
-                robot.transfer.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                return false;
-            }
-            if (timer.seconds() < timeout){
-                return true;
-            } else {
-                robot.transfer.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                robot.leftLight.setPosition(0.28);
-                robot.rightLight.setPosition(0.28);
-                return false;
-            }
-        }
-    }
-
-    public class StopShooter implements Action{
-        double Top_Target_Speed = 0;
-        double Bottom_Target_Speed = 0;
-        ElapsedTime timer;
-
-        PIDFController topShooterController = new PIDFController(top_P, top_I, top_D, top_F);
-        PIDFController bottomShooterController = new PIDFController(bottom_P, bottom_I, bottom_D, bottom_F);
-
-        double topOutput = topShooterController.calculate(robot.TopMotor.getVelocity(),Top_Target_Speed);
-        double bottomOutput = bottomShooterController.calculate(robot.BottomMotor.getVelocity(),Bottom_Target_Speed);
-
-        @Override
-        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-            robot.TopMotor.setVelocity(topOutput);
-            robot.BottomMotor.setVelocity(bottomOutput);
-            return false;
-        }
-    }
-
-    public class RunShooter implements Action{
-        double Top_Target_Speed;
-        double Bottom_Target_Speed;
-        //        int spoolTime;
-        int timeout;
-        ElapsedTime timer;
-
-        PIDFController topShooterController = new PIDFController(top_P, top_I, top_D, top_F);
-        PIDFController bottomShooterController = new PIDFController(bottom_P, bottom_I, bottom_D, bottom_F);
-
-        double topOutput = topShooterController.calculate(robot.TopMotor.getVelocity(),Top_Target_Speed);
-        double bottomOutput = bottomShooterController.calculate(robot.BottomMotor.getVelocity(),Bottom_Target_Speed);
-
-        public RunShooter(double topPower, double bottomPower/*, int spoolTime*/, int timeout){
-            this.Top_Target_Speed = topPower;
-            this.Bottom_Target_Speed = bottomPower;
-//            this.spoolTime = spoolTime;
-            this.timeout = timeout;
-        }
-        @Override
-        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-            if (timer == null){
-                timer = new ElapsedTime();
-                //put code to initialize here per action
-            }
-            if (Top_Target_Speed < 0 || Bottom_Target_Speed < 0){
-                throw new RuntimeException("The shooter power needs to be a positive number! Change to continue");
-            }
-            if(timeout <= 0){
-                robot.leftLight.setPosition(0.28);
-                robot.rightLight.setPosition(0.28);
-                throw new RuntimeException("The shooter timeout needs to be greater than 0!");
-            }
-            robot.TopMotor.setVelocity(topOutput);
-            robot.BottomMotor.setVelocity(bottomOutput);
-
-            if(robot.TopMotor.getVelocity() >= Top_Target_Speed && robot.BottomMotor.getVelocity() >= Top_Target_Speed){
-                return true;
-            }
-            if (timer.seconds() < timeout){
-                return true;
-            } else {
-                return false;
-            }
-        }
-    }
-
 }
