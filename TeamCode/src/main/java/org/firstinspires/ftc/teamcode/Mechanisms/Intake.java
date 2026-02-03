@@ -36,14 +36,7 @@ public class Intake {
         public RunIntake(double Power, double Timeout) {
             this.power = Power;
             this.timeout = Timeout;
-        }
 
-        @Override
-        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-            if (timer == null) {
-                timer = new ElapsedTime();
-                //put code to initialize here per action
-            }
             if (power == 0) {
                 robot.leftLight.setPosition(0.28);
                 robot.rightLight.setPosition(0.28);
@@ -59,25 +52,33 @@ public class Intake {
                 robot.rightLight.setPosition(0.28);
                 throw new RuntimeException("The intake timeout needs to be greater than 0!");
             }
+        }
+
+        @Override
+        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            if (timer == null) {
+                timer = new ElapsedTime();
+                //put code to initialize here per action
+            }
+
             robot.intake.setPower(power);
 
 
-            if (timer.seconds() < timeout) {
-                return true;
-            } else {
-                return false;
+            if (timer.seconds() >= timeout) {
+                robot.intake.setPower(0);
+                return false; // Action complete
             }
+            return true;
         }
     }
 
 
     public class stopIntake implements Action {
-        double power = 0;
 
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-            robot.intake.setPower(power);
-            return true;
+            robot.intake.setPower(0);
+            return false;
         }
     }
 }

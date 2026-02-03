@@ -12,6 +12,7 @@ import com.acmerobotics.roadrunner.SleepAction;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.MecanumDrive;
@@ -57,11 +58,10 @@ public class Blue_Close_Gate extends LinearOpMode {
                 //shoot preload3
                 .stopAndAdd(
                         new ParallelAction(
-                                shooter.runShooter(topVelocity, bottomVelocity),
                                 intake.runIntake(1, 0.1),
                                 new SequentialAction(
                                         new SleepAction(2),
-                                        shooter.shootBallRapid(topVelocity, bottomVelocity, 3,0.8,20)
+                                        shooter.shootSequence(topVelocity,bottomVelocity,3,1,4)
                                 )
                         )
                 )
@@ -85,11 +85,10 @@ public class Blue_Close_Gate extends LinearOpMode {
                 //shoot 3
                 .stopAndAdd(
                         new ParallelAction(
-                                shooter.runShooter(topVelocity, bottomVelocity),
                                 intake.runIntake(1, 0.1),
                                 new SequentialAction(
                                         new SleepAction(2),
-                                        shooter.shootBallRapid(topVelocity, bottomVelocity, 3,1,10)
+                                        shooter.shootSequence(topVelocity,bottomVelocity,3,1,4)
                                 )
                         )
                 )
@@ -113,11 +112,10 @@ public class Blue_Close_Gate extends LinearOpMode {
                 //shoot 3
                 .stopAndAdd(
                         new ParallelAction(
-                                shooter.runShooter(topVelocity, bottomVelocity),
                                 intake.runIntake(1, 0.1),
                                 new SequentialAction(
                                         new SleepAction(2),
-                                        shooter.shootBallRapid(topVelocity, bottomVelocity, 3,0.9,10)
+                                        shooter.shootSequence(topVelocity,bottomVelocity,3,1,4)
                                 )
                         )
                 )

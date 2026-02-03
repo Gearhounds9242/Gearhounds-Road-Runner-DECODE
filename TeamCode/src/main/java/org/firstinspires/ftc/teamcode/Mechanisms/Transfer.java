@@ -25,21 +25,31 @@ public class Transfer {
         int currentPos;
         int targetPos;
         int howMuchToTap = 100;
+        int timeout = 1;
         ElapsedTime timer;
 
 
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
             if (timer == null) {
+                // First call - initialize
                 timer = new ElapsedTime();
                 currentPos = robot.transfer.getCurrentPosition();
-                targetPos = currentPos + (howMuchToTap);
+                targetPos = currentPos + howMuchToTap;
                 robot.transfer.setTargetPosition(targetPos);
                 robot.transfer.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 robot.transfer.setPower(1);
             }
 
-            return true;
+            // Check if complete (reached target or timed out)
+            if (!robot.transfer.isBusy() || timer.seconds() > timeout) {
+                // Clean up - reset to normal mode and stop
+                robot.transfer.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                robot.transfer.setPower(0);
+                return false; // Action complete
+            }
+
+            return true; // Still running
         }
     }
 }
