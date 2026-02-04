@@ -20,7 +20,7 @@ public class Red_Close extends LinearOpMode {
     private final GearhoundsHardware robot = new GearhoundsHardware();
     MecanumDrive drive;
     // Starting pose
-    Pose2d startPose = new Pose2d(new Vector2d(60, 15), Math.toRadians(180));
+    Pose2d startPose = new Pose2d(new Vector2d(-50, 50), Math.toRadians(-146.25));
 
 
     @Override
@@ -39,8 +39,27 @@ public class Red_Close extends LinearOpMode {
         if (isStopRequested()) return;
         Actions.runBlocking(
                 drive.actionBuilder(startPose)
+                        .splineToSplineHeading(new Pose2d(-11.6, 11.6, Math.toRadians(139)), Math.toRadians(-4))
+                .waitSeconds(3)
+                //    shoot
+                .splineToSplineHeading(new Pose2d(-12,30, Math.toRadians(90)), Math.toRadians(0))
+                .waitSeconds(1)
+                .strafeTo(new Vector2d(-12, 52.5))
+                        .stopAndAdd(intake.runIntake(1,5))
+                .strafeTo(new Vector2d(-12, 50))
+                .splineToLinearHeading(new Pose2d(-12, 52.5, Math.toRadians(90)), Math.toRadians(-11))
+                .splineToSplineHeading(new Pose2d(-11.6, 11.6, Math.toRadians(139)), Math.toRadians(1))
+                // shoot
+                .waitSeconds(1)
+                .splineToSplineHeading(new Pose2d(12, 30, Math.toRadians(90)), Math.toRadians(0))
+                .strafeTo(new Vector2d(12, 60))
+                        .stopAndAdd(intake.runIntake(1,5))
+                .strafeTo(new Vector2d(12, 45))
+                .splineToSplineHeading(new Pose2d(-11.6, 11.6, Math.toRadians(139)), Math.toRadians(1))
+                // shoot
+                .waitSeconds(1)
+                .strafeTo(new Vector2d(12, 20))
 
-                        .stopAndAdd(new SavePose())
                         .build());
 
 
