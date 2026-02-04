@@ -10,6 +10,7 @@ import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.sun.tools.javac.comp.Todo;
 
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Mechanisms.Intake;
@@ -94,6 +95,7 @@ You may see the word "Pose thrown around a lot. Pose is essentially just a way o
     /// Here are is the "SavePose" command, this command allows for the robot to remember where it is after auto ends.
     /// For the rest of the commands look inside the folder org.firstin...teamcode/Mechanisms
 // TODO: 1/30/2026 eventually there needs to be an example file for creating mechanisms
+// TODO: 2/4/20206 need to make example of how to flip the auto for the other side
 
 
     public class SavePose implements InstantFunction {
