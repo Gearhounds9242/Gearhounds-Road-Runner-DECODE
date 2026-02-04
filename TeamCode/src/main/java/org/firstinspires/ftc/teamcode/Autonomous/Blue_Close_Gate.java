@@ -12,7 +12,6 @@ import com.acmerobotics.roadrunner.SleepAction;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.MecanumDrive;
@@ -26,8 +25,8 @@ import org.firstinspires.ftc.teamcode.Utilities.PoseStorage;
 public class Blue_Close_Gate extends LinearOpMode {
 
     private final GearhoundsHardware robot = new GearhoundsHardware();
-    int topVelocity = 1100;
-    int bottomVelocity = 1100;
+    int topVelocity = 1300;
+    int bottomVelocity = 1300;
     MecanumDrive drive;
     // Starting pose
     Pose2d startPose = new Pose2d(new Vector2d(-50, -50), Math.toRadians(146.25));
@@ -59,9 +58,10 @@ public class Blue_Close_Gate extends LinearOpMode {
                 .stopAndAdd(
                         new ParallelAction(
                                 intake.runIntake(1, 0.1),
+                                shooter.shootSequence(topVelocity, bottomVelocity, 3, 1, 1),
                                 new SequentialAction(
-                                        new SleepAction(2),
-                                        shooter.shootSequence(topVelocity,bottomVelocity,3,1,4)
+                                        new SleepAction(4),
+                                        transfer.runTransfer()
                                 )
                         )
                 )
@@ -88,7 +88,7 @@ public class Blue_Close_Gate extends LinearOpMode {
                                 intake.runIntake(1, 0.1),
                                 new SequentialAction(
                                         new SleepAction(2),
-                                        shooter.shootSequence(topVelocity,bottomVelocity,3,1,4)
+                                        shooter.shootSequence(topVelocity, bottomVelocity, 3, 1, 4)
                                 )
                         )
                 )
@@ -96,7 +96,7 @@ public class Blue_Close_Gate extends LinearOpMode {
                 ///go to 2nd spike mark
                 .splineToSplineHeading(new Pose2d(12, -29.5, Math.toRadians(270)), Math.toRadians(10))
                 //turn on intake
-                .stopAndAdd(intake.runIntake(1,0.1))
+                .stopAndAdd(intake.runIntake(1, 0.1))
                 .waitSeconds(0.05)
                 .splineToConstantHeading(new Vector2d(12, -53.5), Math.toRadians(-90))
                 //tap transfer
@@ -106,7 +106,7 @@ public class Blue_Close_Gate extends LinearOpMode {
                 //intake off
                 .stopAndAdd(intake.stopIntake())
                 ///go to shoot location third time
-                .splineToConstantHeading(new Vector2d(12,-40), Math.toRadians(-90))
+                .splineToConstantHeading(new Vector2d(12, -40), Math.toRadians(-90))
                 .splineToLinearHeading(new Pose2d(-20, -15, Math.toRadians(223.5)), Math.toRadians(10))
                 .waitSeconds(0.05)
                 //shoot 3
@@ -115,7 +115,7 @@ public class Blue_Close_Gate extends LinearOpMode {
                                 intake.runIntake(1, 0.1),
                                 new SequentialAction(
                                         new SleepAction(2),
-                                        shooter.shootSequence(topVelocity,bottomVelocity,3,1,4)
+                                        shooter.shootSequence(topVelocity, bottomVelocity, 3, 1, 4)
                                 )
                         )
                 )

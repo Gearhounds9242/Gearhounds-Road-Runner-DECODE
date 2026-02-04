@@ -133,17 +133,6 @@ public class GearhoundsHardware extends Hardware {
         transfer.setDirection(DcMotorSimple.Direction.REVERSE);
 
 
-        PIDFCoefficients pidf = new PIDFCoefficients(
-                top_P,  // P
-                top_I,// ,   // I
-                top_D,   // D
-                top_F   // F
-        );
-
-        TopMotor.setPIDFCoefficients(
-                DcMotor.RunMode.RUN_USING_ENCODER,
-                pidf
-        );
 
         intake = robotMap.get(DcMotorEx.class, "intake");
         intake.setDirection(DcMotorImplEx.Direction.REVERSE);

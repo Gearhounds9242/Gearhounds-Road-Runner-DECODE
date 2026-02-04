@@ -63,11 +63,6 @@ public class Intake {
 
             robot.intake.setPower(power);
 
-
-            if (timer.seconds() >= timeout) {
-                robot.intake.setPower(0);
-                return false; // Action complete
-            }
             return true;
         }
     }
