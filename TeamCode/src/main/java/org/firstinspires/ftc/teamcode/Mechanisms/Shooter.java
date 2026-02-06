@@ -40,8 +40,8 @@ public class Shooter {
     }
 
     public Action shootSequence(double topVelocity, double bottomVelocity,
-                                int ballCount, double transferPower, int transferTimeoutSec) {
-        return new Shooter.ShootSequence(topVelocity, bottomVelocity, ballCount, transferPower, transferTimeoutSec);
+                                int ballCount, double transferPower, int timeoutSec) {
+        return new Shooter.ShootSequence(topVelocity, bottomVelocity, ballCount, transferPower, timeoutSec);
     }
     public Action stopShooter() {
         return new StopShooter();
@@ -97,7 +97,7 @@ public class Shooter {
         private final double bottomTarget;
         private final int ballCount;
         private final double transferPower;
-        private final float transferTimeoutSec;
+        private final float timeoutSec;
 
         private ElapsedTime timer;
         private int stableLoops = 0;
@@ -107,7 +107,7 @@ public class Shooter {
         private int transferTargetPos;
 
         public ShootSequence(double topTarget, double bottomTarget,
-                             int ballCount, double transferPower, int transferTimeoutSec) {
+                             int ballCount, double transferPower, int timeoutSec) {
             // Input validation
             if (topTarget < 0 || bottomTarget < 0) {
                 throw new RuntimeException("Shooter velocities must be positive!");
@@ -115,15 +115,15 @@ public class Shooter {
             if (transferPower > 1 || transferPower < -1 || transferPower == 0) {
                 throw new RuntimeException("Transfer power must be between -1 and 1, and not 0!");
             }
-            if (transferTimeoutSec <= 0) {
-                throw new RuntimeException("Transfer timeout must be greater than 0!");
-            }
+//            if (transferTimeoutSec <= 0) {
+//                throw new RuntimeException("Transfer timeout must be greater than 0!");
+//            }
 
             this.topTarget = topTarget;
             this.bottomTarget = bottomTarget;
             this.ballCount = ballCount;
             this.transferPower = transferPower;
-            this.transferTimeoutSec = transferTimeoutSec;
+            this.timeoutSec = timeoutSec;
         }
 
         @Override
@@ -180,8 +180,7 @@ public class Shooter {
 //                robot.BottomMotor.setPower(0);
 //                return true; // Action complete
 //            }
-
-            return true; // Still shooting
+            return !(timer.seconds() > timeoutSec);// Still shooting
         }
     }
 

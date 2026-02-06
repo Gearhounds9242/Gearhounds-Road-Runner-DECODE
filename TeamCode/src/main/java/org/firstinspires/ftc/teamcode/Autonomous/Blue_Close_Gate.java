@@ -25,8 +25,8 @@ import org.firstinspires.ftc.teamcode.Utilities.PoseStorage;
 public class Blue_Close_Gate extends LinearOpMode {
 
     private final GearhoundsHardware robot = new GearhoundsHardware();
-    int topVelocity = 1300;
-    int bottomVelocity = 1300;
+    int topVelocity = 1135;
+    int bottomVelocity = 1080;
     MecanumDrive drive;
     // Starting pose
     Pose2d startPose = new Pose2d(new Vector2d(-50, -50), Math.toRadians(146.25));
@@ -51,72 +51,84 @@ public class Blue_Close_Gate extends LinearOpMode {
         Action path = drive.actionBuilder(startPose)
 
                 ///go to shoot location first time
-                .splineToConstantHeading(new Vector2d(-49, -49), Math.toRadians(58.5))
-                .splineToSplineHeading(new Pose2d(-20, -20, Math.toRadians(223.5)), Math.toRadians(60))
+                .splineToConstantHeading(new Vector2d(-49, -40), Math.toRadians(58.5))
+                .splineToSplineHeading(new Pose2d(-18, -10, Math.toRadians(223.5)), Math.toRadians(60))
                 .waitSeconds(0.05)
                 //shoot preload3
                 .stopAndAdd(
-                        new ParallelAction(
-                                intake.runIntake(1, 0.1),
-                                shooter.shootSequence(topVelocity, bottomVelocity, 3, 1, 1),
-                                new SequentialAction(
-                                        new SleepAction(4),
-                                        transfer.runTransfer()
-                                )
+                        new SequentialAction(
+                                new ParallelAction(
+                                        intake.runIntake(1,1),
+                                        shooter.shootSequence(topVelocity, bottomVelocity, 3, 1, 1)
+                                ),
+                                transfer.runTransfer(),
+                                new SleepAction(1),
+                                transfer.stopTransfer(),
+                                shooter.stopShooter()
                         )
                 )
                 ///go to 1st spike mark
-                .splineToSplineHeading(new Pose2d(-11.5, -29.5, Math.toRadians(270)), Math.toRadians(-40))
+//                .splineToSplineHeading(new Pose2d(-11.5, -29.5, Math.toRadians(270)), Math.toRadians(-90))
+                .splineToLinearHeading(new Pose2d(-11.5,-29.5, Math.toRadians(270)), Math.toRadians(-90))
                 //turn on intake
-                .stopAndAdd(intake.runIntake(1, 0.1))
+//                .stopAndAdd(intake.runIntake(1, 0.1))
                 .waitSeconds(0.05)
                 .splineToConstantHeading(new Vector2d(-11.5, -53.5), Math.toRadians(-90))
                 //tap transfer
                 .stopAndAdd(transfer.tapTransfer())
                 .waitSeconds(0.05)
-                .splineToConstantHeading(new Vector2d(-14, -40), Math.toRadians(-90))
+                .strafeTo(new Vector2d(-14,-40))
                 //intake off
                 .stopAndAdd(intake.stopIntake())
                 /// hit gate
-                .splineToSplineHeading(new Pose2d(-9, -30, Math.toRadians(90)), Math.toRadians(-90))
-                .splineToConstantHeading(new Vector2d(0, -50), Math.toRadians(-90))
-                ///go to shoot location second time
-                .splineToLinearHeading(new Pose2d(-20, -20, Math.toRadians(223.5)), Math.toRadians(270))
+//                .splineToSplineHeading(new Pose2d(-9, -34, Math.toRadians(90)), Math.toRadians(-90))
+//                .splineToConstantHeading(new Vector2d(0, -34), Math.toRadians(-90))
+                .strafeTo(new Vector2d(-14,-33))
+//                ///go to shoot location second time
+                .splineToLinearHeading(new Pose2d(-10, -10, Math.toRadians(223.5)), Math.toRadians(270))
                 //shoot 3
                 .stopAndAdd(
-                        new ParallelAction(
-                                intake.runIntake(1, 0.1),
-                                new SequentialAction(
-                                        new SleepAction(2),
-                                        shooter.shootSequence(topVelocity, bottomVelocity, 3, 1, 4)
-                                )
+                        new SequentialAction(
+                                new ParallelAction(
+                                        intake.runIntake(1,1),
+                                        shooter.shootSequence(topVelocity, bottomVelocity, 3, 1, 1)
+                                ),
+                                transfer.runTransfer(),
+                                new SleepAction(1),
+                                transfer.stopTransfer(),
+                                shooter.stopShooter()
                         )
                 )
                 .waitSeconds(1)
                 ///go to 2nd spike mark
-                .splineToSplineHeading(new Pose2d(12, -29.5, Math.toRadians(270)), Math.toRadians(10))
+                .strafeToLinearHeading(new Vector2d(12,-20), Math.toRadians(280))
+//                .splineToSplineHeading(new Pose2d(12, -29.5, Math.toRadians(270)), Math.toRadians(10))
                 //turn on intake
                 .stopAndAdd(intake.runIntake(1, 0.1))
                 .waitSeconds(0.05)
-                .splineToConstantHeading(new Vector2d(12, -53.5), Math.toRadians(-90))
+                .strafeTo(new Vector2d(13,-53.5))
+
+//                .splineToConstantHeading(new Vector2d(12, -53.5), Math.toRadians(-90))
                 //tap transfer
                 .stopAndAdd(transfer.tapTransfer())
                 .waitSeconds(0.05)
                 .splineToConstantHeading(new Vector2d(12, -49), Math.toRadians(-90))
                 //intake off
-                .stopAndAdd(intake.stopIntake())
                 ///go to shoot location third time
-                .splineToConstantHeading(new Vector2d(12, -40), Math.toRadians(-90))
-                .splineToLinearHeading(new Pose2d(-20, -15, Math.toRadians(223.5)), Math.toRadians(10))
+                .splineToConstantHeading(new Vector2d(12, -20), Math.toRadians(-90))
+                .splineToLinearHeading(new Pose2d(-10, -10, Math.toRadians(223.5)), Math.toRadians(10))
                 .waitSeconds(0.05)
                 //shoot 3
                 .stopAndAdd(
-                        new ParallelAction(
-                                intake.runIntake(1, 0.1),
-                                new SequentialAction(
-                                        new SleepAction(2),
-                                        shooter.shootSequence(topVelocity, bottomVelocity, 3, 1, 4)
-                                )
+                        new SequentialAction(
+                                new ParallelAction(
+                                        intake.runIntake(1,1),
+                                        shooter.shootSequence(topVelocity, bottomVelocity, 3, 1, 1)
+                                ),
+                                transfer.runTransfer(),
+                                new SleepAction(1),
+                                transfer.stopTransfer(),
+                                shooter.stopShooter()
                         )
                 )
                 ///go out of the launch zone

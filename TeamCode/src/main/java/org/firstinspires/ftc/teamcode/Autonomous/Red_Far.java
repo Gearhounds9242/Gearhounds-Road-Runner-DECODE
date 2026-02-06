@@ -15,7 +15,7 @@ import org.firstinspires.ftc.teamcode.Mechanisms.Shooter;
 import org.firstinspires.ftc.teamcode.Utilities.GearhoundsHardware;
 import org.firstinspires.ftc.teamcode.Utilities.PoseStorage;
 
-@Autonomous(name = "Red_Close")
+@Autonomous(name = "Red_Far")
 public class Red_Far extends LinearOpMode {
 
     private final GearhoundsHardware robot = new GearhoundsHardware();

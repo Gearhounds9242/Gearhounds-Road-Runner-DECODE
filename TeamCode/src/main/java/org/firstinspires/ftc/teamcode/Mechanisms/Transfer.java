@@ -25,6 +25,10 @@ public class Transfer {
         return new Transfer.runTransfer();
     }
 
+    public Action stopTransfer() {
+        return new Transfer.stopTransfer();
+    }
+
     public class tapTransfer implements Action {
         int currentPos;
         int targetPos;
@@ -64,8 +68,19 @@ public class Transfer {
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
 
             robot.transfer.setPower(1);
-            return true;
+            return false;
 
+
+        }
+    }
+
+    public class stopTransfer implements Action {
+
+
+        @Override
+        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            robot.transfer.setPower(0);
+            return false;
 
         }
     }

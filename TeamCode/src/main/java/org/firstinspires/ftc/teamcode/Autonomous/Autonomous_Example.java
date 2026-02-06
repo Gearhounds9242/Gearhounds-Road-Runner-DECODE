@@ -96,6 +96,8 @@ You may see the word "Pose thrown around a lot. Pose is essentially just a way o
     /// For the rest of the commands look inside the folder org.firstin...teamcode/Mechanisms
 // TODO: 1/30/2026 eventually there needs to be an example file for creating mechanisms
 // TODO: 2/4/20206 need to make example of how to flip the auto for the other side
+        //false makes it exit the loop
+        //true makes it run again
 
 
     public class SavePose implements InstantFunction {

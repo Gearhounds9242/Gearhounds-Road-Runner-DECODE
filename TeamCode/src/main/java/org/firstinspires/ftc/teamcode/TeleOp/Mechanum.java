@@ -15,6 +15,10 @@ import com.seattlesolvers.solverslib.controller.PIDFController;
 import com.seattlesolvers.solverslib.util.InterpLUT;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Position;
+import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Utilities.GearhoundsHardware;
 import org.firstinspires.ftc.teamcode.Utilities.PoseStorage;
@@ -45,17 +49,17 @@ public class Mechanum extends OpMode {
     public static double Bottom_Target_Speed = 2000.0;
     public static double shift = 1.0;
     // Drop servo + ball count logic
-    public static double rotationFactor = 0.05;
+    public static double rotationFactor = -0.03;
     public static double aimTolorance = 1;
     public static int ballNumber = 0;
     public static double offset = 0;
-    public static double top_P = 3;
+    public static double top_P = 2;
     public static double top_I = 0;
-    public static double top_D = 0.3;
-    public static double top_F = 2.875;
-    public static double bottom_P = 3;
+    public static double top_D = 0;
+    public static double top_F = 1;
+    public static double bottom_P = 2;
     public static double bottom_I = 0;
-    public static double bottom_D = 0.3;
+    public static double bottom_D = 0;
     public static double bottom_F = 1;
     public static double rightLightColor = 0;
     public static double leftLightColor = 0;
@@ -69,7 +73,7 @@ public class Mechanum extends OpMode {
     public static double bearing = 0;
     public static double shooterTolerance;
     public static double transfer_velocity = 2000;
-    static double ROLLER_VELOCITY_TOLERANCE = 5;
+    static double ROLLER_VELOCITY_TOLERANCE = 65;
     private final GearhoundsHardware robot = new GearhoundsHardware();
     private final ElapsedTime runtime = new ElapsedTime();
     public boolean canSeeTag;
@@ -91,6 +95,10 @@ public class Mechanum extends OpMode {
     private AprilTagProcessor tagProcessor;
     private VisionPortal visionPortal;
     private MecanumDrive drive;
+    private Position cameraPosition = new Position(DistanceUnit.INCH,
+            0, 0, 0, 0);
+    private YawPitchRollAngles cameraOrientation = new YawPitchRollAngles(AngleUnit.DEGREES,
+            0, 180, 0, 0);
 
     @Override
     public void init() {
@@ -102,31 +110,19 @@ public class Mechanum extends OpMode {
 
         velocityTopLut.add(-1, 0);
         velocityTopLut.add(0, 0);
-        velocityTopLut.add(46, 1400);
-        velocityTopLut.add(53, 1300);
-//        velocityTopLut.add(70, 1270);
-//        velocityTopLut.add(118, 1400);
-//        velocityTopLut.add(53,1310);
-        velocityTopLut.add(70, 1250);
-//        velocityTopLut.add(69,1050);
-
-        velocityTopLut.add(140, 1400);
+        velocityTopLut.add(58,1200);
+        velocityTopLut.add(75.5,1080);
+        velocityTopLut.add(86,1080);
+        velocityTopLut.add(117,1180);
         velocityTopLut.add(190, 1400);
         velocityTopLut.createLUT();
 //
         velocityBottomLut.add(-1, 0);
         velocityBottomLut.add(0, 0);
-        velocityBottomLut.add(46, 1400);
-        velocityBottomLut.add(53, 1300);
-//        velocityBottomLut.add(70, 1270);
-//
-//        velocityBottomLut.add(118, 1400);
-
-//        velocityBottomLut.add(53,1310);
-        velocityBottomLut.add(70, 1250);
-//        velocityBottomLut.add(69,1050);
-
-        velocityBottomLut.add(140, 1400);
+        velocityBottomLut.add(58,1080);
+        velocityBottomLut.add(75.5,1080);
+        velocityBottomLut.add(86,1080);
+        velocityBottomLut.add(117,1180);
         velocityBottomLut.add(190, 1400);
         velocityBottomLut.createLUT();
 
@@ -136,6 +132,7 @@ public class Mechanum extends OpMode {
                 .setDrawTagID(true)
                 .setDrawTagOutline(true)
                 .setLensIntrinsics(539.0239404, 539.0239404, 316.450283269, 236.36479005)
+                .setCameraPose(cameraPosition,cameraOrientation)
                 .build();
 
         // Vision portal
@@ -191,10 +188,10 @@ public class Mechanum extends OpMode {
 //        packet.put("TopCurrentA", robot.TopMotor.getCurrent(CurrentUnit.AMPS));
 //        packet.put("BottomCurrentA", robot.BottomMotor.getCurrent(CurrentUnit.AMPS));
 //        packet.put("IntakeRPM", (robot.intake.getVelocity() / 28) * 60);
-//        packet.put("BottomVelocity", robot.BottomMotor.getVelocity());
-//        packet.put("TopVelocity", robot.TopMotor.getVelocity());
-//        packet.put("TopTarget", Top_Target_Speed);
-//        packet.put("BottomTarget", Bottom_Target_Speed);
+        packet.put("BottomVelocity", robot.BottomMotor.getVelocity());
+        packet.put("TopVelocity", robot.TopMotor.getVelocity());
+        packet.put("TopTarget", Top_Target_Speed);
+        packet.put("BottomTarget", Bottom_Target_Speed);
         dashboard.sendTelemetryPacket(packet);
 
 //        if (gamepad1.left_bumper) shift = 0.3; // slow mode
@@ -224,7 +221,7 @@ public class Mechanum extends OpMode {
             rightLightColor = 0;
         }
 
-        if (Math.abs(bearing) < 3) {
+        if ((Math.abs(bearing) < 3) && bearing >= 0.1) {
             leftLightColor = 0.388;
             rightLightColor = 0.388;
         } else {
@@ -257,10 +254,11 @@ public class Mechanum extends OpMode {
         if (gamepad1.right_trigger > 0.1) {
             robot.intake.setPower(1);
         }
+        else {
+            robot.intake.setPower(0);
+        }
         if (gamepad1.y) {
-            robot.intake.setVelocity(-Intake_Speed);
-        } else {
-            robot.intake.setPower(0.3);
+            robot.intake.setPower(-1);
         }
 
 
@@ -322,12 +320,12 @@ public class Mechanum extends OpMode {
             robot.transfer.setPower(0);
         }
 
-        if (gamepad2.psWasPressed() && autoPower) {
+        if (gamepad2.psWasPressed() && autoPower == true) {
             autoPower = false;
             leftLightDeafualtColor = 0.333;
             rightLightDeafualtColor = 0.333;
         }
-        if (gamepad2.psWasPressed() && !autoPower) {
+        if (gamepad2.shareWasPressed() && autoPower == false) {
             autoPower = true;
             leftLightDeafualtColor = 0;
             rightLightDeafualtColor = 0;
@@ -340,11 +338,9 @@ CAMERA STUFF
  */
         if (gamepad1.dpadRightWasPressed() /*|| gamepad2.dpadRightWasPressed()*/) {
             TARGET_ID = 24;
-            offset = -3;
         }
         if (gamepad1.dpadLeftWasPressed()/* || gamepad2.dpadLeftWasPressed()*/) {
             TARGET_ID = 20;
-            offset = 2;
         }
         // Get detections
         List<AprilTagDetection> detections = tagProcessor.getDetections();
