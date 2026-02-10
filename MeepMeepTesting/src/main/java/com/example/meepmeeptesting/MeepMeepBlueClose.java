@@ -22,7 +22,7 @@ public class MeepMeepBlueClose {
         myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(-50, -50, Math.toRadians(146.25)))
                 ///go to shoot location first time
                 .splineToConstantHeading(new Vector2d(-49, -49), Math.toRadians(58.5))
-                .strafeToSplineHeading(new Vector2d(-10,-10), Math.toRadians(223.5))
+                .strafeToLinearHeading(new Vector2d(-11,-11), Math.toRadians(223.5))
 
                 .waitSeconds(2)
 
@@ -41,7 +41,7 @@ public class MeepMeepBlueClose {
 //                )
                 ///go to 1st spike mark
                 .strafeToSplineHeading(new Vector2d(-11.5,-29.5), Math.toRadians(270))
-                .splineToConstantHeading(new Vector2d(-11.5, -53.5), Math.toRadians(-90))
+                .splineToConstantHeading(new Vector2d(-11.5, -53.), Math.toRadians(-90))
 //                //tap transfer
 ///                .stopAndAdd(transfer.tapTransfer())
                 .strafeToSplineHeading(new Vector2d(-10,-10), Math.toRadians(223.5))
@@ -63,7 +63,7 @@ public class MeepMeepBlueClose {
 //                )
 
 
-                .strafeToSplineHeading(new Vector2d(11.5, -29), Math.toRadians(270))
+                .strafeToSplineHeading(new Vector2d(11.5, -29), Math.toRadians(275))
                 .strafeToConstantHeading(new Vector2d(11.5,-60))
                 .strafeToConstantHeading(new Vector2d(11.5,-29))
                 .strafeToSplineHeading(new Vector2d(-10,-10), Math.toRadians(223.5))
