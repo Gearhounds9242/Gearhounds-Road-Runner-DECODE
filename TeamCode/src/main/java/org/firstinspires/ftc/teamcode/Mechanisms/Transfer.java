@@ -32,7 +32,7 @@ public class Transfer {
     public class tapTransfer implements Action {
         int currentPos;
         int targetPos;
-        int howMuchToTap = 100;
+        int howMuchToTap = 150;
         int timeout = 1;
         ElapsedTime timer;
 
