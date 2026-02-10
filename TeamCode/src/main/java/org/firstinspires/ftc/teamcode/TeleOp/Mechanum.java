@@ -194,8 +194,8 @@ public class Mechanum extends OpMode {
         packet.put("BottomTarget", Bottom_Target_Speed);
         dashboard.sendTelemetryPacket(packet);
 
-//        if (gamepad1.left_bumper) shift = 0.3; // slow mode
-//        if (gamepad1.right_bumper) shift = 1.0; // full speed
+        if (gamepad1.left_bumper) shift = 0.3; // slow mode
+        if (gamepad1.right_bumper) shift = 1.0; // full speed
 
 //        if (((robot.TopMotor.getVelocity() == topOutput) && (bearing < 3 || bearing > -3) && (robot.BottomMotor.getVelocity() == bottomOutput))) {
 //            leftLightColor = 0.5;
@@ -248,6 +248,15 @@ public class Mechanum extends OpMode {
         }
         if (rightLightColor <= 0) {
             robot.rightLight.setPosition(rightLightDeafualtColor);
+        }
+
+
+
+        if (gamepad1.dpadUpWasPressed()){
+            offset += 1;
+        }
+        if (gamepad1.dpadDownWasPressed()){
+            offset -= 1;
         }
 
 

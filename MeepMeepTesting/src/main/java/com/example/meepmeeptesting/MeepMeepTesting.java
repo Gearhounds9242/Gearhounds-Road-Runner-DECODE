@@ -4,8 +4,10 @@ import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.TranslationalVelConstraint;
 import com.acmerobotics.roadrunner.Vector2d;
+import com.acmerobotics.roadrunner.VelConstraint;
 import com.noahbres.meepmeep.MeepMeep;
 import com.noahbres.meepmeep.roadrunner.DefaultBotBuilder;
+import com.noahbres.meepmeep.roadrunner.DriveTrainType;
 import com.noahbres.meepmeep.roadrunner.entity.RoadRunnerBotEntity;
 
 public class MeepMeepTesting {
@@ -15,10 +17,16 @@ public class MeepMeepTesting {
         RoadRunnerBotEntity myBot = new DefaultBotBuilder(meepMeep)
                 // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
                 .setConstraints(120, 120, Math.toRadians(180), Math.toRadians(130), 15.5)
+//                .setDimensions()
                 .build();
 //        myBot.setDimensions()
-        myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(60, 15, Math.toRadians(180)))
-                .strafeToLinearHeading(new Vector2d(55,-15),Math.toRadians(-160))
+        myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(-24, 48, Math.toRadians(0)))
+                .splineTo(new Vector2d(48.00, -22), Math.atan2(
+                        -22 - 48,
+                        48 - (-24)
+                ))
+
+
                 .build());
 
 
