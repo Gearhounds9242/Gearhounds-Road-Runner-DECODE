@@ -46,6 +46,10 @@ public class Red_Far extends LinearOpMode {
 
         waitForStart();
 
+
+
+
+
         if (isStopRequested()) return;
         Actions.runBlocking(
                 drive.actionBuilder(startPose)
@@ -78,7 +82,8 @@ public class Red_Far extends LinearOpMode {
                                         transfer.stopTransfer(),
                                         shooter.stopShooter()
                                 )
-                        )                        .splineTo(new Vector2d(12,30), Math.toRadians(90))
+                        )
+                        .splineTo(new Vector2d(12,30), Math.toRadians(90))
                         .strafeTo(new Vector2d(12, 60))
                 .stopAndAdd(intake.runIntake(1,0.1))
                         .stopAndAdd(intake.stopIntake())
@@ -97,6 +102,26 @@ public class Red_Far extends LinearOpMode {
                                 )
                         )
 
+                        .splineToSplineHeading(new Pose2d(60, 52.5, Math.toRadians(90)), Math.toRadians(0))
+                        .stopAndAdd(intake.runIntake(1,0.1))
+
+                        .strafeTo(new Vector2d(60, 60))
+                        .strafeTo(new Vector2d(60, 45))
+                        .stopAndAdd(intake.stopIntake())
+
+                        .strafeToSplineHeading(new Vector2d(55, 14), Math.toRadians(160.7))
+                        .stopAndAdd(
+                                new SequentialAction(
+                                        new ParallelAction(
+                                                intake.runIntake(1,1),
+                                                shooter.shootSequence(topVelocity, bottomVelocity, 3, 1, 1)
+                                        ),
+                                        transfer.runTransfer(),
+                                        new SleepAction(1),
+                                        transfer.stopTransfer(),
+                                        shooter.stopShooter()
+                                )
+                        )
 
                         .stopAndAdd(new SavePose())
                         .build());
