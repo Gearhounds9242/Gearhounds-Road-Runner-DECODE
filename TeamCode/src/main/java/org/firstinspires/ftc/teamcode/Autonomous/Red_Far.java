@@ -63,9 +63,8 @@ public class Red_Far extends LinearOpMode {
                                 )
                         )
                         .splineTo(new Vector2d(35,30), Math.toRadians(90))
-                        .stopAndAdd(intake.runIntake(1,5))
+                        .stopAndAdd(intake.runIntake(1,0.1))
                         .strafeTo(new Vector2d(35, 60))
-                .strafeTo(new Vector2d(35, 45))
                         .stopAndAdd(intake.stopIntake())
                         .splineToSplineHeading(new Pose2d(55, 14, Math.toRadians(160.7)), Math.toRadians(0))
                         .stopAndAdd(
@@ -81,10 +80,10 @@ public class Red_Far extends LinearOpMode {
                                 )
                         )                        .splineTo(new Vector2d(12,30), Math.toRadians(90))
                         .strafeTo(new Vector2d(12, 60))
-                .stopAndAdd(intake.runIntake(1,5))
-        .strafeTo(new Vector2d(12, 45))
+                .stopAndAdd(intake.runIntake(1,0.1))
                         .stopAndAdd(intake.stopIntake())
                         .splineToSplineHeading(new Pose2d(55, 14, Math.toRadians(160.7)), Math.toRadians(0))
+                        .waitSeconds(1)
                         .stopAndAdd(
                                 new SequentialAction(
                                         new ParallelAction(
