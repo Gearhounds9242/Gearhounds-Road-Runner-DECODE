@@ -12,8 +12,10 @@ public class MeepMeepRedFar {
         MeepMeep meepMeep = new MeepMeep(500);
 
         RoadRunnerBotEntity myBot = new DefaultBotBuilder(meepMeep)
+                .setDimensions(16.5,18)
                 // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
-                .setConstraints(120, 120, Math.toRadians(180), Math.toRadians(130), 15.5)
+                .setConstraints(85, 70, Math.PI * 1.5, Math.PI * 1.5, 13)
+
                 .build();
 //        myBot.setDimensions()
         myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(60, 14, Math.toRadians(180)))
@@ -36,6 +38,12 @@ public class MeepMeepRedFar {
                 .splineToSplineHeading(new Pose2d(55, 14, Math.toRadians(160.7)), Math.toRadians(0))
                         .waitSeconds(3)
                 //              add shoot
+                        .splineToSplineHeading(new Pose2d(60, 52.5, Math.toRadians(90)), Math.toRadians(0))
+
+                .strafeTo(new Vector2d(60, 60))
+                .strafeTo(new Vector2d(60, 45))
+
+                .splineToSplineHeading(new Pose2d(55, 14, Math.toRadians(160.7)), Math.toRadians(0))
 
                 .build());
 
