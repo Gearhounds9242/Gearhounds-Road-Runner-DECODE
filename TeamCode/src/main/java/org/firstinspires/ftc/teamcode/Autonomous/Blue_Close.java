@@ -57,16 +57,17 @@ public class Blue_Close extends LinearOpMode {
 
                 ///shoot preload3
                 .stopAndAdd(
-                        new SequentialAction(
-                                new ParallelAction(
-                                        intake.runIntake(1,1),
-                                        shooter.shootSequence(topVelocity, bottomVelocity, 3, 1, 1)
-                                ),
+                        new ParallelAction(
+                                shooter.runShooter(1100,1100),
+                                intake.runIntake(1,1),
+                            new SequentialAction(
+                                new SleepAction(1),
                                 transfer.runTransfer(),
                                 new SleepAction(1),
                                 transfer.stopTransfer(),
                                 shooter.stopShooter()
                         )
+                )
                 )
                 ///go to 1st spike mark
                 .strafeToSplineHeading(new Vector2d(-11.5,-29.5), Math.toRadians(270))
@@ -79,14 +80,16 @@ public class Blue_Close extends LinearOpMode {
 
                 ///shoot 3
                 .stopAndAdd(
-                        new SequentialAction(
-                                new ParallelAction(
-                                        shooter.shootSequence(topVelocity, bottomVelocity, 3, 1, 1)
-                                ),
-                                transfer.runTransfer(),
-                                new SleepAction(1),
-                                transfer.stopTransfer(),
-                                shooter.stopShooter()
+                        new ParallelAction(
+                                shooter.runShooter(1100,1100),
+                                intake.runIntake(1,1),
+                                new SequentialAction(
+                                        new SleepAction(1),
+                                        transfer.runTransfer(),
+                                        new SleepAction(1),
+                                        transfer.stopTransfer(),
+                                        shooter.stopShooter()
+                                )
                         )
                 )
 
@@ -100,14 +103,16 @@ public class Blue_Close extends LinearOpMode {
 
 //                shoot 3
                 .stopAndAdd(
-                        new SequentialAction(
-                                new ParallelAction(
-                                        shooter.shootSequence(topVelocity, bottomVelocity, 3, 1, 1)
-                                ),
-                                transfer.runTransfer(),
-                                new SleepAction(1),
-                                transfer.stopTransfer(),
-                                shooter.stopShooter()
+                        new ParallelAction(
+                                shooter.runShooter(1100,1100),
+                                intake.runIntake(1,1),
+                                new SequentialAction(
+                                        new SleepAction(1),
+                                        transfer.runTransfer(),
+                                        new SleepAction(1),
+                                        transfer.stopTransfer(),
+                                        shooter.stopShooter()
+                                )
                         )
                 )
 
@@ -115,6 +120,7 @@ public class Blue_Close extends LinearOpMode {
                 .splineToSplineHeading(new Pose2d(-23.5, -50, Math.toRadians(270)), Math.toRadians(270))
 
 //                /// save pos for teleop
+                .stopAndAdd(shooter.stopShooter())
                 .stopAndAdd(new SavePose())
                 .build();
         Actions.runBlocking(new SequentialAction(path));

@@ -28,6 +28,7 @@ public class Shooter {
     private final GearhoundsHardware robot;
     private final PIDFController topRollerController;
     private final PIDFController bottomRollerController;
+    private boolean shooterDone;
 
     public Shooter(GearhoundsHardware robot) {
         this.robot = robot;
@@ -54,7 +55,6 @@ public class Shooter {
     public class RunShooter implements Action {
         private final double topRollerTargetVelocity;
         private final double bottomRollerTargetVelocity;
-        private int stableRollerLoops = 0;
 
         public RunShooter(double topRollerTargetVelocity, double bottomRollerTargetVelocity) {
             // confirm velocity values top and bottom rollers
@@ -78,17 +78,15 @@ public class Shooter {
             robot.TopMotor.setVelocity(topOutput);
             robot.BottomMotor.setVelocity(bottomOutput);
 
-            // check to see how close we are to target velocity
-            boolean topRollerReady = Math.abs(topRollerTargetVelocity - topVelocity) < ROLLER_VELOCITY_TOLERANCE;
-            boolean bottomRollerReady = Math.abs(bottomRollerTargetVelocity - bottomVelocity) < ROLLER_VELOCITY_TOLERANCE;
 
-            // only exit if rollers have been stable for STABLE_ROLLER_LOOPS_REQUIREMENT
-            if (topRollerReady && bottomRollerReady) {
-                stableRollerLoops++;
-            } else {
-                stableRollerLoops = 0;
+
+
+            if (shooterDone == true){
+                shooterDone = false;
+                return false;
+            }else {
+                return true;
             }
-            return stableRollerLoops < STABLE_ROLLER_LOOPS_REQUIREMENT;
         }
     }
 
@@ -194,6 +192,7 @@ public class Shooter {
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
             robot.TopMotor.setVelocity(0);
             robot.BottomMotor.setVelocity(0);
+            shooterDone = true;
             return false;
         }
     }

@@ -1,12 +1,9 @@
 package org.firstinspires.ftc.teamcode.Autonomous;
 
 
-import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.InstantFunction;
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
-import com.acmerobotics.roadrunner.SequentialAction;
-import com.acmerobotics.roadrunner.SleepAction;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -15,6 +12,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Mechanisms.Intake;
 import org.firstinspires.ftc.teamcode.Mechanisms.Shooter;
+import org.firstinspires.ftc.teamcode.Mechanisms.Transfer;
 import org.firstinspires.ftc.teamcode.Utilities.GearhoundsHardware;
 import org.firstinspires.ftc.teamcode.Utilities.PoseStorage;
 
@@ -37,23 +35,24 @@ public class Run_Shooter extends LinearOpMode {
         drive = new MecanumDrive(hardwareMap, startPose);
         Shooter shooter = new Shooter(robot);
         Intake intake = new Intake(robot);
+        Transfer transfer = new Transfer(robot);
+
 
         waitForStart();
 
+
         if (isStopRequested()) return;
-//        Action path = drive.actionBuilder(startPose)
-//                .stopAndAdd(shooter.runShooter(800,800))
-//                .build();
-//        Actions.runBlocking(new SequentialAction(path));
-
-
-        Actions.runBlocking(new SequentialAction(
-                        shooter.runShooter(800, 800)
-                )
-        ); // end Actions.runBlocking action sequence
+        Actions.runBlocking(
+                drive.actionBuilder(startPose)
+                        .stopAndAdd(
+                                new ParallelAction(
+                                        shooter.runShooter(800, 800)
+                                )
+                        )
+                        .stopAndAdd(new SavePose())
+                        .build());
 
     }
-
 
     /// Please don't go messing around in here if you don't know what you are doing proceed with CAUTION
 
