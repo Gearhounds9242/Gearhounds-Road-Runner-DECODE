@@ -19,7 +19,7 @@ public class MeepMeepRedFar {
                 .build();
 //        myBot.setDimensions()
         myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(60, 14, Math.toRadians(180)))
-                .splineToSplineHeading(new Pose2d(55, 14, Math.toRadians(160.7)), Math.toRadians(0))
+                .splineToSplineHeading(new Pose2d(55, 14, Math.toRadians(157)), Math.toRadians(0))
                         .waitSeconds(3)
 //              add shoot
                 .splineTo(new Vector2d(35,30), Math.toRadians(90))
