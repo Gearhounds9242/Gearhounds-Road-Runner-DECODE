@@ -190,8 +190,8 @@ public class Shooter {
     public class StopShooter implements Action {
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-            robot.TopMotor.setVelocity(0);
-            robot.BottomMotor.setVelocity(0);
+            robot.TopMotor.setPower(0);
+            robot.BottomMotor.setPower(0);
             shooterDone = true;
             return false;
         }

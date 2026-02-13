@@ -53,11 +53,11 @@ public class Mechanum extends OpMode {
     public static double aimTolorance = 1;
     public static int ballNumber = 0;
     public static double offset = 0;
-    public static double top_P = 2;
+    public static double top_P = 3.3;
     public static double top_I = 0;
     public static double top_D = 0;
     public static double top_F = 1;
-    public static double bottom_P = 2;
+    public static double bottom_P = 3.3;
     public static double bottom_I = 0;
     public static double bottom_D = 0;
     public static double bottom_F = 1;
@@ -110,19 +110,19 @@ public class Mechanum extends OpMode {
 
         velocityTopLut.add(-1, 0);
         velocityTopLut.add(0, 0);
-        velocityTopLut.add(58,1200);
-        velocityTopLut.add(75.5,1080);
-        velocityTopLut.add(86,1080);
-        velocityTopLut.add(117,1180);
+        velocityTopLut.add(66,1125);
+        velocityTopLut.add(86,1125);
+        velocityTopLut.add(125.5,1150);
+        velocityTopLut.add(134.5,1241);
         velocityTopLut.add(190, 1400);
         velocityTopLut.createLUT();
 //
         velocityBottomLut.add(-1, 0);
         velocityBottomLut.add(0, 0);
-        velocityBottomLut.add(58,1080);
-        velocityBottomLut.add(75.5,1080);
-        velocityBottomLut.add(86,1080);
-        velocityBottomLut.add(117,1180);
+        velocityBottomLut.add(66,1200);
+        velocityBottomLut.add(86,1125);
+        velocityBottomLut.add(125.5,1150);
+        velocityBottomLut.add(134.5,1241);
         velocityBottomLut.add(190, 1400);
         velocityBottomLut.createLUT();
 
@@ -194,8 +194,8 @@ public class Mechanum extends OpMode {
         packet.put("BottomTarget", Bottom_Target_Speed);
         dashboard.sendTelemetryPacket(packet);
 
-        if (gamepad1.left_bumper) shift = 0.3; // slow mode
-        if (gamepad1.right_bumper) shift = 1.0; // full speed
+//        if (gamepad1.left_bumper) shift = 0.3; // slow mode
+//        if (gamepad1.right_bumper) shift = 1.0; // full speed
 
 //        if (((robot.TopMotor.getVelocity() == topOutput) && (bearing < 3 || bearing > -3) && (robot.BottomMotor.getVelocity() == bottomOutput))) {
 //            leftLightColor = 0.5;
@@ -213,7 +213,7 @@ public class Mechanum extends OpMode {
 //        }
 
 
-        if (topReady && bottomReady) {
+        if (topReady == true && bottomReady == true) {
             leftLightColor = 0.583;
             rightLightColor = 0.583;
         } else {
