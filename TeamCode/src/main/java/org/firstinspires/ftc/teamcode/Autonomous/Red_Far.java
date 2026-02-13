@@ -1,4 +1,3 @@
-
 package org.firstinspires.ftc.teamcode.Autonomous;
 
 
@@ -24,8 +23,8 @@ public class Red_Far extends LinearOpMode {
 
     private final GearhoundsHardware robot = new GearhoundsHardware();
 
-    int topVelocity = 1135;
-    int bottomVelocity = 1080;
+    int topVelocity = 1215;
+    int bottomVelocity = 1215;
     MecanumDrive drive;
     // Starting pose
     Pose2d startPose = new Pose2d(new Vector2d(60, 14), Math.toRadians(180));
@@ -47,84 +46,87 @@ public class Red_Far extends LinearOpMode {
         waitForStart();
 
 
-
-
-
         if (isStopRequested()) return;
         Actions.runBlocking(
                 drive.actionBuilder(startPose)
-                        .splineToSplineHeading(new Pose2d(55, 14, Math.toRadians(160.7)), Math.toRadians(0))
+                        .strafeToSplineHeading(new Vector2d(55, 14), Math.toRadians(157))
                         .stopAndAdd(
-                                new SequentialAction(
-                                        new ParallelAction(
-                                                intake.runIntake(1,1),
-                                                shooter.shootSequence(topVelocity, bottomVelocity, 3, 1, 1)
-                                        ),
-                                        transfer.runTransfer(),
-                                        new SleepAction(1),
-                                        transfer.stopTransfer(),
-                                        shooter.stopShooter()
+                                new ParallelAction(
+                                        shooter.runShooter(topVelocity,bottomVelocity),
+                                        intake.runIntake(1,1),
+                                        new SequentialAction(
+                                                new SleepAction(1),
+                                                transfer.runTransfer(),
+                                                new SleepAction(1),
+                                                transfer.stopTransfer(),
+                                                shooter.stopShooter()
+                                        )
                                 )
                         )
-                        .splineTo(new Vector2d(35,30), Math.toRadians(90))
-                        .stopAndAdd(intake.runIntake(1,0.1))
+                        .splineTo(new Vector2d(35, 25), Math.toRadians(90))
+//                        .stopAndAdd(intake.runIntake(1, 0.1))
                         .strafeTo(new Vector2d(35, 60))
-                        .stopAndAdd(intake.stopIntake())
-                        .splineToSplineHeading(new Pose2d(55, 14, Math.toRadians(160.7)), Math.toRadians(0))
+//                        .stopAndAdd(intake.stopIntake())
+                        .strafeToSplineHeading(new Vector2d(55, 14), Math.toRadians(157))
                         .stopAndAdd(
-                                new SequentialAction(
-                                        new ParallelAction(
-                                                intake.runIntake(1,1),
-                                                shooter.shootSequence(topVelocity, bottomVelocity, 3, 1, 1)
-                                        ),
-                                        transfer.runTransfer(),
-                                        new SleepAction(1),
-                                        transfer.stopTransfer(),
-                                        shooter.stopShooter()
+                                new ParallelAction(
+                                        shooter.runShooter(topVelocity,bottomVelocity),
+//                                        intake.runIntake(1,1),
+                                        new SequentialAction(
+                                                new SleepAction(1),
+                                                transfer.runTransfer(),
+                                                new SleepAction(1),
+                                                transfer.stopTransfer(),
+                                                shooter.stopShooter()
+                                        )
                                 )
                         )
-                        .splineTo(new Vector2d(12,30), Math.toRadians(90))
+                        .splineTo(new Vector2d(12, 30), Math.toRadians(90))
                         .strafeTo(new Vector2d(12, 60))
-                .stopAndAdd(intake.runIntake(1,0.1))
-                        .stopAndAdd(intake.stopIntake())
-                        .splineToSplineHeading(new Pose2d(55, 14, Math.toRadians(160.7)), Math.toRadians(0))
+//                        .stopAndAdd(intake.runIntake(1, 0.1))
+//                        .stopAndAdd(intake.stopIntake())
+                        .strafeToSplineHeading(new Vector2d(55, 14), Math.toRadians(157))
                         .waitSeconds(1)
                         .stopAndAdd(
-                                new SequentialAction(
-                                        new ParallelAction(
-                                                intake.runIntake(1,1),
-                                                shooter.shootSequence(topVelocity, bottomVelocity, 3, 1, 1)
-                                        ),
-                                        transfer.runTransfer(),
-                                        new SleepAction(1),
-                                        transfer.stopTransfer(),
-                                        shooter.stopShooter()
+                                new ParallelAction(
+                                        shooter.runShooter(topVelocity, bottomVelocity),
+                                        intake.runIntake(1,1),
+                                        new SequentialAction(
+                                                new SleepAction(1),
+                                                transfer.runTransfer(),
+                                                new SleepAction(1),
+                                                transfer.stopTransfer(),
+                                                shooter.stopShooter()
+                                        )
                                 )
                         )
-
                         .splineToSplineHeading(new Pose2d(60, 52.5, Math.toRadians(90)), Math.toRadians(0))
-                        .stopAndAdd(intake.runIntake(1,0.1))
+//                        .stopAndAdd(intake.runIntake(1, 0.1))
 
                         .strafeTo(new Vector2d(60, 60))
                         .strafeTo(new Vector2d(60, 45))
-                        .stopAndAdd(intake.stopIntake())
+//                        .stopAndAdd(intake.stopIntake())
 
-                        .strafeToSplineHeading(new Vector2d(55, 14), Math.toRadians(160.7))
+                        .strafeTo(new Vector2d(52, 33))
+
+                        .strafeToSplineHeading(new Vector2d(55, 14), Math.toRadians(160))
                         .stopAndAdd(
-                                new SequentialAction(
-                                        new ParallelAction(
-                                                intake.runIntake(1,1),
-                                                shooter.shootSequence(topVelocity, bottomVelocity, 3, 1, 1)
-                                        ),
-                                        transfer.runTransfer(),
-                                        new SleepAction(1),
-                                        transfer.stopTransfer(),
-                                        shooter.stopShooter()
+                                new ParallelAction(
+                                        shooter.runShooter(topVelocity,bottomVelocity),
+                                        intake.runIntake(1,1),
+                                        new SequentialAction(
+                                                new SleepAction(1),
+                                                transfer.runTransfer(),
+                                                new SleepAction(1),
+                                                transfer.stopTransfer(),
+                                                shooter.stopShooter(),
+                                                intake.stopIntake()
+                                        )
                                 )
                         )
-
-                        .stopAndAdd(new SavePose())
-                        .build());
+                        .strafeTo(new Vector2d(35, 14))
+                                .stopAndAdd(new SavePose())
+                                .build());
 
 
     }
@@ -135,6 +137,8 @@ public class Red_Far extends LinearOpMode {
 
     public class SavePose implements InstantFunction {
         @Override
-        public void run() {PoseStorage.currentPose = drive.localizer.getPose();}
+        public void run() {
+            PoseStorage.currentPose = drive.localizer.getPose();
+        }
     }
 }
