@@ -1,8 +1,14 @@
 package org.firstinspires.ftc.teamcode.Autonomous;
 
 
+import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.InstantFunction;
+import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.Pose2dDual;
+import com.acmerobotics.roadrunner.PoseMap;
+import com.acmerobotics.roadrunner.SequentialAction;
+import com.acmerobotics.roadrunner.SleepAction;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -11,6 +17,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Mechanisms.Intake;
 import org.firstinspires.ftc.teamcode.Mechanisms.Shooter;
+import org.firstinspires.ftc.teamcode.Mechanisms.Transfer;
 import org.firstinspires.ftc.teamcode.Utilities.GearhoundsHardware;
 import org.firstinspires.ftc.teamcode.Utilities.PoseStorage;
 
@@ -18,9 +25,12 @@ import org.firstinspires.ftc.teamcode.Utilities.PoseStorage;
 public class Red_Close extends LinearOpMode {
 
     private final GearhoundsHardware robot = new GearhoundsHardware();
+    int topVelocity = 1125;
+    int bottomVelocity = 1200;
     MecanumDrive drive;
     // Starting pose
     Pose2d startPose = new Pose2d(new Vector2d(-50, 50), Math.toRadians(-146.25));
+    PoseMap mirrorPoseMap = pose -> new Pose2dDual<>(pose.position.x, pose.position.y.unaryMinus(), pose.heading.inverse());
 
 
     @Override
@@ -33,34 +43,87 @@ public class Red_Close extends LinearOpMode {
         drive = new MecanumDrive(hardwareMap, startPose);
         Shooter shooter = new Shooter(robot);
         Intake intake = new Intake(robot);
+        Transfer transfer = new Transfer(robot);
 
         waitForStart();
 
         if (isStopRequested()) return;
-        Actions.runBlocking(
-                drive.actionBuilder(startPose)
-                        .splineToSplineHeading(new Pose2d(-11.6, 11.6, Math.toRadians(139)), Math.toRadians(-4))
-                .waitSeconds(3)
-                //    shoot
-                .splineToSplineHeading(new Pose2d(-12,30, Math.toRadians(90)), Math.toRadians(0))
-                .waitSeconds(1)
-                .strafeTo(new Vector2d(-12, 52.5))
-                        .stopAndAdd(intake.runIntake(1,5))
-                .strafeTo(new Vector2d(-12, 50))
-                .splineToLinearHeading(new Pose2d(-12, 52.5, Math.toRadians(90)), Math.toRadians(-11))
-                .splineToSplineHeading(new Pose2d(-11.6, 11.6, Math.toRadians(139)), Math.toRadians(1))
-                // shoot
-                .waitSeconds(1)
-                .splineToSplineHeading(new Pose2d(12, 30, Math.toRadians(90)), Math.toRadians(0))
-                .strafeTo(new Vector2d(12, 60))
-                        .stopAndAdd(intake.runIntake(1,5))
-                .strafeTo(new Vector2d(12, 45))
-                .splineToSplineHeading(new Pose2d(-11.6, 11.6, Math.toRadians(139)), Math.toRadians(1))
-                // shoot
-                .waitSeconds(1)
-                .strafeTo(new Vector2d(12, 20))
+        Action path = drive.actionBuilder(startPose, mirrorPoseMap)
+///go to shoot location first time
+//                .splineToConstantHeading(new Vector2d(-49, -49), Math.toRadians(58.5))
+                .strafeToLinearHeading(new Vector2d(-19.5,-10), Math.toRadians(223.5))
 
-                        .build());
+//                .waitSeconds(0.5)
+
+                ///shoot preload3
+                .stopAndAdd(
+                        new ParallelAction(
+                                shooter.runShooter(topVelocity,bottomVelocity),
+                                intake.runIntake(1,1),
+                                new SequentialAction(
+                                        new SleepAction(1),
+                                        transfer.runTransfer(),
+                                        new SleepAction(1),
+                                        transfer.stopTransfer(),
+                                        shooter.stopShooter()
+                                )
+                        )
+                )
+                ///go to 1st spike mark
+                .strafeToSplineHeading(new Vector2d(-11.5,-29.5), Math.toRadians(270))
+                .splineToConstantHeading(new Vector2d(-11.5, -53.5), Math.toRadians(-90))
+//                //tap transfer
+                .stopAndAdd(transfer.tapTransfer())
+                .strafeToLinearHeading(new Vector2d(-19.5,-10), Math.toRadians(220))
+
+//                .waitSeconds(0.5)
+
+                ///shoot 3
+                .stopAndAdd(
+                        new ParallelAction(
+                                shooter.runShooter(topVelocity,bottomVelocity),
+                                intake.runIntake(1,1),
+                                new SequentialAction(
+                                        new SleepAction(1),
+                                        transfer.runTransfer(),
+                                        new SleepAction(1),
+                                        transfer.stopTransfer(),
+                                        shooter.stopShooter()
+                                )
+                        )
+                )
+
+
+                .strafeToSplineHeading(new Vector2d(13.5, -22), Math.toRadians(280))
+                .strafeToConstantHeading(new Vector2d(13.5,-60))
+                .strafeToConstantHeading(new Vector2d(13.5,-29))
+                .strafeToLinearHeading(new Vector2d(-19.5,-10), Math.toRadians(220))
+
+//                .waitSeconds(0.5)
+
+//                shoot 3
+                .stopAndAdd(
+                        new ParallelAction(
+                                shooter.runShooter(topVelocity,bottomVelocity+100),
+                                intake.runIntake(1,1),
+                                new SequentialAction(
+                                        new SleepAction(1),
+                                        transfer.runTransfer(),
+                                        new SleepAction(1),
+                                        transfer.stopTransfer(),
+                                        shooter.stopShooter()
+                                )
+                        )
+                )
+
+
+                .splineToSplineHeading(new Pose2d(-23.5, -50, Math.toRadians(270)), Math.toRadians(270))
+
+//                /// save pos for teleop
+                .stopAndAdd(shooter.stopShooter())
+                .stopAndAdd(new SavePose())
+                .build();
+        Actions.runBlocking(new SequentialAction(path));
 
 
     }
@@ -71,6 +134,8 @@ public class Red_Close extends LinearOpMode {
 
     public class SavePose implements InstantFunction {
         @Override
-        public void run() {PoseStorage.currentPose = drive.localizer.getPose();}
+        public void run() {
+            PoseStorage.currentPose = drive.localizer.getPose();
+        }
     }
 }
