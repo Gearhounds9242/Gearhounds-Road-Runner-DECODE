@@ -25,8 +25,8 @@ import org.firstinspires.ftc.teamcode.Utilities.PoseStorage;
 public class Blue_Close extends LinearOpMode {
 
     private final GearhoundsHardware robot = new GearhoundsHardware();
-    int topVelocity = 1135;
-    int bottomVelocity = 1080;
+    int topVelocity = 1125;
+    int bottomVelocity = 1200;
     MecanumDrive drive;
     // Starting pose
     Pose2d startPose = new Pose2d(new Vector2d(-50, -50), Math.toRadians(146.25));
@@ -51,14 +51,14 @@ public class Blue_Close extends LinearOpMode {
         Action path = drive.actionBuilder(startPose)
 ///go to shoot location first time
 //                .splineToConstantHeading(new Vector2d(-49, -49), Math.toRadians(58.5))
-                .strafeToLinearHeading(new Vector2d(-20,-12), Math.toRadians(223.5))
+                .strafeToLinearHeading(new Vector2d(-19.5,-10), Math.toRadians(223.5))
 
 //                .waitSeconds(0.5)
 
                 ///shoot preload3
                 .stopAndAdd(
                         new ParallelAction(
-                                shooter.runShooter(1100,1100),
+                                shooter.runShooter(topVelocity,bottomVelocity),
                                 intake.runIntake(1,1),
                             new SequentialAction(
                                 new SleepAction(1),
@@ -74,14 +74,14 @@ public class Blue_Close extends LinearOpMode {
                 .splineToConstantHeading(new Vector2d(-11.5, -53.5), Math.toRadians(-90))
 //                //tap transfer
                 .stopAndAdd(transfer.tapTransfer())
-                .strafeToSplineHeading(new Vector2d(-20,-12), Math.toRadians(223.5))
+                .strafeToLinearHeading(new Vector2d(-19.5,-10), Math.toRadians(220))
 
 //                .waitSeconds(0.5)
 
                 ///shoot 3
                 .stopAndAdd(
                         new ParallelAction(
-                                shooter.runShooter(1100,1100),
+                                shooter.runShooter(topVelocity,bottomVelocity),
                                 intake.runIntake(1,1),
                                 new SequentialAction(
                                         new SleepAction(1),
@@ -94,17 +94,17 @@ public class Blue_Close extends LinearOpMode {
                 )
 
 
-                .strafeToSplineHeading(new Vector2d(13.5, -26), Math.toRadians(275))
+                .strafeToSplineHeading(new Vector2d(13.5, -22), Math.toRadians(280))
                 .strafeToConstantHeading(new Vector2d(13.5,-60))
                 .strafeToConstantHeading(new Vector2d(13.5,-29))
-                .strafeToSplineHeading(new Vector2d(-20,-12), Math.toRadians(223.5))
+                .strafeToLinearHeading(new Vector2d(-19.5,-10), Math.toRadians(220))
 
 //                .waitSeconds(0.5)
 
 //                shoot 3
                 .stopAndAdd(
                         new ParallelAction(
-                                shooter.runShooter(1100,1100),
+                                shooter.runShooter(topVelocity,bottomVelocity+100),
                                 intake.runIntake(1,1),
                                 new SequentialAction(
                                         new SleepAction(1),
