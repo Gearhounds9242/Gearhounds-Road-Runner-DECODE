@@ -112,7 +112,7 @@ public class Mechanum extends OpMode {
         velocityTopLut.add(0, 0);
         velocityTopLut.add(66,1125);
         velocityTopLut.add(86,1125);
-        velocityTopLut.add(125.5,1150);
+        velocityTopLut.add(125,1170);
         velocityTopLut.add(134.5,1241);
         velocityTopLut.add(190, 1400);
         velocityTopLut.createLUT();
@@ -121,7 +121,7 @@ public class Mechanum extends OpMode {
         velocityBottomLut.add(0, 0);
         velocityBottomLut.add(66,1200);
         velocityBottomLut.add(86,1125);
-        velocityBottomLut.add(125.5,1150);
+        velocityBottomLut.add(125,1170);
         velocityBottomLut.add(134.5,1241);
         velocityBottomLut.add(190, 1400);
         velocityBottomLut.createLUT();
@@ -347,6 +347,7 @@ CAMERA STUFF
  */
         if (gamepad1.dpadRightWasPressed() /*|| gamepad2.dpadRightWasPressed()*/) {
             TARGET_ID = 24;
+            offset = 3.2;
         }
         if (gamepad1.dpadLeftWasPressed()/* || gamepad2.dpadLeftWasPressed()*/) {
             TARGET_ID = 20;
