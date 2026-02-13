@@ -104,10 +104,8 @@ public class Red_Far extends LinearOpMode {
 //                        .stopAndAdd(intake.runIntake(1, 0.1))
 
                         .strafeTo(new Vector2d(60, 60))
-                        .strafeTo(new Vector2d(60, 45))
 //                        .stopAndAdd(intake.stopIntake())
 
-                        .strafeTo(new Vector2d(52, 33))
 
                         .strafeToSplineHeading(new Vector2d(55, 14), Math.toRadians(160))
                         .stopAndAdd(
