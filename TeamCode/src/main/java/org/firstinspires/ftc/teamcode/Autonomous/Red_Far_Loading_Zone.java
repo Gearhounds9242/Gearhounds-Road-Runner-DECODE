@@ -54,8 +54,24 @@ public class Red_Far_Loading_Zone extends LinearOpMode {
         if (isStopRequested()) return;
         Actions.runBlocking(
                 drive.actionBuilder(startPose)
-                        .strafeToSplineHeading(new Vector2d(55, 14), Math.toRadians(160.7))
-                        .waitSeconds(0.5)
+                        .strafeToSplineHeading(new Vector2d(55, 14), Math.toRadians(156))
+                        .stopAndAdd(
+                                new ParallelAction(
+                                        shooter.runShooter(topVelocity,bottomVelocity),
+                                        intake.runIntake(1,0.1),
+                                        new SequentialAction(
+                                                new SleepAction(1),
+                                                transfer.runTransfer(),
+                                                new SleepAction(1),
+                                                transfer.stopTransfer(),
+                                                shooter.stopShooter()
+                                        )
+                                )
+                        )
+                        .strafeToSplineHeading(new Vector2d(60, 14), Math.toRadians(90))
+                        .strafeToSplineHeading(new Vector2d(60, 60), Math.toRadians(90))
+
+                        .strafeToSplineHeading(new Vector2d(55, 14), Math.toRadians(156))
                         .stopAndAdd(
                                 new ParallelAction(
                                         shooter.runShooter(topVelocity,bottomVelocity),
@@ -69,6 +85,47 @@ public class Red_Far_Loading_Zone extends LinearOpMode {
                                         )
                                 )
                         )
+                        .strafeToSplineHeading(new Vector2d(60, 14), Math.toRadians(90))
+                        .strafeToSplineHeading(new Vector2d(60, 60), Math.toRadians(90))
+
+                        .strafeToSplineHeading(new Vector2d(55, 14), Math.toRadians(156))
+                        .stopAndAdd(
+                                new ParallelAction(
+                                        shooter.runShooter(topVelocity,bottomVelocity),
+                                        intake.runIntake(1,1),
+                                        new SequentialAction(
+                                                new SleepAction(1),
+                                                transfer.runTransfer(),
+                                                new SleepAction(1),
+                                                transfer.stopTransfer(),
+                                                shooter.stopShooter()
+                                        )
+                                )
+                        )
+                        .strafeToSplineHeading(new Vector2d(60, 14), Math.toRadians(90))
+                        .strafeToSplineHeading(new Vector2d(60, 60), Math.toRadians(90))
+
+                        .strafeToSplineHeading(new Vector2d(55, 14), Math.toRadians(156))
+                        .stopAndAdd(
+                                new ParallelAction(
+                                        shooter.runShooter(topVelocity,bottomVelocity),
+                                        intake.runIntake(1,1),
+                                        new SequentialAction(
+                                                new SleepAction(1),
+                                                transfer.runTransfer(),
+                                                new SleepAction(1),
+                                                transfer.stopTransfer(),
+                                                shooter.stopShooter()
+                                        )
+                                )
+                        )
+
+                        .strafeToSplineHeading(new Vector2d(60, 14), Math.toRadians(90))
+                        .strafeToSplineHeading(new Vector2d(60, 60), Math.toRadians(90))
+                        .waitSeconds(1)
+
+
+                        .splineToSplineHeading(new Pose2d(30, 30, Math.toRadians(90)), Math.toRadians(0))
 
 
 
