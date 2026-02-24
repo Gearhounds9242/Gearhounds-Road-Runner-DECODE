@@ -10,6 +10,7 @@ import com.acmerobotics.roadrunner.PoseVelocity2d;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.seattlesolvers.solverslib.controller.PIDFController;
 import com.seattlesolvers.solverslib.util.InterpLUT;
@@ -20,6 +21,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Position;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
+import org.firstinspires.ftc.teamcode.Mechanisms.Interpolator;
 import org.firstinspires.ftc.teamcode.Utilities.GearhoundsHardware;
 import org.firstinspires.ftc.teamcode.Utilities.PoseStorage;
 import org.firstinspires.ftc.vision.VisionPortal;
@@ -86,11 +88,11 @@ public class Mechanum extends OpMode {
 //            .addStep(0.0, 0.0, 150)   // pause for 0.15 sec
 //            .addStep(0.0, 10.0, 300)   // strong rumble
 //            .build();
-//    Gamepad.RumbleEffect noEffect = new Gamepad.RumbleEffect.Builder()
-//            .addStep(5.0, 0.0, 80)   // strong rumble for 0.3 sec
-//            .addStep(0.0, 0.0, 150)   // pause for 0.15 sec
-//            .addStep(0.0, 5.0, 100)   // strong rumble
-//            .build();
+    Gamepad.RumbleEffect noEffect = new Gamepad.RumbleEffect.Builder()
+            .addStep(5.0, 0.0, 80)   // strong rumble for 0.3 sec
+            .addStep(0.0, 0.0, 150)   // pause for 0.15 sec
+            .addStep(0.0, 5.0, 100)   // strong rumble
+            .build();
     private FtcDashboard dashboard;
     private AprilTagProcessor tagProcessor;
     private VisionPortal visionPortal;
@@ -125,6 +127,16 @@ public class Mechanum extends OpMode {
         velocityBottomLut.add(134.5,1241);
         velocityBottomLut.add(190, 1400);
         velocityBottomLut.createLUT();
+
+        Interpolator interpolator = new Interpolator(8, 2.0);
+
+        interpolator.addPoint(0, 0, 10);
+        interpolator.addPoint(10, 0, 20);
+        interpolator.addPoint(0, 10, 30);
+        interpolator.addPoint(10, 10, 40);
+        interpolator.addPoint(5, 5, 25);
+
+        double result = interpolator.interpolate(4, 6);
 
         tagProcessor = new AprilTagProcessor.Builder()
                 .setDrawAxes(true)
@@ -212,6 +224,10 @@ public class Mechanum extends OpMode {
 //            rightLightColor = 0;
 //        }
 
+
+        if (gamepad1.ps){
+            drive.localizer.setPose(new Pose2d(60.5, 61, drive.localizer.getPose().heading.real));
+        }
 
         if (topReady == true && bottomReady == true) {
             leftLightColor = 0.583;
@@ -394,7 +410,7 @@ CAMERA STUFF
 ////            );
         }
         if (gamepad1.left_trigger > 0.9 && targetTag == null) {
-//            gamepad1.runRumbleEffect(noEffect);
+            gamepad1.runRumbleEffect(noEffect);
         }
 
 
@@ -438,6 +454,9 @@ CAMERA STUFF
         telemetry.addData("range", range);
 //        telemetry.addData("robotRange", robotRange);
         telemetry.addData("autopower", autoPower);
+        telemetry.addData("X",drive.localizer.getPose().position.x);
+        telemetry.addData("Y",drive.localizer.getPose().position.y);
+        telemetry.addData("Heading",drive.localizer.getPose().heading);
         telemetry.update();
     }
 
