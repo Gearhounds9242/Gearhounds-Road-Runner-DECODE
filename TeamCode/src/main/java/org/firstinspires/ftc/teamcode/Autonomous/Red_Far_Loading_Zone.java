@@ -19,6 +19,7 @@ import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Mechanisms.Intake;
 import org.firstinspires.ftc.teamcode.Mechanisms.Shooter;
 import org.firstinspires.ftc.teamcode.Mechanisms.Transfer;
+import org.firstinspires.ftc.teamcode.Mechanisms.Vision;
 import org.firstinspires.ftc.teamcode.Utilities.GearhoundsHardware;
 import org.firstinspires.ftc.teamcode.Utilities.PoseStorage;
 
@@ -48,6 +49,7 @@ public class Red_Far_Loading_Zone extends LinearOpMode {
         Shooter shooter = new Shooter(robot);
         Intake intake = new Intake(robot);
         Transfer transfer = new Transfer(robot);
+        Vision vision = new Vision(robot);
 
         waitForStart();
 
