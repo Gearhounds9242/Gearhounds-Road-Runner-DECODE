@@ -13,7 +13,7 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 import java.util.concurrent.TimeUnit;
 
 @TeleOp(name = "Vision Test")
-public class vision extends LinearOpMode {
+public class Vision extends LinearOpMode {
 
     public VisionPortal visionPortal;
     public AprilTagProcessor tagProcessor;

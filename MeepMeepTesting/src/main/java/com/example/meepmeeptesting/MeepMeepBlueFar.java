@@ -30,9 +30,6 @@ public class MeepMeepBlueFar {
 
 
 
-
-
-
         meepMeep.setBackground(MeepMeep.Background.FIELD_DECODE_OFFICIAL)
                 .setDarkMode(true)
                 .setBackgroundAlpha(0.95f)

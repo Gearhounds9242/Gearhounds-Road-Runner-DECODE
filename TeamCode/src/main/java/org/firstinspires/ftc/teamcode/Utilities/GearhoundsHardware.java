@@ -1,10 +1,6 @@
 package org.firstinspires.ftc.teamcode.Utilities;
 
 //import com.qualcomm.hardware.bosch.BNO055IMU i
-import static org.firstinspires.ftc.teamcode.TeleOp.Mechanum.top_D;
-import static org.firstinspires.ftc.teamcode.TeleOp.Mechanum.top_F;
-import static org.firstinspires.ftc.teamcode.TeleOp.Mechanum.top_I;
-import static org.firstinspires.ftc.teamcode.TeleOp.Mechanum.top_P;
 
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -13,9 +9,9 @@ import com.qualcomm.robotcore.hardware.DcMotorImplEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
-import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
@@ -35,12 +31,12 @@ public class GearhoundsHardware extends Hardware {
 */
 //    public Servo drop;
     public DcMotorEx intake;
-    public DcMotorEx TopMotor;
-    public DcMotorEx BottomMotor;
+    public DcMotorEx topMotor;
+    public DcMotorEx bottomMotor;
     public RevBlinkinLedDriver blinkin;
 
     //Comment back in when needed for vision
-//    public WebcamName webcamName;
+    public WebcamName webcam;
 //Drivetrain Members
     public DcMotorEx leftFront;
     public DcMotorEx leftBack;
@@ -91,7 +87,7 @@ public class GearhoundsHardware extends Hardware {
 //        blinkin = robotMap.get(RevBlinkinLedDriver.class, "blinkin");
 
 //Comment back in when needed for vision
-//        webcamName = robotMap.get(WebcamName.class, "Webcam 1");
+        webcam = robotMap.get(WebcamName.class, "Webcam 1");
         //Drivetrain Members
 
 //        drop = robotMap.get(Servo.class, "drop");
@@ -103,10 +99,10 @@ public class GearhoundsHardware extends Hardware {
         leftLight = robotMap.get(Servo.class,"leftLight");
         rightLight = robotMap.get(Servo.class,"rightLight");
 
-        TopMotor = robotMap.get(DcMotorEx.class, "topmotor");
-        TopMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-        BottomMotor = robotMap.get(DcMotorEx.class, "bottommotor");
-        BottomMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+        topMotor = robotMap.get(DcMotorEx.class, "topmotor");
+        topMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        bottomMotor = robotMap.get(DcMotorEx.class, "bottommotor");
+        bottomMotor.setDirection(DcMotorSimple.Direction.FORWARD);
 
 
         leftFront = robotMap.get(DcMotorEx.class, "leftFront");

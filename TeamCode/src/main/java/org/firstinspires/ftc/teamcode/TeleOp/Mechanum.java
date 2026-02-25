@@ -187,10 +187,10 @@ public class Mechanum extends OpMode {
         bottomShooterController.setPIDF(bottom_P, bottom_I, bottom_D, bottom_F);
 
 
-        double topOutput = topShooterController.calculate(robot.TopMotor.getVelocity(), Top_Target_Speed);
-        double bottomOutput = bottomShooterController.calculate(robot.BottomMotor.getVelocity(), Bottom_Target_Speed);
-        boolean topReady = Math.abs(Top_Target_Speed - robot.TopMotor.getVelocity()) < ROLLER_VELOCITY_TOLERANCE;
-        boolean bottomReady = Math.abs(Bottom_Target_Speed - robot.BottomMotor.getVelocity()) < ROLLER_VELOCITY_TOLERANCE;
+        double topOutput = topShooterController.calculate(robot.topMotor.getVelocity(), Top_Target_Speed);
+        double bottomOutput = bottomShooterController.calculate(robot.bottomMotor.getVelocity(), Bottom_Target_Speed);
+        boolean topReady = Math.abs(Top_Target_Speed - robot.topMotor.getVelocity()) < ROLLER_VELOCITY_TOLERANCE;
+        boolean bottomReady = Math.abs(Bottom_Target_Speed - robot.bottomMotor.getVelocity()) < ROLLER_VELOCITY_TOLERANCE;
 
         double autoTurn = 0;
 
@@ -200,8 +200,8 @@ public class Mechanum extends OpMode {
 //        packet.put("TopCurrentA", robot.TopMotor.getCurrent(CurrentUnit.AMPS));
 //        packet.put("BottomCurrentA", robot.BottomMotor.getCurrent(CurrentUnit.AMPS));
 //        packet.put("IntakeRPM", (robot.intake.getVelocity() / 28) * 60);
-        packet.put("BottomVelocity", robot.BottomMotor.getVelocity());
-        packet.put("TopVelocity", robot.TopMotor.getVelocity());
+        packet.put("BottomVelocity", robot.bottomMotor.getVelocity());
+        packet.put("TopVelocity", robot.topMotor.getVelocity());
         packet.put("TopTarget", Top_Target_Speed);
         packet.put("BottomTarget", Bottom_Target_Speed);
         dashboard.sendTelemetryPacket(packet);
@@ -288,15 +288,15 @@ public class Mechanum extends OpMode {
 
 
         if (Math.abs(gamepad2.right_trigger) > 0.1) {
-            robot.BottomMotor.setVelocity(bottomOutput);
+            robot.bottomMotor.setVelocity(bottomOutput);
         } else {
-            robot.BottomMotor.setPower(0.0);
+            robot.bottomMotor.setPower(0.0);
         }
 
         if (Math.abs(gamepad2.left_trigger) > 0.1) {
-            robot.TopMotor.setVelocity(topOutput);
+            robot.topMotor.setVelocity(topOutput);
         } else {
-            robot.TopMotor.setPower(0.0);
+            robot.topMotor.setPower(0.0);
         }
         if (gamepad2.dpadUpWasPressed()) {
             Top_Target_Speed += interval;

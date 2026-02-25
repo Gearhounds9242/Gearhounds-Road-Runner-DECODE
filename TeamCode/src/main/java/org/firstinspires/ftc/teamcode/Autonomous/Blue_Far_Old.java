@@ -30,32 +30,32 @@ public class Blue_Far_Old extends LinearOpMode {
     public class StartShooter implements InstantFunction {
         @Override
         public void run() {
-            robot.TopMotor.setVelocity(1690);
-            robot.BottomMotor.setVelocity(1690);
+            robot.topMotor.setVelocity(1690);
+            robot.bottomMotor.setVelocity(1690);
         }
     }
 
     public class StartShooterWeak implements InstantFunction {
         @Override
         public void run() {
-            robot.TopMotor.setVelocity(1680);
-            robot.BottomMotor.setVelocity(1680);
+            robot.topMotor.setVelocity(1680);
+            robot.bottomMotor.setVelocity(1680);
         }
     }
 
     public class StartShooterStrong implements InstantFunction {
         @Override
         public void run() {
-            robot.TopMotor.setVelocity(1720);
-            robot.BottomMotor.setVelocity(1720);
+            robot.topMotor.setVelocity(1720);
+            robot.bottomMotor.setVelocity(1720);
         }
     }
 
     public class StopShooter implements InstantFunction {
         @Override
         public void run() {
-            robot.TopMotor.setVelocity(0);
-            robot.BottomMotor.setVelocity(0);
+            robot.topMotor.setVelocity(0);
+            robot.bottomMotor.setVelocity(0);
         }
     }
 

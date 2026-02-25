@@ -44,16 +44,16 @@ public class Red_Far_Old extends LinearOpMode {
     public class StartShooter implements InstantFunction {
         @Override
         public void run() {
-            robot.TopMotor.setVelocity(Top_Target_Speed);
-            robot.BottomMotor.setVelocity(Bottom_Target_Speed);
+            robot.topMotor.setVelocity(Top_Target_Speed);
+            robot.bottomMotor.setVelocity(Bottom_Target_Speed);
         }
     }
 
     public class StopShooter implements InstantFunction {
         @Override
         public void run() {
-            robot.TopMotor.setVelocity(0);
-            robot.BottomMotor.setVelocity(0);
+            robot.topMotor.setVelocity(0);
+            robot.bottomMotor.setVelocity(0);
         }
     }
 
@@ -104,8 +104,8 @@ public class Red_Far_Old extends LinearOpMode {
 
         waitForStart();
         if (isStopRequested()) return;
-        double topOutput = topShooterController.calculate(robot.TopMotor.getVelocity(),Top_Target_Speed);
-        double bottomOutput = bottomShooterController.calculate(robot.BottomMotor.getVelocity(),Bottom_Target_Speed);
+        double topOutput = topShooterController.calculate(robot.topMotor.getVelocity(),Top_Target_Speed);
+        double bottomOutput = bottomShooterController.calculate(robot.bottomMotor.getVelocity(),Bottom_Target_Speed);
 
         Action path = drive.actionBuilder(startPose)
                 .strafeTo(new Vector2d(52,15))
