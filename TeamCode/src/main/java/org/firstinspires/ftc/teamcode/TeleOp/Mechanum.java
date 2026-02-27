@@ -11,6 +11,7 @@ import com.acmerobotics.roadrunner.Rotation2d;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.seattlesolvers.solverslib.controller.PIDFController;
 import com.seattlesolvers.solverslib.util.InterpLUT;
@@ -52,17 +53,17 @@ public class Mechanum extends OpMode {
     public static double shift = 1.0;
     // Drop servo + ball count logic
     public static double rotationFactor = -0.03;
-    public static double aimTolorance = 1;
+    public static double aimTolorance = 0.2;
     public static int ballNumber = 0;
     public static double offset = 0;
-    public static double top_P = 3.3;
+    public static double top_P = 0.0018;
     public static double top_I = 0;
     public static double top_D = 0;
-    public static double top_F = 1;
-    public static double bottom_P = 3.3;
+    public static double top_F = 0.0004;
+    public static double bottom_P = 0.0018;
     public static double bottom_I = 0;
     public static double bottom_D = 0;
-    public static double bottom_F = 1;
+    public static double bottom_F = 0.0004;
     public static double rightLightColor = 0;
     public static double leftLightColor = 0;
     public static double leftLightDeafualtColor = 0;
@@ -89,11 +90,11 @@ public class Mechanum extends OpMode {
 //            .addStep(0.0, 0.0, 150)   // pause for 0.15 sec
 //            .addStep(0.0, 10.0, 300)   // strong rumble
 //            .build();
-//    Gamepad.RumbleEffect noEffect = new Gamepad.RumbleEffect.Builder()
-//            .addStep(5.0, 0.0, 80)   // strong rumble for 0.3 sec
-//            .addStep(0.0, 0.0, 150)   // pause for 0.15 sec
-//            .addStep(0.0, 5.0, 100)   // strong rumble
-//            .build();
+    Gamepad.RumbleEffect noEffect = new Gamepad.RumbleEffect.Builder()
+            .addStep(5.0, 0.0, 80)   // strong rumble for 0.3 sec
+            .addStep(0.0, 0.0, 150)   // pause for 0.15 sec
+            .addStep(0.0, 5.0, 100)   // strong rumble
+            .build();
     private FtcDashboard dashboard;
     private AprilTagProcessor tagProcessor;
     private VisionPortal visionPortal;
@@ -229,6 +230,10 @@ public class Mechanum extends OpMode {
 //        }
 
 
+        if (gamepad1.ps){
+            drive.localizer.setPose(new Pose2d(60.5, 61, 180));
+        }
+
         if (topReady == true && bottomReady == true) {
             leftLightColor = 0.583;
             rightLightColor = 0.583;
@@ -288,13 +293,13 @@ public class Mechanum extends OpMode {
 
 
         if (Math.abs(gamepad2.right_trigger) > 0.1) {
-            robot.BottomMotor.setVelocity(bottomOutput);
+            robot.BottomMotor.setPower(bottomOutput);
         } else {
             robot.BottomMotor.setPower(0.0);
         }
 
         if (Math.abs(gamepad2.left_trigger) > 0.1) {
-            robot.TopMotor.setVelocity(topOutput);
+            robot.TopMotor.setPower(topOutput);
         } else {
             robot.TopMotor.setPower(0.0);
         }
@@ -363,7 +368,7 @@ CAMERA STUFF
  */
         if (gamepad1.dpadRightWasPressed() /*|| gamepad2.dpadRightWasPressed()*/) {
             TARGET_ID = 24;
-            offset = 3.2;
+            offset = 2.1;
         }
         if (gamepad1.dpadLeftWasPressed()/* || gamepad2.dpadLeftWasPressed()*/) {
             TARGET_ID = 20;
@@ -410,7 +415,7 @@ CAMERA STUFF
 ////            );
         }
         if (gamepad1.left_trigger > 0.9 && targetTag == null) {
-//            gamepad1.runRumbleEffect(noEffect);
+            gamepad1.runRumbleEffect(noEffect);
         }
 
 
@@ -454,6 +459,9 @@ CAMERA STUFF
         telemetry.addData("range", range);
 //        telemetry.addData("robotRange", robotRange);
         telemetry.addData("autopower", autoPower);
+        telemetry.addData("X",drive.localizer.getPose().position.x);
+        telemetry.addData("Y",drive.localizer.getPose().position.y);
+        telemetry.addData("Heading",drive.localizer.getPose().heading);
         telemetry.update();
     }
 

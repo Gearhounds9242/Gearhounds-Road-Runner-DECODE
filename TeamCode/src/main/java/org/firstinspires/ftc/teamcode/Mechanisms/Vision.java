@@ -50,6 +50,7 @@ public class Vision {
      */
     public Vision(GearhoundsHardware robot) {
         this.robot = robot;
+        WebcamName webcam = robot.webcam;
         tagProcessor = new AprilTagProcessor.Builder()
                 .setDrawAxes(true)
                 .setDrawTagID(true)
@@ -57,7 +58,8 @@ public class Vision {
                 .build();
 
         visionPortal = new VisionPortal.Builder()
-                .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
+                .setCamera(webcam)
+//                .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
                 .addProcessor(tagProcessor)
                 .setCameraResolution(new Size(640, 480))
                 .setStreamFormat(VisionPortal.StreamFormat.MJPEG)
