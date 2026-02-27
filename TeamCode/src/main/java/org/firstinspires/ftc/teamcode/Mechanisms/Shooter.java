@@ -4,8 +4,6 @@ import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.util.ElapsedTime;
 import com.seattlesolvers.solverslib.controller.PIDFController;
 
 import org.firstinspires.ftc.teamcode.Utilities.GearhoundsHardware;
@@ -65,14 +63,14 @@ public class Shooter {
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
             // get roller velocities
-            double topVelocity = robot.TopMotor.getVelocity();
-            double bottomVelocity = robot.BottomMotor.getVelocity();
+            double topVelocity = robot.topMotor.getVelocity();
+            double bottomVelocity = robot.bottomMotor.getVelocity();
 
             // update motor speeds with PIDF
             double topOutput = topRollerController.calculate(topVelocity, topRollerTargetVelocity);
             double bottomOutput = bottomRollerController.calculate(bottomVelocity, bottomRollerTargetVelocity);
-            robot.TopMotor.setVelocity(topOutput);
-            robot.BottomMotor.setVelocity(bottomOutput);
+            robot.topMotor.setVelocity(topOutput);
+            robot.bottomMotor.setVelocity(bottomOutput);
 
 
 
@@ -95,8 +93,8 @@ public class Shooter {
     public class StopShooter implements Action {
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-            robot.TopMotor.setPower(0);
-            robot.BottomMotor.setPower(0);
+            robot.topMotor.setPower(0);
+            robot.bottomMotor.setPower(0);
             shooterDone = true;
             return false;
         }
