@@ -7,6 +7,7 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.PoseVelocity2d;
+import com.acmerobotics.roadrunner.Rotation2d;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -20,6 +21,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Position;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
+import org.firstinspires.ftc.teamcode.Mechanisms.BilinearInterpolator;
 import org.firstinspires.ftc.teamcode.Utilities.GearhoundsHardware;
 import org.firstinspires.ftc.teamcode.Utilities.PoseStorage;
 import org.firstinspires.ftc.vision.VisionPortal;
@@ -74,6 +76,7 @@ public class Mechanum extends OpMode {
     public static double shooterTolerance;
     public static double transfer_velocity = 2000;
     static double ROLLER_VELOCITY_TOLERANCE = 65;
+    private double headingOffset;
     private final GearhoundsHardware robot = new GearhoundsHardware();
     private final ElapsedTime runtime = new ElapsedTime();
     public boolean canSeeTag;
@@ -107,6 +110,19 @@ public class Mechanum extends OpMode {
 //        TARGET_ID = 20;
         telemetry.addData("Status", "Initializing...");
         telemetry.update();
+
+
+        BilinearInterpolator cameraOffset = new BilinearInterpolator()
+                .add(0,  0,  0.30)
+                .add(0,  45, 0.45)
+                .add(0,  90, 0.60)
+                .add(12, 0,  0.50)
+                .add(12, 45, 0.65)
+                .add(12, 90, 0.80)
+                .add(24, 0,  0.70)
+                .add(24, 45, 0.85)
+                .add(24, 90, 1.00);
+
 
         velocityTopLut.add(-1, 0);
         velocityTopLut.add(0, 0);
@@ -398,28 +414,28 @@ CAMERA STUFF
         }
 
 
-        Pose2d pose = drive.localizer.getPose();// radians
-
 
 //TODO: Combine joystick movement and camera auto centering movement
 
 
-        drive.setDrivePowers(drive.localizer.getPose().heading.inverse().times(new PoseVelocity2d(
-                new Vector2d(
-                        (-gamepad1.left_stick_y * shift),
-                        (-gamepad1.left_stick_x * shift)
-                ),
-                (-gamepad1.right_stick_x * shift) + autoTurn
-        )));
-
+        // Options button - reset driver's forward reference
         if (gamepad1.optionsWasPressed()) {
-            drive.localizer.setPose(
-                    new Pose2d(
-                            drive.localizer.getPose().position,
-                            0.0
-                    )
-            );
+            // Store current robot heading as the new "forward" reference
+            // without touching the localizer pose at all
+            headingOffset = drive.localizer.getPose().heading.toDouble();
         }
+
+// Then in the drive.setDrivePowers call, apply the offset:
+        drive.setDrivePowers(
+                Rotation2d.exp(-drive.localizer.getPose().heading.toDouble() + headingOffset)
+                        .times(new PoseVelocity2d(
+                                new Vector2d(
+                                        (-gamepad1.left_stick_y * shift),
+                                        (-gamepad1.left_stick_x * shift)
+                                ),
+                                (-gamepad1.right_stick_x * shift) + autoTurn
+                        ))
+        );
 //        else if(gamepad1.left_stick_x <=0 && gamepad1.left_stick_y <=0 && gamepad1.right_stick_x <=0) {
 //                drive.setDrivePowers(
 //                        new PoseVelocity2d(new Vector2d(0, 0), 0)
