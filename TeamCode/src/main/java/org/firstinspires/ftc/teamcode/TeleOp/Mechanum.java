@@ -21,6 +21,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Position;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
+import org.firstinspires.ftc.teamcode.Drawing;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Mechanisms.BilinearInterpolator;
 import org.firstinspires.ftc.teamcode.Utilities.GearhoundsHardware;
@@ -69,7 +70,6 @@ public class Mechanum extends OpMode {
     public static double leftLightDeafualtColor = 0;
     public static double rightLightDeafualtColor = 0;
     public static double range;
-    public static double robotRange;
     public static boolean autoPower = true;
     public static double farOffset = 0;
     public static double closeOffset = 0;
@@ -111,7 +111,6 @@ public class Mechanum extends OpMode {
 //        TARGET_ID = 20;
         telemetry.addData("Status", "Initializing...");
         telemetry.update();
-
 
         BilinearInterpolator cameraOffset = new BilinearInterpolator()
                 .add(0,  0,  0.30)
@@ -181,16 +180,18 @@ public class Mechanum extends OpMode {
 
     @Override
     public void loop() {
-        if (robotRange > 0 && autoPower) {
-            Top_Target_Speed = velocityTopLut.get(robotRange);
-            Bottom_Target_Speed = velocityBottomLut.get(robotRange);
-        }
-        robotRange = range;
+        // Update Road Runner’s localization
+        drive.localizer.update();
+        Pose2d pose = drive.localizer.getPose();
+        //
 
 
         topShooterController.setPIDF(top_P, top_I, top_D, top_F);
         bottomShooterController.setPIDF(bottom_P, bottom_I, bottom_D, bottom_F);
-
+        if ((range > 0 && range < 189.9) && autoPower) {
+            Top_Target_Speed = velocityTopLut.get(range);
+            Bottom_Target_Speed = velocityBottomLut.get(range);
+        }
 
         double topOutput = topShooterController.calculate(robot.topMotor.getVelocity(), Top_Target_Speed);
         double bottomOutput = bottomShooterController.calculate(robot.bottomMotor.getVelocity(), Bottom_Target_Speed);
@@ -199,61 +200,17 @@ public class Mechanum extends OpMode {
 
         double autoTurn = 0;
 
-        TelemetryPacket packet = new TelemetryPacket();
-//        packet.put("TopMotorRPM", (robot.TopMotor.getVelocity() / 28.0) * 60.0);
-//        packet.put("BottomMotorRPM", (robot.BottomMotor.getVelocity() / 28.0) * 60.0);
-//        packet.put("TopCurrentA", robot.TopMotor.getCurrent(CurrentUnit.AMPS));
-//        packet.put("BottomCurrentA", robot.BottomMotor.getCurrent(CurrentUnit.AMPS));
-//        packet.put("IntakeRPM", (robot.intake.getVelocity() / 28) * 60);
-        packet.put("BottomVelocity", robot.bottomMotor.getVelocity());
-        packet.put("TopVelocity", robot.topMotor.getVelocity());
-        packet.put("TopTarget", Top_Target_Speed);
-        packet.put("BottomTarget", Bottom_Target_Speed);
-        dashboard.sendTelemetryPacket(packet);
-
-//        if (gamepad1.left_bumper) shift = 0.3; // slow mode
-//        if (gamepad1.right_bumper) shift = 1.0; // full speed
-
-//        if (((robot.TopMotor.getVelocity() == topOutput) && (bearing < 3 || bearing > -3) && (robot.BottomMotor.getVelocity() == bottomOutput))) {
-//            leftLightColor = 0.5;
-//            rightLightColor = 0.5;
-//        } else {
-//            leftLightColor = 0;
-//            rightLightColor = 0;
-//        }
-//        if (((robot.TopMotor.getVelocity() == topOutput) && (robot.BottomMotor.getVelocity() == bottomOutput))) {
-//            leftLightColor = 0.388;
-//            rightLightColor = 0.388;
-//        } else {
-//            leftLightColor = 0;
-//            rightLightColor = 0;
-//        }
-
-
-        if (gamepad1.ps){
-            drive.localizer.setPose(new Pose2d(60.5, 61, 180));
-        }
-
-        if (topReady == true && bottomReady == true) {
-            leftLightColor = 0.583;
-            rightLightColor = 0.583;
-        } else {
-            leftLightColor = 0;
-            rightLightColor = 0;
-        }
-
-        if ((Math.abs(bearing) < 3) && bearing >= 0.1) {
-            leftLightColor = 0.388;
-            rightLightColor = 0.388;
-        } else {
-            leftLightColor = 0;
-            rightLightColor = 0;
-        }
-
         if ((topReady && bottomReady) && (Math.abs(bearing) < 3)) {
             leftLightColor = 0.472;
             rightLightColor = 0.472;
+        } else if (topReady && bottomReady) {
+            leftLightColor = 0.583;
+            rightLightColor = 0.583;
+        } else if (Math.abs(bearing) < 3) {
+            leftLightColor = 0.388;
+            rightLightColor = 0.388;
         } else {
+            // Neither ready
             leftLightColor = 0;
             rightLightColor = 0;
         }
@@ -273,6 +230,28 @@ public class Mechanum extends OpMode {
 
 
 
+//        if (gamepad1.left_bumper) shift = 0.3; // slow mode
+//        if (gamepad1.right_bumper) shift = 1.0; // full speed
+
+        if (gamepad1.dpadRightWasPressed() || gamepad2.optionsWasPressed()) {
+            TARGET_ID = 24;
+            offset = 2.1;
+            isRedAlliance = true;
+        }
+        if (gamepad1.dpadLeftWasPressed() || gamepad2.shareWasPressed()) {
+            TARGET_ID = 20;
+            isRedAlliance = false;
+        }
+
+
+        if (gamepad1.ps && isRedAlliance){
+            drive.localizer.setPose(new Pose2d(60.5, -61, 90));
+        }
+        if (gamepad1.ps && !isRedAlliance){
+            drive.localizer.setPose(new Pose2d(60.5, 61, 270));
+        }
+
+
         if (gamepad1.dpadUpWasPressed()){
             offset += 1;
         }
@@ -283,12 +262,10 @@ public class Mechanum extends OpMode {
 
         if (gamepad1.right_trigger > 0.1) {
             robot.intake.setPower(1);
-        }
-        else {
-            robot.intake.setPower(0);
-        }
-        if (gamepad1.y) {
+        } else if (gamepad1.y) {
             robot.intake.setPower(-1);
+        } else {
+            robot.intake.setPower(0.2);
         }
 
 
@@ -303,28 +280,28 @@ public class Mechanum extends OpMode {
         } else {
             robot.topMotor.setPower(0.0);
         }
-        if (gamepad2.dpadUpWasPressed()) {
+        if (gamepad2.dpadUpWasPressed() && !autoPower) {
             Top_Target_Speed += interval;
         }
-        if (gamepad2.dpadDownWasPressed()) {
+        if (gamepad2.dpadDownWasPressed() && !autoPower) {
             Top_Target_Speed -= interval;
         }
 
-        if (gamepad2.dpadRightWasPressed()) {
+        if (gamepad2.dpadRightWasPressed() && !autoPower) {
             Bottom_Target_Speed += interval;
         }
-        if (gamepad2.dpadLeftWasPressed()) {
+        if (gamepad2.dpadLeftWasPressed() && !autoPower) {
             Bottom_Target_Speed -= interval;
         }
 
         if (gamepad2.x && !autoPower) {
-            Top_Target_Speed = 1270;
-            Bottom_Target_Speed = 1270;
+            Top_Target_Speed = 1120;
+            Bottom_Target_Speed = 1120;
         }
 
         if (gamepad2.b && !autoPower) {
-            Top_Target_Speed = 1400;
-            Bottom_Target_Speed = 1400;
+            Top_Target_Speed = 1190;
+            Bottom_Target_Speed = 1190;
 
         }
 
@@ -332,7 +309,7 @@ public class Mechanum extends OpMode {
 //        if(gamepad2.b && autoPower == true){
 //            offset = farOffset;
 //        }
-//        if(gamepad2.b && autoPower == true){
+//        if(gamepad2.x && autoPower == true){
 //            offset = closeOffset;
 //
 //        }
@@ -340,22 +317,19 @@ public class Mechanum extends OpMode {
             robot.transfer.setVelocity(transfer_velocity);
             robot.intake.setPower(1);
         }
-        if (gamepad1.right_bumper) {
-            robot.transfer.setVelocity(transfer_velocity);
 
-        }
         if (gamepad2.left_bumper || gamepad2.a) {
             robot.transfer.setPower(-transfer_velocity);
         } else {
             robot.transfer.setPower(0);
         }
 
-        if (gamepad2.psWasPressed() && autoPower == true) {
+        if (gamepad2.psWasReleased() && autoPower == true) {
             autoPower = false;
             leftLightDeafualtColor = 0.333;
             rightLightDeafualtColor = 0.333;
         }
-        if (gamepad2.shareWasPressed() && autoPower == false) {
+        if (gamepad2.psWasReleased() && autoPower == false) {
             autoPower = true;
             leftLightDeafualtColor = 0;
             rightLightDeafualtColor = 0;
@@ -366,13 +340,7 @@ public class Mechanum extends OpMode {
 /*
 CAMERA STUFF
  */
-        if (gamepad1.dpadRightWasPressed() /*|| gamepad2.dpadRightWasPressed()*/) {
-            TARGET_ID = 24;
-            offset = 2.1;
-        }
-        if (gamepad1.dpadLeftWasPressed()/* || gamepad2.dpadLeftWasPressed()*/) {
-            TARGET_ID = 20;
-        }
+
         // Get detections
         List<AprilTagDetection> detections = tagProcessor.getDetections();
 
@@ -395,10 +363,6 @@ CAMERA STUFF
         }
 
 
-//        if (targetTag == null) {
-//            range = targetTag.ftcPose.range;
-//            bearing = targetTag.ftcPose.bearing;
-//        }
         if (gamepad1.left_trigger > 0.9 && targetTag != null) {
 
             double bearing = targetTag.ftcPose.bearing;
@@ -407,12 +371,6 @@ CAMERA STUFF
                 autoTurn = (bearing + offset) * rotationFactor;// proportional turn
             }
             telemetry.addData("range", targetTag.ftcPose.range);
-////            drive.setDrivePowers(
-////                    new PoseVelocity2d(
-////                            new Vector2d(0, 0),   // no translation
-////                            turnPower             // rotation
-////                    )
-////            );
         }
         if (gamepad1.left_trigger > 0.9 && targetTag == null) {
             gamepad1.runRumbleEffect(noEffect);
@@ -441,23 +399,29 @@ CAMERA STUFF
                                 (-gamepad1.right_stick_x * shift) + autoTurn
                         ))
         );
-//        else if(gamepad1.left_stick_x <=0 && gamepad1.left_stick_y <=0 && gamepad1.right_stick_x <=0) {
-//                drive.setDrivePowers(
-//                        new PoseVelocity2d(new Vector2d(0, 0), 0)
-//                );
-//        }
 
-        // Update Road Runner’s localization
-        drive.localizer.update();
+
+        TelemetryPacket packet = new TelemetryPacket();
+//        packet.put("TopMotorRPM", (robot.TopMotor.getVelocity() / 28.0) * 60.0);
+//        packet.put("BottomMotorRPM", (robot.BottomMotor.getVelocity() / 28.0) * 60.0);
+//        packet.put("TopCurrentA", robot.TopMotor.getCurrent(CurrentUnit.AMPS));
+//        packet.put("BottomCurrentA", robot.BottomMotor.getCurrent(CurrentUnit.AMPS));
+//        packet.put("IntakeRPM", (robot.intake.getVelocity() / 28) * 60);
+        packet.put("BottomVelocity", robot.bottomMotor.getVelocity());
+        packet.put("TopVelocity", robot.topMotor.getVelocity());
+        packet.put("TopTarget", Top_Target_Speed);
+        packet.put("BottomTarget", Bottom_Target_Speed);
+        packet.fieldOverlay().setStroke("#3F51B5");
+        packet.fieldOverlay().setFill("#3F51B5");
+        Drawing.drawRobot(packet.fieldOverlay(), pose);
+        dashboard.sendTelemetryPacket(packet);
 
 //        telemetry.addData("Intake Power", Intake_Speed);
-//        telemetry.addData("Top Shooter Target Speed", Top_Target_Speed);
-//        telemetry.addData("Bottom Shooter Target Speed", Bottom_Target_Speed);
-//        telemetry.addData("Ball Count", ballNumber);
+        telemetry.addData("Top Shooter Target Speed", Top_Target_Speed);
+        telemetry.addData("Bottom Shooter Target Speed", Bottom_Target_Speed);
         telemetry.addData("Selected Id", TARGET_ID);
 //        telemetry.addData("bearing", bearing);
         telemetry.addData("range", range);
-//        telemetry.addData("robotRange", robotRange);
         telemetry.addData("autopower", autoPower);
         telemetry.addData("X",drive.localizer.getPose().position.x);
         telemetry.addData("Y",drive.localizer.getPose().position.y);
