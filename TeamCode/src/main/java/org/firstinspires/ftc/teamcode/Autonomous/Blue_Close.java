@@ -15,9 +15,11 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.MecanumDrive;
+import org.firstinspires.ftc.teamcode.Mechanisms.Drivetrain;
 import org.firstinspires.ftc.teamcode.Mechanisms.Intake;
 import org.firstinspires.ftc.teamcode.Mechanisms.Shooter;
 import org.firstinspires.ftc.teamcode.Mechanisms.Transfer;
+import org.firstinspires.ftc.teamcode.Mechanisms.Vision;
 import org.firstinspires.ftc.teamcode.Utilities.GearhoundsHardware;
 import org.firstinspires.ftc.teamcode.Utilities.PoseStorage;
 
@@ -44,6 +46,9 @@ public class Blue_Close extends LinearOpMode {
         Shooter shooter = new Shooter(robot);
         Intake intake = new Intake(robot);
         Transfer transfer = new Transfer(robot);
+        Vision vision = new Vision(robot);
+        vision.setDrive(drive);
+        Drivetrain drivetrain = new Drivetrain(drive);
 
         waitForStart();
 
