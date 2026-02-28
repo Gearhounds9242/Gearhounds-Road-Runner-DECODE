@@ -62,12 +62,14 @@ public class MeepMeepRedFar {
 //                        )
 //                )
                 .waitSeconds(0.5)
-//                        .strafeToSplineHeading(new Vector2d(12, 25), Math.toRadians(90))
-//                        .strafeToConstantHeading(new Vector2d(12, 60))
+                        .strafeToSplineHeading(new Vector2d(12, 25), Math.toRadians(90))
+                      .strafeToConstantHeading(new Vector2d(12, 60))
 //                        .stopAndAdd(transfer.tapTransfer())
 ////                        .stopAndAdd(intake.runIntake(1, 0.1))
 ////                        .stopAndAdd(intake.stopIntake())
-//                        .strafeToSplineHeading(new Vector2d(55, 14), Math.toRadians(158))
+                       .strafeToSplineHeading(new Vector2d(55, 14), Math.toRadians(158))
+                .waitSeconds(1)
+
 //                        .stopAndAdd(
 //                                new ParallelAction(
 //                                        shooter.runShooter(topVelocity+10, bottomVelocity+10),
@@ -104,6 +106,12 @@ public class MeepMeepRedFar {
 //                                )
 //                        )
 //                )
+
+                .strafeToSplineHeading(new Vector2d(-12, 30), Math.toRadians(90))
+                .strafeToSplineHeading(new Vector2d(-12, 53), Math.toRadians(90))
+                .strafeToSplineHeading(new Vector2d(55, 14), Math.toRadians(158))
+                        .waitSeconds(1)
+
                 .strafeTo(new Vector2d(35, 14))
 //                .stopAndAdd(new SavePose())
                 .build());
