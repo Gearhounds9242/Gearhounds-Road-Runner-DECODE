@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Autonomous;
+package org.firstinspires.ftc.teamcode.Examples;
 
 
 import com.acmerobotics.roadrunner.InstantFunction;
@@ -10,12 +10,12 @@ import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.sun.tools.javac.comp.Todo;
 
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Mechanisms.Intake;
 import org.firstinspires.ftc.teamcode.Mechanisms.Shooter;
 import org.firstinspires.ftc.teamcode.Mechanisms.Transfer;
+import org.firstinspires.ftc.teamcode.Mechanisms.Vision;
 import org.firstinspires.ftc.teamcode.Utilities.GearhoundsHardware;
 import org.firstinspires.ftc.teamcode.Utilities.PoseStorage;
 
@@ -55,15 +55,18 @@ You may see the word "Pose thrown around a lot. Pose is essentially just a way o
 
 /// On of the main commands you may want to use is to shoot. Here is the current code to shoot 3 balls.
 //.stopAndAdd(
-//         new ParallelAction(
-//                 shooter.runShooter(800, 800),
-//                 intake.runIntake(1, 0.1),
-//                 new SequentialAction(
-//                         new SleepAction(2),
-//                         shooter.shootBallRapid(3, 1, 4)
-//                 )
-//         )
-//)
+//                        new ParallelAction(
+//                    shooter.runShooter(topVelocity, bottomVelocity),
+//                                intake.runIntake(1,1),
+//                                        new SequentialAction(
+//                                new SleepAction(1),
+//                                transfer.runTransfer(),
+//                                        new SleepAction(1),
+//                                transfer.stopTransfer(),
+//                                        shooter.stopShooter()
+//                                        )
+//                                        )
+//                                        )
 
     /// ********************************************
 
@@ -78,6 +81,7 @@ You may see the word "Pose thrown around a lot. Pose is essentially just a way o
         Shooter shooter = new Shooter(robot);
         Intake intake = new Intake(robot);
         Transfer transfer = new Transfer(robot);
+        Vision vision = new Vision(robot);
 
         waitForStart();
 
