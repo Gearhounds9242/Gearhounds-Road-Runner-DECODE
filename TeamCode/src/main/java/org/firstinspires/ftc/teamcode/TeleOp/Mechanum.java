@@ -277,13 +277,13 @@ public class Mechanum extends OpMode {
 
 
         if (Math.abs(gamepad2.right_trigger) > 0.1) {
-            robot.bottomMotor.setPower(bottomOutput);
+            robot.bottomMotor.setPower(bottomOutput * 12/robot.voltageSensor.getVoltage());
         } else {
             robot.bottomMotor.setPower(0.0);
         }
 
         if (Math.abs(gamepad2.left_trigger) > 0.1) {
-            robot.topMotor.setPower(topOutput);
+            robot.topMotor.setPower(topOutput * 12/robot.voltageSensor.getVoltage());
         } else {
             robot.topMotor.setPower(0.0);
         }
