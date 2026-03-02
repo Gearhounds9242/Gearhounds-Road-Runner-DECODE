@@ -76,15 +76,19 @@ public class Mechanum extends OpMode {
     public static double bearing = 0;
     public static double shooterTolerance;
     public static double transfer_velocity = 2000;
+    public static double airTime = 1;
     static double ROLLER_VELOCITY_TOLERANCE = 65;
     private double headingOffset;
     private final GearhoundsHardware robot = new GearhoundsHardware();
     private final ElapsedTime runtime = new ElapsedTime();
     public boolean canSeeTag;
+    public int goalX;
+    public int goalY;
     InterpLUT velocityTopLut = new InterpLUT();
     InterpLUT velocityBottomLut = new InterpLUT();
     PIDFController topShooterController;
     PIDFController bottomShooterController;
+    PIDFController aimController;
     //    Gamepad.RumbleEffect yesEffect = new Gamepad.RumbleEffect.Builder()
 //            .addStep(10.0, 0.0, 300)   // strong rumble for 0.3 sec
 //            .addStep(0.0, 0.0, 150)   // pause for 0.15 sec
@@ -185,6 +189,26 @@ public class Mechanum extends OpMode {
         Pose2d pose = drive.localizer.getPose();
         //
 
+        PoseVelocity2d vel = drive.updatePoseEstimate();
+
+        double vx = vel.linearVel.x; // forward/backward velocity (inches/sec)
+        double vy = vel.linearVel.y; // strafe velocity (inches/sec)
+        double omega = vel.angVel;   // angular velocity (radians/sec)
+
+        double robotX = drive.localizer.getPose().position.x;
+        double robotY = drive.localizer.getPose().position.y;
+        double robotHeading = drive.localizer.getPose().heading.toDouble();
+
+        double px = robotX + vx * airTime;
+        double py = robotY + vy * airTime;
+
+        double dx = goalX - px;
+        double dy = goalY - py;
+
+        double goalHeadingField = Math.toDegrees(Math.atan2(dy, dx));
+        double aimTarget = goalHeadingField - robotHeading;
+
+
 
         topShooterController.setPIDF(top_P, top_I, top_D, top_F);
         bottomShooterController.setPIDF(bottom_P, bottom_I, bottom_D, bottom_F);
@@ -237,10 +261,14 @@ public class Mechanum extends OpMode {
             TARGET_ID = 24;
             offset = 2.1;
             isRedAlliance = true;
+            goalX = -70;
+            goalY = 70;
         }
         if (gamepad1.dpadLeftWasPressed() || gamepad2.shareWasPressed()) {
             TARGET_ID = 20;
             isRedAlliance = false;
+            goalX = -70;
+            goalY = -70;
         }
 
 
