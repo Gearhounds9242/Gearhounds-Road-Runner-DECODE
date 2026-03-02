@@ -65,6 +65,10 @@ public class Mechanum extends OpMode {
     public static double bottom_I = 0;
     public static double bottom_D = 0;
     public static double bottom_F = 0.0004;
+    public static double aim_P = 0;
+    public static double aim_I = 0;
+    public static double aim_D = 0;
+    public static double aim_F = 0;
     public static double rightLightColor = 0;
     public static double leftLightColor = 0;
     public static double leftLightDeafualtColor = 0;
@@ -82,10 +86,11 @@ public class Mechanum extends OpMode {
     private final GearhoundsHardware robot = new GearhoundsHardware();
     private final ElapsedTime runtime = new ElapsedTime();
     public boolean canSeeTag;
-    public int goalX;
-    public int goalY;
+    public int goalX = 0;
+    public int goalY = 0;
     InterpLUT velocityTopLut = new InterpLUT();
     InterpLUT velocityBottomLut = new InterpLUT();
+    InterpLUT airTimeLut = new InterpLUT();
     PIDFController topShooterController;
     PIDFController bottomShooterController;
     PIDFController aimController;
@@ -146,6 +151,9 @@ public class Mechanum extends OpMode {
         velocityBottomLut.add(190, 1400);
         velocityBottomLut.createLUT();
 
+        airTimeLut.add(0,0);
+        airTimeLut.createLUT();
+
         tagProcessor = new AprilTagProcessor.Builder()
                 .setDrawAxes(true)
                 .setDrawCubeProjection(true)
@@ -189,6 +197,8 @@ public class Mechanum extends OpMode {
         Pose2d pose = drive.localizer.getPose();
         //
 
+
+
         PoseVelocity2d vel = drive.updatePoseEstimate();
 
         double vx = vel.linearVel.x; // forward/backward velocity (inches/sec)
@@ -199,23 +209,29 @@ public class Mechanum extends OpMode {
         double robotY = drive.localizer.getPose().position.y;
         double robotHeading = drive.localizer.getPose().heading.toDouble();
 
+        //predicted
         double px = robotX + vx * airTime;
         double py = robotY + vy * airTime;
 
+        //Vectors
         double dx = goalX - px;
         double dy = goalY - py;
 
         double goalHeadingField = Math.toDegrees(Math.atan2(dy, dx));
         double aimTarget = goalHeadingField - robotHeading;
 
-
+        double goalDistance = Math.hypot(dx,dy);
 
         topShooterController.setPIDF(top_P, top_I, top_D, top_F);
         bottomShooterController.setPIDF(bottom_P, bottom_I, bottom_D, bottom_F);
+        aimController.setPIDF(aim_P, aim_I, aim_D, aim_F);
+
         if ((range > 0 && range < 189.9) && autoPower) {
             Top_Target_Speed = velocityTopLut.get(range);
             Bottom_Target_Speed = velocityBottomLut.get(range);
         }
+
+        airTimeLut.get(goalDistance);
 
         double topOutput = topShooterController.calculate(robot.topMotor.getVelocity(), Top_Target_Speed);
         double bottomOutput = bottomShooterController.calculate(robot.bottomMotor.getVelocity(), Bottom_Target_Speed);
@@ -253,7 +269,6 @@ public class Mechanum extends OpMode {
         }
 
 
-
 //        if (gamepad1.left_bumper) shift = 0.3; // slow mode
 //        if (gamepad1.right_bumper) shift = 1.0; // full speed
 
@@ -272,18 +287,18 @@ public class Mechanum extends OpMode {
         }
 
 
-        if (gamepad1.ps && isRedAlliance){
+        if (gamepad1.ps && isRedAlliance) {
             drive.localizer.setPose(new Pose2d(60.5, -61, 90));
         }
-        if (gamepad1.ps && !isRedAlliance){
+        if (gamepad1.ps && !isRedAlliance) {
             drive.localizer.setPose(new Pose2d(60.5, 61, 270));
         }
 
 
-        if (gamepad1.dpadUpWasPressed()){
+        if (gamepad1.dpadUpWasPressed()) {
             offset += 1;
         }
-        if (gamepad1.dpadDownWasPressed()){
+        if (gamepad1.dpadDownWasPressed()) {
             offset -= 1;
         }
 
@@ -298,13 +313,13 @@ public class Mechanum extends OpMode {
 
 
         if (Math.abs(gamepad2.right_trigger) > 0.1) {
-            robot.bottomMotor.setPower(bottomOutput);
+            robot.bottomMotor.setPower(bottomOutput * 12/robot.voltageSensor.getVoltage());
         } else {
             robot.bottomMotor.setPower(0.0);
         }
 
         if (Math.abs(gamepad2.left_trigger) > 0.1) {
-            robot.topMotor.setPower(topOutput);
+            robot.topMotor.setPower(topOutput * 12/robot.voltageSensor.getVoltage());
         } else {
             robot.topMotor.setPower(0.0);
         }
@@ -405,7 +420,6 @@ CAMERA STUFF
         }
 
 
-
 //TODO: Combine joystick movement and camera auto centering movement
 
 
@@ -417,6 +431,12 @@ CAMERA STUFF
         }
 
 // Then in the drive.setDrivePowers call, apply the offset:
+        double aimTurn = 0;
+        if (gamepad1.left_bumper) {
+
+            double normalizedAim = normAim(aimTarget);
+            aimTurn = aimController.calculate(robotHeading, normalizedAim);
+
         drive.setDrivePowers(
                 Rotation2d.exp(-drive.localizer.getPose().heading.toDouble() + headingOffset)
                         .times(new PoseVelocity2d(
@@ -424,9 +444,21 @@ CAMERA STUFF
                                         (-gamepad1.left_stick_y * shift),
                                         (-gamepad1.left_stick_x * shift)
                                 ),
-                                (-gamepad1.right_stick_x * shift) + autoTurn
+                                aimTurn
                         ))
         );
+    } else {
+            drive.setDrivePowers(
+                    Rotation2d.exp(-drive.localizer.getPose().heading.toDouble() + headingOffset)
+                            .times(new PoseVelocity2d(
+                                    new Vector2d(
+                                            (-gamepad1.left_stick_y * shift),
+                                            (-gamepad1.left_stick_x * shift)
+                                    ),
+                                    (-gamepad1.right_stick_x * shift) + autoTurn
+                            ))
+            );
+        }
 
 
         TelemetryPacket packet = new TelemetryPacket();
@@ -463,5 +495,5 @@ CAMERA STUFF
             visionPortal.close();
         }
     }
-
+    public double normAim(double angle) {angle %= 360; if (angle < -180) angle += 360; else if (angle > 180) angle -= 360;return angle;}
 }
