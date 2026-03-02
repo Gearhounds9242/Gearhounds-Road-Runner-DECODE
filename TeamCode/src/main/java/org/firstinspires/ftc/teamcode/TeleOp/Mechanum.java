@@ -88,6 +88,7 @@ public class Mechanum extends OpMode {
     public boolean canSeeTag;
     public int goalX = 0;
     public int goalY = 0;
+    public double aimTurn;
     InterpLUT velocityTopLut = new InterpLUT();
     InterpLUT velocityBottomLut = new InterpLUT();
     InterpLUT airTimeLut = new InterpLUT();
@@ -151,7 +152,11 @@ public class Mechanum extends OpMode {
         velocityBottomLut.add(190, 1400);
         velocityBottomLut.createLUT();
 
+        airTimeLut.add(-100,-100);
+        airTimeLut.add(-1,-1);
         airTimeLut.add(0,0);
+        airTimeLut.add(1,1);
+        airTimeLut.add(100,100);
         airTimeLut.createLUT();
 
         tagProcessor = new AprilTagProcessor.Builder()
@@ -179,6 +184,7 @@ public class Mechanum extends OpMode {
 
         topShooterController = new PIDFController(top_P, top_I, top_D, top_F);
         bottomShooterController = new PIDFController(bottom_P, bottom_I, bottom_D, bottom_F);
+        aimController = new PIDFController(aim_P, aim_I, aim_D, aim_F);
     }
 
     @Override
@@ -197,7 +203,11 @@ public class Mechanum extends OpMode {
         Pose2d pose = drive.localizer.getPose();
         //
 
+        double autoTurn = 0;
 
+        topShooterController.setPIDF(top_P, top_I, top_D, top_F);
+        bottomShooterController.setPIDF(bottom_P, bottom_I, bottom_D, bottom_F);
+        aimController.setPIDF(aim_P, aim_I, aim_D, aim_F);
 
         PoseVelocity2d vel = drive.updatePoseEstimate();
 
@@ -207,7 +217,7 @@ public class Mechanum extends OpMode {
 
         double robotX = drive.localizer.getPose().position.x;
         double robotY = drive.localizer.getPose().position.y;
-        double robotHeading = drive.localizer.getPose().heading.toDouble();
+        double robotHeading = Math.toDegrees(drive.localizer.getPose().heading.toDouble());
 
         //predicted
         double px = robotX + vx * airTime;
@@ -219,26 +229,26 @@ public class Mechanum extends OpMode {
 
         double goalHeadingField = Math.toDegrees(Math.atan2(dy, dx));
         double aimTarget = goalHeadingField - robotHeading;
+        double normalizedAim = normAim(aimTarget);
 
-        double goalDistance = Math.hypot(dx,dy);
+        double goalDistance = Math.hypot(dx, dy);
 
-        topShooterController.setPIDF(top_P, top_I, top_D, top_F);
-        bottomShooterController.setPIDF(bottom_P, bottom_I, bottom_D, bottom_F);
-        aimController.setPIDF(aim_P, aim_I, aim_D, aim_F);
+        aimTurn = aimController.calculate(robotHeading, normalizedAim);
+
+
 
         if ((range > 0 && range < 189.9) && autoPower) {
             Top_Target_Speed = velocityTopLut.get(range);
             Bottom_Target_Speed = velocityBottomLut.get(range);
         }
 
-        airTimeLut.get(goalDistance);
+//        airTimeLut.get(goalDistance);
 
         double topOutput = topShooterController.calculate(robot.topMotor.getVelocity(), Top_Target_Speed);
         double bottomOutput = bottomShooterController.calculate(robot.bottomMotor.getVelocity(), Bottom_Target_Speed);
         boolean topReady = Math.abs(Top_Target_Speed - robot.topMotor.getVelocity()) < ROLLER_VELOCITY_TOLERANCE;
         boolean bottomReady = Math.abs(Bottom_Target_Speed - robot.bottomMotor.getVelocity()) < ROLLER_VELOCITY_TOLERANCE;
 
-        double autoTurn = 0;
 
         if ((topReady && bottomReady) && (Math.abs(bearing) < 3)) {
             leftLightColor = 0.472;
@@ -313,13 +323,13 @@ public class Mechanum extends OpMode {
 
 
         if (Math.abs(gamepad2.right_trigger) > 0.1) {
-            robot.bottomMotor.setPower(bottomOutput * 12/robot.voltageSensor.getVoltage());
+            robot.bottomMotor.setPower(bottomOutput * 12 / robot.voltageSensor.getVoltage());
         } else {
             robot.bottomMotor.setPower(0.0);
         }
 
         if (Math.abs(gamepad2.left_trigger) > 0.1) {
-            robot.topMotor.setPower(topOutput * 12/robot.voltageSensor.getVoltage());
+            robot.topMotor.setPower(topOutput * 12 / robot.voltageSensor.getVoltage());
         } else {
             robot.topMotor.setPower(0.0);
         }
@@ -431,23 +441,21 @@ CAMERA STUFF
         }
 
 // Then in the drive.setDrivePowers call, apply the offset:
-        double aimTurn = 0;
         if (gamepad1.left_bumper) {
 
-            double normalizedAim = normAim(aimTarget);
-            aimTurn = aimController.calculate(robotHeading, normalizedAim);
 
-        drive.setDrivePowers(
-                Rotation2d.exp(-drive.localizer.getPose().heading.toDouble() + headingOffset)
-                        .times(new PoseVelocity2d(
-                                new Vector2d(
-                                        (-gamepad1.left_stick_y * shift),
-                                        (-gamepad1.left_stick_x * shift)
-                                ),
-                                aimTurn
-                        ))
-        );
-    } else {
+
+            drive.setDrivePowers(
+                    Rotation2d.exp(-drive.localizer.getPose().heading.toDouble() + headingOffset)
+                            .times(new PoseVelocity2d(
+                                    new Vector2d(
+                                            (-gamepad1.left_stick_y * shift),
+                                            (-gamepad1.left_stick_x * shift)
+                                    ),
+                                    aimTurn
+                            ))
+            );
+        } else {
             drive.setDrivePowers(
                     Rotation2d.exp(-drive.localizer.getPose().heading.toDouble() + headingOffset)
                             .times(new PoseVelocity2d(
@@ -483,9 +491,11 @@ CAMERA STUFF
 //        telemetry.addData("bearing", bearing);
         telemetry.addData("range", range);
         telemetry.addData("autopower", autoPower);
-        telemetry.addData("X",drive.localizer.getPose().position.x);
-        telemetry.addData("Y",drive.localizer.getPose().position.y);
-        telemetry.addData("Heading",drive.localizer.getPose().heading);
+        telemetry.addData("X", drive.localizer.getPose().position.x);
+        telemetry.addData("Y", drive.localizer.getPose().position.y);
+        telemetry.addData("Heading", drive.localizer.getPose().heading);
+        telemetry.addData("aimturn", aimTurn);
+        telemetry.addData("robotHeading", robotHeading);
         telemetry.update();
     }
 
