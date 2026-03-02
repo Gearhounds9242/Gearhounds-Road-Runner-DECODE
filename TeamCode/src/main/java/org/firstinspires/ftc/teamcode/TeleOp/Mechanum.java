@@ -13,6 +13,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.seattlesolvers.solverslib.controller.PIDController;
 import com.seattlesolvers.solverslib.controller.PIDFController;
 import com.seattlesolvers.solverslib.util.InterpLUT;
 
@@ -65,6 +66,9 @@ public class Mechanum extends OpMode {
     public static double bottom_I = 0;
     public static double bottom_D = 0;
     public static double bottom_F = 0.0004;
+    public static double aim_P = 0;
+    public static double aim_I = 0;
+    public static double aime_D = 0;
     public static double rightLightColor = 0;
     public static double leftLightColor = 0;
     public static double leftLightDeafualtColor = 0;
@@ -85,6 +89,7 @@ public class Mechanum extends OpMode {
     InterpLUT velocityBottomLut = new InterpLUT();
     PIDFController topShooterController;
     PIDFController bottomShooterController;
+    PIDController aimController;
     //    Gamepad.RumbleEffect yesEffect = new Gamepad.RumbleEffect.Builder()
 //            .addStep(10.0, 0.0, 300)   // strong rumble for 0.3 sec
 //            .addStep(0.0, 0.0, 150)   // pause for 0.15 sec
@@ -167,6 +172,7 @@ public class Mechanum extends OpMode {
 
         topShooterController = new PIDFController(top_P, top_I, top_D, top_F);
         bottomShooterController = new PIDFController(bottom_P, bottom_I, bottom_D, bottom_F);
+        aimController = new PIDController(aim_P, aim_I, aime_D);
     }
 
     @Override
@@ -188,6 +194,7 @@ public class Mechanum extends OpMode {
 
         topShooterController.setPIDF(top_P, top_I, top_D, top_F);
         bottomShooterController.setPIDF(bottom_P, bottom_I, bottom_D, bottom_F);
+        aimController.setPID(aim_P,aim_I,aime_D);
         if ((range > 0 && range < 189.9) && autoPower) {
             Top_Target_Speed = velocityTopLut.get(range);
             Bottom_Target_Speed = velocityBottomLut.get(range);
