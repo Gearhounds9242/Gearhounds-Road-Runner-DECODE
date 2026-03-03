@@ -42,8 +42,10 @@ public class Vision {
 
         tagProcessor = new AprilTagProcessor.Builder()
                 .setDrawAxes(true)
+                .setDrawCubeProjection(true)
                 .setDrawTagID(true)
                 .setDrawTagOutline(true)
+                .setLensIntrinsics(539.0239404, 539.0239404, 316.450283269, 236.36479005)
                 .build();
 
         visionPortal = new VisionPortal.Builder()

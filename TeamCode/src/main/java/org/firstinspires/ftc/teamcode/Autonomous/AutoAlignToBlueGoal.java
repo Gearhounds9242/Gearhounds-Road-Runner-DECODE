@@ -22,8 +22,8 @@ import org.firstinspires.ftc.teamcode.Mechanisms.Vision;
 import org.firstinspires.ftc.teamcode.Utilities.GearhoundsHardware;
 import org.firstinspires.ftc.teamcode.Utilities.PoseStorage;
 
-@Autonomous(name = "AutoAlignToRedGoal")
-public class AutoAlignToRedGoal extends LinearOpMode {
+@Autonomous(name = "AutoAlignToBlueGoal")
+public class AutoAlignToBlueGoal extends LinearOpMode {
 
     int topVelocity = 1215;
     int bottomVelocity = 1215;
@@ -31,7 +31,7 @@ public class AutoAlignToRedGoal extends LinearOpMode {
     MecanumDrive drive;
 
     // Starting pose
-    Pose2d startPose = new Pose2d(new Vector2d(60, 14), Math.toRadians(180));
+    Pose2d startPose = new Pose2d(new Vector2d(60, -14), Math.toRadians(180));
 
     PoseMap mirrorPoseMap = pose -> new Pose2dDual<>(pose.position.x, pose.position.y.unaryMinus(), pose.heading.inverse());
 
@@ -56,22 +56,22 @@ public class AutoAlignToRedGoal extends LinearOpMode {
 
         if (isStopRequested()) return;
         Actions.runBlocking(
-                drive.actionBuilder(startPose)
-                        .strafeToSplineHeading(new Vector2d(55, 14), Math.toRadians(156))
-                        .stopAndAdd(vision.alignToTag(Vision.RED_GOAL_TAG_ID,0))
-                        .stopAndAdd(
-                                new ParallelAction(
-                                        shooter.runShooter(topVelocity,bottomVelocity),
-                                        intake.runIntake(1,0.1),
-                                        new SequentialAction(
-                                                new SleepAction(1),
-                                                transfer.runTransfer(),
-                                                new SleepAction(1),
-                                                transfer.stopTransfer(),
-                                                shooter.stopShooter()
-                                        )
-                                )
-                        )
+                drive.actionBuilder(startPose, mirrorPoseMap)
+                        .strafeToSplineHeading(new Vector2d(55, 14), Math.toRadians(150))
+                        .stopAndAdd(vision.alignToTag(20,0))
+//                        .stopAndAdd(
+//                                new ParallelAction(
+//                                        shooter.runShooter(topVelocity,bottomVelocity),
+//                                        intake.runIntake(1,0.1),
+//                                        new SequentialAction(
+//                                                new SleepAction(1),
+//                                                transfer.runTransfer(),
+//                                                new SleepAction(1),
+//                                                transfer.stopTransfer(),
+//                                                shooter.stopShooter()
+//                                        )
+//                                )
+//                        )
 
 
                         .stopAndAdd(new SavePose())
