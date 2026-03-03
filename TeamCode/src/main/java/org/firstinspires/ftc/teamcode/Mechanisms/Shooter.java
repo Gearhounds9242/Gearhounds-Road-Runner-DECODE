@@ -69,8 +69,8 @@ public class Shooter {
             // update motor speeds with PIDF
             double topOutput = topRollerController.calculate(topVelocity, topRollerTargetVelocity);
             double bottomOutput = bottomRollerController.calculate(bottomVelocity, bottomRollerTargetVelocity);
-            robot.topMotor.setVelocity(topOutput);
-            robot.bottomMotor.setVelocity(bottomOutput);
+            robot.topMotor.setPower(topOutput);
+            robot.bottomMotor.setPower(bottomOutput);
 
 
 

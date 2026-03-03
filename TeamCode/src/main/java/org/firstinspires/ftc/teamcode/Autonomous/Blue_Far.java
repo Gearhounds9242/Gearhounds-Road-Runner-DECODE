@@ -27,8 +27,8 @@ public class Blue_Far extends LinearOpMode {
 
     private final GearhoundsHardware robot = new GearhoundsHardware();
 
-    int topVelocity = 1186;
-    int bottomVelocity = 1186;
+    int topVelocity = 1215;
+    int bottomVelocity = 1215;
     MecanumDrive drive;
     // Starting pose
     Pose2d startPose = new Pose2d(new Vector2d(60, -14), Math.toRadians(180));
@@ -56,7 +56,8 @@ public class Blue_Far extends LinearOpMode {
         if (isStopRequested()) return;
         Actions.runBlocking(
                 drive.actionBuilder(startPose, mirrorPoseMap)
-                        .strafeToSplineHeading(new Vector2d(55, 14), Math.toRadians(158))
+                        .strafeToSplineHeading(new Vector2d(55, 14), Math.toRadians(156))
+                        .stopAndAdd(vision.alignToTag(Vision.BLUE_GOAL_TAG_ID,0))
                         .stopAndAdd(
                                 new ParallelAction(
                                         shooter.runShooter(topVelocity,bottomVelocity),
@@ -74,6 +75,7 @@ public class Blue_Far extends LinearOpMode {
                         .strafeToConstantHeading(new Vector2d(35, 60))
                         .stopAndAdd(transfer.tapTransfer())
                         .strafeToSplineHeading(new Vector2d(55, 14), Math.toRadians(158))
+                        .stopAndAdd(vision.alignToTag(Vision.BLUE_GOAL_TAG_ID,0))
                         .stopAndAdd(
                                 new ParallelAction(
                                         shooter.runShooter(topVelocity,bottomVelocity),
@@ -91,6 +93,7 @@ public class Blue_Far extends LinearOpMode {
                         .strafeToConstantHeading(new Vector2d(12, 60))
                         .stopAndAdd(transfer.tapTransfer())
                         .strafeToSplineHeading(new Vector2d(55, 14), Math.toRadians(158))
+                        .stopAndAdd(vision.alignToTag(Vision.BLUE_GOAL_TAG_ID,0))
                         .stopAndAdd(
                                 new ParallelAction(
                                         shooter.runShooter(topVelocity+10, bottomVelocity+10),
@@ -108,6 +111,7 @@ public class Blue_Far extends LinearOpMode {
                         .strafeTo(new Vector2d(60, 60))
                         .stopAndAdd(transfer.tapTransfer())
                         .strafeToSplineHeading(new Vector2d(55, 14), Math.toRadians(158))
+                        .stopAndAdd(vision.alignToTag(Vision.BLUE_GOAL_TAG_ID,0))
                         .stopAndAdd(
                                 new ParallelAction(
                                         shooter.runShooter(topVelocity+10,bottomVelocity+10),

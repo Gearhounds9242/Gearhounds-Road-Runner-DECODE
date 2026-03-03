@@ -104,9 +104,9 @@ public class Mechanum extends OpMode {
     private AprilTagProcessor tagProcessor;
     private VisionPortal visionPortal;
     private MecanumDrive drive;
-    private Position cameraPosition = new Position(DistanceUnit.INCH,
+    public Position cameraPosition = new Position(DistanceUnit.INCH,
             0, 0, 0, 0);
-    private YawPitchRollAngles cameraOrientation = new YawPitchRollAngles(AngleUnit.DEGREES,
+    public YawPitchRollAngles cameraOrientation = new YawPitchRollAngles(AngleUnit.DEGREES,
             0, 180, 0, 0);
 
     @Override
@@ -269,12 +269,13 @@ public class Mechanum extends OpMode {
 
         if (gamepad1.right_trigger > 0.1) {
             robot.intake.setPower(1);
-        } else if (gamepad1.y) {
-            robot.intake.setPower(-1);
-        } else {
+        }
+        else {
             robot.intake.setPower(0.2);
         }
-
+        if (gamepad1.y){
+            robot.intake.setPower(-1);
+        }
 
         if (Math.abs(gamepad2.right_trigger) > 0.1) {
             robot.bottomMotor.setPower(bottomOutput * 12/robot.voltageSensor.getVoltage());
