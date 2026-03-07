@@ -17,7 +17,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
-
+import com.qualcomm.robotcore.hardware.VoltageSensor;
 
 
 // Generic robot class
@@ -47,6 +47,7 @@ public class GearhoundsHardware extends Hardware {
     public Servo block;
     public Servo leftLight;
     public Servo rightLight;
+    public VoltageSensor voltageSensor;
 
 
 
@@ -128,7 +129,7 @@ public class GearhoundsHardware extends Hardware {
         transfer = robotMap.get(DcMotorEx.class, "transfer");
         transfer.setDirection(DcMotorSimple.Direction.REVERSE);
 
-
+        voltageSensor = robotMap.get(VoltageSensor.class, "Control Hub");
 
         intake = robotMap.get(DcMotorEx.class, "intake");
         intake.setDirection(DcMotorImplEx.Direction.REVERSE);

@@ -54,6 +54,7 @@ public class Red_Far extends LinearOpMode {
         Actions.runBlocking(
                 drive.actionBuilder(startPose)
                         .strafeToSplineHeading(new Vector2d(55, 14), Math.toRadians(158))
+                        .stopAndAdd(vision.alignToTag(Vision.RED_GOAL_TAG_ID, 0))
                         .stopAndAdd(
                                 new ParallelAction(
                                         shooter.runShooter(topVelocity,bottomVelocity),
@@ -71,6 +72,7 @@ public class Red_Far extends LinearOpMode {
                         .strafeToConstantHeading(new Vector2d(35, 60))
                         .stopAndAdd(transfer.tapTransfer())
                         .strafeToSplineHeading(new Vector2d(55, 14), Math.toRadians(158))
+                        .stopAndAdd(vision.alignToTag(Vision.RED_GOAL_TAG_ID, 0))
                         .stopAndAdd(
                                 new ParallelAction(
                                         shooter.runShooter(topVelocity,bottomVelocity),
@@ -88,6 +90,7 @@ public class Red_Far extends LinearOpMode {
                         .strafeToConstantHeading(new Vector2d(12, 60))
                         .stopAndAdd(transfer.tapTransfer())
                         .strafeToSplineHeading(new Vector2d(55, 14), Math.toRadians(158))
+                        .stopAndAdd(vision.alignToTag(Vision.RED_GOAL_TAG_ID, 0))
                         .stopAndAdd(
                                 new ParallelAction(
                                         shooter.runShooter(topVelocity+10, bottomVelocity+10),
@@ -105,6 +108,7 @@ public class Red_Far extends LinearOpMode {
                         .strafeTo(new Vector2d(60, 60))
                         .stopAndAdd(transfer.tapTransfer())
                         .strafeToSplineHeading(new Vector2d(55, 14), Math.toRadians(158))
+                        .stopAndAdd(vision.alignToTag(Vision.RED_GOAL_TAG_ID, 0))
                         .stopAndAdd(
                                 new ParallelAction(
                                         shooter.runShooter(topVelocity+10,bottomVelocity+10),

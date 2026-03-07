@@ -13,6 +13,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.seattlesolvers.solverslib.controller.PIDController;
 import com.seattlesolvers.solverslib.controller.PIDFController;
 import com.seattlesolvers.solverslib.util.InterpLUT;
 
@@ -65,6 +66,9 @@ public class Mechanum extends OpMode {
     public static double bottom_I = 0;
     public static double bottom_D = 0;
     public static double bottom_F = 0.0004;
+    public static double aim_P = 0;
+    public static double aim_I = 0;
+    public static double aime_D = 0;
     public static double rightLightColor = 0;
     public static double leftLightColor = 0;
     public static double leftLightDeafualtColor = 0;
@@ -85,6 +89,7 @@ public class Mechanum extends OpMode {
     InterpLUT velocityBottomLut = new InterpLUT();
     PIDFController topShooterController;
     PIDFController bottomShooterController;
+    PIDController aimController;
     //    Gamepad.RumbleEffect yesEffect = new Gamepad.RumbleEffect.Builder()
 //            .addStep(10.0, 0.0, 300)   // strong rumble for 0.3 sec
 //            .addStep(0.0, 0.0, 150)   // pause for 0.15 sec
@@ -99,9 +104,9 @@ public class Mechanum extends OpMode {
     private AprilTagProcessor tagProcessor;
     private VisionPortal visionPortal;
     private MecanumDrive drive;
-    private Position cameraPosition = new Position(DistanceUnit.INCH,
+    public Position cameraPosition = new Position(DistanceUnit.INCH,
             0, 0, 0, 0);
-    private YawPitchRollAngles cameraOrientation = new YawPitchRollAngles(AngleUnit.DEGREES,
+    public YawPitchRollAngles cameraOrientation = new YawPitchRollAngles(AngleUnit.DEGREES,
             0, 180, 0, 0);
 
     @Override
@@ -167,6 +172,7 @@ public class Mechanum extends OpMode {
 
         topShooterController = new PIDFController(top_P, top_I, top_D, top_F);
         bottomShooterController = new PIDFController(bottom_P, bottom_I, bottom_D, bottom_F);
+        aimController = new PIDController(aim_P, aim_I, aime_D);
     }
 
     @Override
@@ -188,6 +194,7 @@ public class Mechanum extends OpMode {
 
         topShooterController.setPIDF(top_P, top_I, top_D, top_F);
         bottomShooterController.setPIDF(bottom_P, bottom_I, bottom_D, bottom_F);
+        aimController.setPID(aim_P,aim_I,aime_D);
         if ((range > 0 && range < 189.9) && autoPower) {
             Top_Target_Speed = velocityTopLut.get(range);
             Bottom_Target_Speed = velocityBottomLut.get(range);
@@ -262,21 +269,22 @@ public class Mechanum extends OpMode {
 
         if (gamepad1.right_trigger > 0.1) {
             robot.intake.setPower(1);
-        } else if (gamepad1.y) {
-            robot.intake.setPower(-1);
-        } else {
+        }
+        else {
             robot.intake.setPower(0.2);
         }
-
+        if (gamepad1.y){
+            robot.intake.setPower(-1);
+        }
 
         if (Math.abs(gamepad2.right_trigger) > 0.1) {
-            robot.bottomMotor.setPower(bottomOutput);
+            robot.bottomMotor.setPower(bottomOutput * 12/robot.voltageSensor.getVoltage());
         } else {
             robot.bottomMotor.setPower(0.0);
         }
 
         if (Math.abs(gamepad2.left_trigger) > 0.1) {
-            robot.topMotor.setPower(topOutput);
+            robot.topMotor.setPower(topOutput * 12/robot.voltageSensor.getVoltage());
         } else {
             robot.topMotor.setPower(0.0);
         }

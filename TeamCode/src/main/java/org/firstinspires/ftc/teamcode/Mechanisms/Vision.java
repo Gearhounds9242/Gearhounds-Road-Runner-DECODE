@@ -42,8 +42,10 @@ public class Vision {
 
         tagProcessor = new AprilTagProcessor.Builder()
                 .setDrawAxes(true)
+                .setDrawCubeProjection(true)
                 .setDrawTagID(true)
                 .setDrawTagOutline(true)
+                .setLensIntrinsics(539.0239404, 539.0239404, 316.450283269, 236.36479005)
                 .build();
 
         visionPortal = new VisionPortal.Builder()
@@ -117,12 +119,12 @@ public class Vision {
 
             AprilTagDetection target = getTag(targetTagId);
 
-            // Tag not visible - stop and exit, odometry got us close enough
-            if (target == null) {
-                drive.setDrivePowers(new PoseVelocity2d(new Vector2d(0, 0), 0));
-                packet.addLine("AlignToTag: tag not visible, skipping");
-                return false;
-            }
+//            // Tag not visible - stop and exit, odometry got us close enough
+//            if (target == null) {
+//                drive.setDrivePowers(new PoseVelocity2d(new Vector2d(0, 0), 0));
+//                packet.addLine("AlignToTag: tag not visible, skipping");
+//                return false;
+//            }
 
             // bearing is how many degrees the tag is left/right of camera center
             // offset shifts where we want to be relative to tag center
