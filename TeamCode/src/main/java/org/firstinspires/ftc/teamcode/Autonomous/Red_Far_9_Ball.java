@@ -20,48 +20,21 @@ import org.firstinspires.ftc.teamcode.Mechanisms.Transfer;
 import org.firstinspires.ftc.teamcode.Utilities.GearhoundsHardware;
 import org.firstinspires.ftc.teamcode.Utilities.PoseStorage;
 
-@Disabled
+
 @Autonomous(name = "Red_Far_9_Ball")
 public class Red_Far_9_Ball extends LinearOpMode {
 
     private final GearhoundsHardware robot = new GearhoundsHardware();
 
-    public int topVelocity = 1186;
-    public int bottomVelocity = 1186;
+    public int topVelocity = 1220;
+    public int bottomVelocity = 1220;
     MecanumDrive drive;
     // Starting pose
-    Pose2d startPose = new Pose2d(new Vector2d(60, 15), Math.toRadians(180));
+    Pose2d startPose = new Pose2d(new Vector2d(60, 14), Math.toRadians(180));
 
     PoseMap mirrorPoseMap = pose -> new Pose2dDual<>(pose.position.x, pose.position.y.unaryMinus(), pose.heading.inverse());
 
-/*
-You may see the word "Pose thrown around a lot. Pose is essentially just a way of explaining a point in space using coordinates like X and Y
- */
 
-    /// Some of the Autonomous commands include (these may change as time goes on will be updated here)
-/*
-.stopAndAdd(new SavePose())
-
-.stopAndAdd(shooter.shootBallRapid("ballCount","transferWheelPower","timeout")
-.stopAndAdd(shooter.runShooter("topPower","bottomPower", "timeout"))
-.stopAndAdd(shooter.stopShooter())
-
-.stopAndAdd(intake.runIntake("power","timeout"))
-.stopAndAdd(intake.stopIntake())
-
-.stopAndAdd(transfer.tapTransfer())
- */
-
-//.stopAndAdd(
-//         new ParallelAction(
-//                 shooter.runShooter(800, 800),
-//                 intake.runIntake(1, 0.1),
-//                 new SequentialAction(
-//                         new SleepAction(2),
-//                         shooter.shootBallRapid(3, 1, 4)
-//                 )
-//         )
-//)
     @Override
     public void runOpMode() throws InterruptedException {
 
@@ -79,10 +52,10 @@ You may see the word "Pose thrown around a lot. Pose is essentially just a way o
         if (isStopRequested()) return;
         Actions.runBlocking(
                 drive.actionBuilder(startPose)
-                        .strafeToSplineHeading(new Vector2d(55, 14), Math.toRadians(158))
+                        .strafeToSplineHeading(new Vector2d(55, 14), Math.toRadians(155))
                         .stopAndAdd(
                                 new ParallelAction(
-                                        shooter.runShooter(topVelocity, bottomVelocity),
+                                        shooter.runShooter(topVelocity+10, bottomVelocity+10),
                                         intake.runIntake(1, 1),
                                         new SequentialAction(
                                                 new SleepAction(1.5),
@@ -96,7 +69,7 @@ You may see the word "Pose thrown around a lot. Pose is essentially just a way o
                         .strafeToSplineHeading(new Vector2d(35, 25), Math.toRadians(90))
                         .strafeToConstantHeading(new Vector2d(35, 60))
                         .stopAndAdd(transfer.tapTransfer())
-                        .strafeToSplineHeading(new Vector2d(55, 14), Math.toRadians(158))
+                        .strafeToSplineHeading(new Vector2d(55, 14), Math.toRadians(155))
                         .stopAndAdd(
                                 new ParallelAction(
                                         shooter.runShooter(topVelocity, bottomVelocity),
@@ -110,24 +83,11 @@ You may see the word "Pose thrown around a lot. Pose is essentially just a way o
                                 )
                         )
                         .waitSeconds(0.5)
-                        .strafeToSplineHeading(new Vector2d(12, 25), Math.toRadians(90))
-                        .strafeToConstantHeading(new Vector2d(12, 60))
-                        .stopAndAdd(transfer.tapTransfer())
-                        .strafeToSplineHeading(new Vector2d(55, 14), Math.toRadians(158))
-                        .stopAndAdd(
-                                new ParallelAction(
-                                        shooter.runShooter(topVelocity + 10, bottomVelocity + 10),
-                                        intake.runIntake(1, 1),
-                                        new SequentialAction(
-                                                new SleepAction(1),
-                                                transfer.runTransfer(),
-                                                new SleepAction(1),
-                                                transfer.stopTransfer(),
-                                                shooter.stopShooter()
-                                        )
-                                )
-                        )
-                        .splineToSplineHeading(new Pose2d(60, 52.5, Math.toRadians(90)), Math.toRadians(0))
+                        .splineToSplineHeading(new Pose2d(60, 20, Math.toRadians(90)), Math.toRadians(0))
+                        .strafeTo(new Vector2d(60, 60))
+                        .strafeTo(new Vector2d(60, 50))
+                        .strafeTo(new Vector2d(60, 60))
+                        .strafeTo(new Vector2d(60, 50))
                         .strafeTo(new Vector2d(60, 60))
                         .stopAndAdd(transfer.tapTransfer())
                         .strafeToSplineHeading(new Vector2d(55, 14), Math.toRadians(158))
