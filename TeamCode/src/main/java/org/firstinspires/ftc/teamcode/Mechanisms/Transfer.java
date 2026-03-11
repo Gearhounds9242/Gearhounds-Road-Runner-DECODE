@@ -67,7 +67,7 @@ public class Transfer {
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
 
-            robot.transfer.setPower(1);
+            robot.transfer.setPower(0.8);
             return false;
 
 

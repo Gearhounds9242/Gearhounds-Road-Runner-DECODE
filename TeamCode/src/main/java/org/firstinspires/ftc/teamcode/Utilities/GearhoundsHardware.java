@@ -44,7 +44,7 @@ public class GearhoundsHardware extends Hardware {
     public DcMotorEx rightBack;
 
     public DcMotorEx transfer;
-    public Servo block;
+    public Servo rightKickstand;
     public Servo leftLight;
     public Servo rightLight;
     public VoltageSensor voltageSensor;
@@ -96,7 +96,7 @@ public class GearhoundsHardware extends Hardware {
 //        motor = robotMap.get(DcMotorEx.class, "motor");
 //        motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 //        motor
-        block = robotMap.get(Servo.class,"block");
+        rightKickstand = robotMap.get(Servo.class,"rightKickstand");
         leftLight = robotMap.get(Servo.class,"leftLight");
         rightLight = robotMap.get(Servo.class,"rightLight");
 
