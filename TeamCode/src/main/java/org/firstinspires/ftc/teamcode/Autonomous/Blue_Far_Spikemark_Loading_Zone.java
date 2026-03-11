@@ -57,7 +57,7 @@ public class Blue_Far_Spikemark_Loading_Zone extends LinearOpMode {
         Actions.runBlocking(
                 drive.actionBuilder(startPose, mirrorPoseMap)
 
-                        .strafeToSplineHeading(new Vector2d(55, 14), Math.toRadians(156))
+                        .strafeToSplineHeading(new Vector2d(55, 14), Math.toRadians(158))
                         // shoot
                         .stopAndAdd(
                                 new ParallelAction(
