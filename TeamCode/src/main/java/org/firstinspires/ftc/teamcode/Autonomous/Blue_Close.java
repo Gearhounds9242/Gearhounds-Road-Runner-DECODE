@@ -56,7 +56,7 @@ public class Blue_Close extends LinearOpMode {
         Action path = drive.actionBuilder(startPose)
 ///go to shoot location first time
 //                .splineToConstantHeading(new Vector2d(-49, -49), Math.toRadians(58.5))
-                .strafeToLinearHeading(new Vector2d(-19.5,-10), Math.toRadians(223.5))
+                .strafeToLinearHeading(new Vector2d(-19.5,-10), Math.toRadians(221.5))
 
 //                .waitSeconds(0.5)
 
@@ -79,7 +79,7 @@ public class Blue_Close extends LinearOpMode {
                 .splineToConstantHeading(new Vector2d(-11.5, -53.5), Math.toRadians(-90))
 //                //tap transfer
                 .stopAndAdd(transfer.tapTransfer())
-                .strafeToLinearHeading(new Vector2d(-19.5,-10), Math.toRadians(220))
+                .strafeToLinearHeading(new Vector2d(-19.5,-10), Math.toRadians(221.5))
 
 //                .waitSeconds(0.5)
 
@@ -99,14 +99,14 @@ public class Blue_Close extends LinearOpMode {
                 )
 
 
-                .strafeToSplineHeading(new Vector2d(13.5, -22), Math.toRadians(280))
-                .strafeToConstantHeading(new Vector2d(13.5,-60))
-                .strafeToConstantHeading(new Vector2d(13.5,-29))
-                .strafeToLinearHeading(new Vector2d(-19.5,-10), Math.toRadians(220))
+                .strafeToSplineHeading(new Vector2d(15, -22), Math.toRadians(280))
+                .strafeToConstantHeading(new Vector2d(15,-60))
+                .strafeToConstantHeading(new Vector2d(15,-29))
+                .strafeToLinearHeading(new Vector2d(-19.5,-10), Math.toRadians(221.5))
 
 //                .waitSeconds(0.5)
 
-//                shoot 3
+///                shoot 3
                 .stopAndAdd(
                         new ParallelAction(
                                 shooter.runShooter(topVelocity,bottomVelocity+100),

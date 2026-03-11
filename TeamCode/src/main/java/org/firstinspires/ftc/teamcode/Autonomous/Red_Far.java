@@ -25,8 +25,8 @@ public class Red_Far extends LinearOpMode {
 
     private final GearhoundsHardware robot = new GearhoundsHardware();
 
-    int topVelocity = 1186;
-    int bottomVelocity = 1186;
+    int topVelocity = 1230;
+    int bottomVelocity = 1230;
     MecanumDrive drive;
     // Starting pose
     Pose2d startPose = new Pose2d(new Vector2d(60, 14), Math.toRadians(180));
@@ -53,8 +53,7 @@ public class Red_Far extends LinearOpMode {
         if (isStopRequested()) return;
         Actions.runBlocking(
                 drive.actionBuilder(startPose)
-                        .strafeToSplineHeading(new Vector2d(55, 14), Math.toRadians(158))
-                        .stopAndAdd(vision.alignToTag(Vision.RED_GOAL_TAG_ID, 0))
+                        .strafeToSplineHeading(new Vector2d(55, 14), Math.toRadians(151))
                         .stopAndAdd(
                                 new ParallelAction(
                                         shooter.runShooter(topVelocity,bottomVelocity),
@@ -71,52 +70,49 @@ public class Red_Far extends LinearOpMode {
                         .strafeToSplineHeading(new Vector2d(35,25), Math.toRadians(90))
                         .strafeToConstantHeading(new Vector2d(35, 60))
                         .stopAndAdd(transfer.tapTransfer())
-                        .strafeToSplineHeading(new Vector2d(55, 14), Math.toRadians(158))
-                        .stopAndAdd(vision.alignToTag(Vision.RED_GOAL_TAG_ID, 0))
+                        .strafeToSplineHeading(new Vector2d(55, 14), Math.toRadians(152))
                         .stopAndAdd(
                                 new ParallelAction(
                                         shooter.runShooter(topVelocity,bottomVelocity),
                                         new SequentialAction(
                                                 new SleepAction(1),
                                                 transfer.runTransfer(),
-                                                new SleepAction(1),
+                                                new SleepAction(1.5),
                                                 transfer.stopTransfer(),
                                                 shooter.stopShooter()
                                         )
                                 )
                         )
                         .waitSeconds(0.5)
-                        .strafeToSplineHeading(new Vector2d(12, 25), Math.toRadians(90))
-                        .strafeToConstantHeading(new Vector2d(12, 60))
+                        .strafeToSplineHeading(new Vector2d(10, 25), Math.toRadians(90))
+                        .strafeToConstantHeading(new Vector2d(11, 60))
                         .stopAndAdd(transfer.tapTransfer())
-                        .strafeToSplineHeading(new Vector2d(55, 14), Math.toRadians(158))
-                        .stopAndAdd(vision.alignToTag(Vision.RED_GOAL_TAG_ID, 0))
+                        .strafeToSplineHeading(new Vector2d(55, 14), Math.toRadians(152))
                         .stopAndAdd(
                                 new ParallelAction(
-                                        shooter.runShooter(topVelocity+10, bottomVelocity+10),
+                                        shooter.runShooter(topVelocity, bottomVelocity),
                                         intake.runIntake(1,1),
                                         new SequentialAction(
                                                 new SleepAction(1),
                                                 transfer.runTransfer(),
-                                                new SleepAction(1),
+                                                new SleepAction(1.5),
                                                 transfer.stopTransfer(),
                                                 shooter.stopShooter()
                                         )
                                 )
                         )
-                        .splineToSplineHeading(new Pose2d(60, 52.5, Math.toRadians(90)), Math.toRadians(0))
+                        .splineToSplineHeading(new Pose2d(60, 20, Math.toRadians(90)), Math.toRadians(0))
                         .strafeTo(new Vector2d(60, 60))
                         .stopAndAdd(transfer.tapTransfer())
-                        .strafeToSplineHeading(new Vector2d(55, 14), Math.toRadians(158))
-                        .stopAndAdd(vision.alignToTag(Vision.RED_GOAL_TAG_ID, 0))
+                        .strafeToSplineHeading(new Vector2d(55, 14), Math.toRadians(156))
                         .stopAndAdd(
                                 new ParallelAction(
-                                        shooter.runShooter(topVelocity+10,bottomVelocity+10),
+                                        shooter.runShooter(topVelocity-15,bottomVelocity-15),
                                         intake.runIntake(1,1),
                                         new SequentialAction(
                                                 new SleepAction(1),
                                                 transfer.runTransfer(),
-                                                new SleepAction(1),
+                                                new SleepAction(1.5),
                                                 transfer.stopTransfer(),
                                                 shooter.stopShooter(),
                                                 intake.stopIntake()
@@ -124,12 +120,12 @@ public class Red_Far extends LinearOpMode {
                                 )
                         )
                         .strafeTo(new Vector2d(35, 14))
+                        .turnTo(90)
                                 .stopAndAdd(new SavePose())
                                 .build());
     }
 
 
-    /// Please don't go messing around in here if you don't know what you are doing proceed with CAUTION
 
 
     public class SavePose implements InstantFunction {
