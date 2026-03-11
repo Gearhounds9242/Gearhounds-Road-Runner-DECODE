@@ -53,7 +53,7 @@ public class Red_Far extends LinearOpMode {
         if (isStopRequested()) return;
         Actions.runBlocking(
                 drive.actionBuilder(startPose)
-                        .strafeToSplineHeading(new Vector2d(55, 14), Math.toRadians(151))
+                        .strafeToSplineHeading(new Vector2d(55, 14), Math.toRadians(150))
                         .stopAndAdd(
                                 new ParallelAction(
                                         shooter.runShooter(topVelocity,bottomVelocity),
@@ -101,10 +101,13 @@ public class Red_Far extends LinearOpMode {
                                         )
                                 )
                         )
-                        .splineToSplineHeading(new Pose2d(60, 20, Math.toRadians(90)), Math.toRadians(0))
+                        .splineToSplineHeading(new Pose2d(60, 14, Math.toRadians(90)), Math.toRadians(0))
                         .strafeTo(new Vector2d(60, 60))
+                        .strafeTo(new Vector2d(60, 55))
+                        .strafeTo(new Vector2d(60, 60))
+
                         .stopAndAdd(transfer.tapTransfer())
-                        .strafeToSplineHeading(new Vector2d(55, 14), Math.toRadians(156))
+                        .strafeToSplineHeading(new Vector2d(55, 14), Math.toRadians(153))
                         .stopAndAdd(
                                 new ParallelAction(
                                         shooter.runShooter(topVelocity-15,bottomVelocity-15),
@@ -119,8 +122,7 @@ public class Red_Far extends LinearOpMode {
                                         )
                                 )
                         )
-                        .strafeTo(new Vector2d(35, 14))
-                        .turnTo(90)
+                        .splineToSplineHeading(new Pose2d(30,30, Math.toRadians(90)), Math.toRadians(0))
                                 .stopAndAdd(new SavePose())
                                 .build());
     }

@@ -20,8 +20,8 @@ import org.firstinspires.ftc.teamcode.Mechanisms.Transfer;
 import org.firstinspires.ftc.teamcode.Utilities.GearhoundsHardware;
 import org.firstinspires.ftc.teamcode.Utilities.PoseStorage;
 
-@Disabled
-@Autonomous(name = "Red_Far_9_Ball")
+
+@Autonomous(name = "Blue_Far_9_Ball")
 public class Blue_Far_9_Ball extends LinearOpMode {
 
     private final GearhoundsHardware robot = new GearhoundsHardware();

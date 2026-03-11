@@ -58,7 +58,7 @@ public class Blue_Close extends LinearOpMode {
 //                .splineToConstantHeading(new Vector2d(-49, -49), Math.toRadians(58.5))
                 .strafeToLinearHeading(new Vector2d(-19.5,-10), Math.toRadians(221.5))
 
-//                .waitSeconds(0.5)
+//
 
                 ///shoot preload3
                 .stopAndAdd(

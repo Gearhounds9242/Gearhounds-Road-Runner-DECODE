@@ -11,7 +11,7 @@ import com.noahbres.meepmeep.roadrunner.entity.RoadRunnerBotEntity;
 
 public class MeepMeepBlueClose {
     public static void main(String[] args) {
-        MeepMeep meepMeep = new MeepMeep(900);
+        MeepMeep meepMeep = new MeepMeep(600);
 
         RoadRunnerBotEntity myBot = new DefaultBotBuilder(meepMeep)
                 .setDimensions(16.5,18)
