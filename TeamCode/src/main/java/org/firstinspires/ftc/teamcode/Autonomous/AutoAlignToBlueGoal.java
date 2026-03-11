@@ -25,8 +25,8 @@ import org.firstinspires.ftc.teamcode.Utilities.PoseStorage;
 @Autonomous(name = "AutoAlignToBlueGoal")
 public class AutoAlignToBlueGoal extends LinearOpMode {
 
-    int topVelocity = 1215;
-    int bottomVelocity = 1215;
+    int topVelocity = 1200;
+    int bottomVelocity = 1200;
     private final GearhoundsHardware robot = new GearhoundsHardware();
     MecanumDrive drive;
 
@@ -59,19 +59,19 @@ public class AutoAlignToBlueGoal extends LinearOpMode {
                 drive.actionBuilder(startPose, mirrorPoseMap)
                         .strafeToSplineHeading(new Vector2d(55, 14), Math.toRadians(158))
                         .stopAndAdd(vision.alignToTag(20,0))
-//                        .stopAndAdd(
-//                                new ParallelAction(
-//                                        shooter.runShooter(topVelocity,bottomVelocity),
-//                                        intake.runIntake(1,0.1),
-//                                        new SequentialAction(
-//                                                new SleepAction(1),
-//                                                transfer.runTransfer(),
-//                                                new SleepAction(1),
-//                                                transfer.stopTransfer(),
-//                                                shooter.stopShooter()
-//                                        )
-//                                )
-//                        )
+                        .stopAndAdd(
+                                new ParallelAction(
+                                        shooter.runShooter(topVelocity,bottomVelocity),
+                                        intake.runIntake(1,0.1),
+                                        new SequentialAction(
+                                                new SleepAction(1),
+                                                transfer.runTransfer(),
+                                                new SleepAction(1),
+                                                transfer.stopTransfer(),
+                                                shooter.stopShooter()
+                                        )
+                                )
+                        )
 
 
                         .stopAndAdd(new SavePose())

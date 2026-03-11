@@ -58,6 +58,7 @@ public class Mechanum extends OpMode {
     public static double aimTolorance = 0.2;
     public static int ballNumber = 0;
     public static double offset = 0;
+    public static double rightKickstandPosition;
     public static double top_P = 0.0018;
     public static double top_I = 0;
     public static double top_D = 0;
@@ -85,6 +86,7 @@ public class Mechanum extends OpMode {
     private final GearhoundsHardware robot = new GearhoundsHardware();
     private final ElapsedTime runtime = new ElapsedTime();
     public boolean canSeeTag;
+    public boolean kickstandDown = false;
     InterpLUT velocityTopLut = new InterpLUT();
     InterpLUT velocityBottomLut = new InterpLUT();
     PIDFController topShooterController;
@@ -267,11 +269,21 @@ public class Mechanum extends OpMode {
         }
 
 
+
+       if (gamepad1.touchpadWasPressed() && kickstandDown == true){
+           robot.rightKickstand.setPosition(1);
+           kickstandDown = false;
+       }
+       if(gamepad1.shareWasPressed() && kickstandDown == false){
+           robot.rightKickstand.setPosition(0.85);
+           kickstandDown = true;
+       }
+
         if (gamepad1.right_trigger > 0.1) {
             robot.intake.setPower(1);
         }
         else {
-            robot.intake.setPower(0.2);
+            robot.intake.setPower(0);
         }
         if (gamepad1.y){
             robot.intake.setPower(-1);
@@ -332,12 +344,12 @@ public class Mechanum extends OpMode {
             robot.transfer.setPower(0);
         }
 
-        if (gamepad2.psWasReleased() && autoPower == true) {
+        if (gamepad2.touchpadWasPressed() && autoPower == true) {
             autoPower = false;
             leftLightDeafualtColor = 0.333;
             rightLightDeafualtColor = 0.333;
         }
-        if (gamepad2.psWasReleased() && autoPower == false) {
+        if (gamepad2.psWasPressed() && autoPower == false) {
             autoPower = true;
             leftLightDeafualtColor = 0;
             rightLightDeafualtColor = 0;

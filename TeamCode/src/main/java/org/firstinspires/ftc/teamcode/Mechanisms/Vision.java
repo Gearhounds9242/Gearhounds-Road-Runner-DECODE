@@ -84,8 +84,8 @@ public class Vision {
         return null;
     }
 
-    public void close() {
-        if (visionPortal != null) visionPortal.close();
+    public Action close() {
+        return new Vision.close();
     }
 
     // ---------------------------------------------------------------
@@ -120,11 +120,11 @@ public class Vision {
             AprilTagDetection target = getTag(targetTagId);
 
 //            // Tag not visible - stop and exit, odometry got us close enough
-//            if (target == null) {
-//                drive.setDrivePowers(new PoseVelocity2d(new Vector2d(0, 0), 0));
-//                packet.addLine("AlignToTag: tag not visible, skipping");
-//                return false;
-//            }
+            if (target == null) {
+                drive.setDrivePowers(new PoseVelocity2d(new Vector2d(0, 0), 0));
+                packet.addLine("AlignToTag: tag not visible, skipping");
+                return false;
+            }
 
             // bearing is how many degrees the tag is left/right of camera center
             // offset shifts where we want to be relative to tag center
@@ -161,6 +161,14 @@ public class Vision {
 
             drive.setDrivePowers(new PoseVelocity2d(new Vector2d(0, 0), turnPower));
             return true;
+        }
+    }
+    public class close implements Action {
+        @Override
+        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            visionPortal.close();
+            return false;
+
         }
     }
 }
