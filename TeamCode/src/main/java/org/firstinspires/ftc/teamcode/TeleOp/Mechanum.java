@@ -59,6 +59,7 @@ public class Mechanum extends OpMode {
     public static int ballNumber = 0;
     public static double offset = 0;
     public static double rightKickstandPosition;
+    public static double leftKickstandPosition;
     public static double top_P = 0.0018;
     public static double top_I = 0;
     public static double top_D = 0;
@@ -272,10 +273,12 @@ public class Mechanum extends OpMode {
 
        if (gamepad1.touchpadWasPressed() && kickstandDown == true){
            robot.rightKickstand.setPosition(1);
+           robot.leftKickstand.setPosition(0);
            kickstandDown = false;
        }
        if(gamepad1.shareWasPressed() && kickstandDown == false){
-           robot.rightKickstand.setPosition(0.85);
+           robot.rightKickstand.setPosition(0.8);
+           robot.leftKickstand.setPosition(0.2);
            kickstandDown = true;
        }
 
