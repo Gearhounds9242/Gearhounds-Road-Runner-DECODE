@@ -26,8 +26,8 @@ public class Red_Far_9_Ball extends LinearOpMode {
 
     private final GearhoundsHardware robot = new GearhoundsHardware();
 
-    public int topVelocity = 1220;
-    public int bottomVelocity = 1220;
+    public int topVelocity = 1230;
+    public int bottomVelocity = 1230;
     MecanumDrive drive;
     // Starting pose
     Pose2d startPose = new Pose2d(new Vector2d(60, 14), Math.toRadians(180));
@@ -52,10 +52,10 @@ public class Red_Far_9_Ball extends LinearOpMode {
         if (isStopRequested()) return;
         Actions.runBlocking(
                 drive.actionBuilder(startPose)
-                        .strafeToSplineHeading(new Vector2d(55, 14), Math.toRadians(155))
+                        .strafeToSplineHeading(new Vector2d(55, 14), Math.toRadians(150))
                         .stopAndAdd(
                                 new ParallelAction(
-                                        shooter.runShooter(topVelocity+10, bottomVelocity+10),
+                                        shooter.runShooter(topVelocity, bottomVelocity),
                                         intake.runIntake(1, 1),
                                         new SequentialAction(
                                                 new SleepAction(1.5),
@@ -93,7 +93,7 @@ public class Red_Far_9_Ball extends LinearOpMode {
                         .strafeToSplineHeading(new Vector2d(55, 14), Math.toRadians(158))
                         .stopAndAdd(
                                 new ParallelAction(
-                                        shooter.runShooter(topVelocity, bottomVelocity),
+                                        shooter.runShooter(topVelocity-10, bottomVelocity-10),
                                         intake.runIntake(1, 1),
                                         new SequentialAction(
                                                 new SleepAction(1),
@@ -105,7 +105,8 @@ public class Red_Far_9_Ball extends LinearOpMode {
                                         )
                                 )
                         )
-                        .strafeTo(new Vector2d(35, 14))
+                        .strafeToLinearHeading(new Vector2d(50, 50), Math.toRadians(90))
+
 
 
                         .stopAndAdd(new SavePose())

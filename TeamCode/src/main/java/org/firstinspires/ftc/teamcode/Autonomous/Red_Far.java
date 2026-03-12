@@ -59,7 +59,7 @@ public class Red_Far extends LinearOpMode {
                                         shooter.runShooter(topVelocity,bottomVelocity),
                                         intake.runIntake(1,1),
                                         new SequentialAction(
-                                                new SleepAction(1.5),
+                                                new SleepAction(1),
                                                 transfer.runTransfer(),
                                                 new SleepAction(1),
                                                 transfer.stopTransfer(),
@@ -77,7 +77,7 @@ public class Red_Far extends LinearOpMode {
                                         new SequentialAction(
                                                 new SleepAction(1),
                                                 transfer.runTransfer(),
-                                                new SleepAction(1.5),
+                                                new SleepAction(1),
                                                 transfer.stopTransfer(),
                                                 shooter.stopShooter()
                                         )
@@ -87,7 +87,7 @@ public class Red_Far extends LinearOpMode {
                         .strafeToSplineHeading(new Vector2d(10, 25), Math.toRadians(90))
                         .strafeToConstantHeading(new Vector2d(11, 60))
                         .stopAndAdd(transfer.tapTransfer())
-                        .strafeToSplineHeading(new Vector2d(55, 14), Math.toRadians(152))
+                        .strafeToSplineHeading(new Vector2d(55, 14), Math.toRadians(155))
                         .stopAndAdd(
                                 new ParallelAction(
                                         shooter.runShooter(topVelocity, bottomVelocity),
@@ -95,7 +95,7 @@ public class Red_Far extends LinearOpMode {
                                         new SequentialAction(
                                                 new SleepAction(1),
                                                 transfer.runTransfer(),
-                                                new SleepAction(1.5),
+                                                new SleepAction(1),
                                                 transfer.stopTransfer(),
                                                 shooter.stopShooter()
                                         )
@@ -105,9 +105,8 @@ public class Red_Far extends LinearOpMode {
                         .strafeTo(new Vector2d(60, 60))
                         .strafeTo(new Vector2d(60, 55))
                         .strafeTo(new Vector2d(60, 60))
-
                         .stopAndAdd(transfer.tapTransfer())
-                        .strafeToSplineHeading(new Vector2d(55, 14), Math.toRadians(153))
+                        .strafeToSplineHeading(new Vector2d(55, 14), Math.toRadians(155))
                         .stopAndAdd(
                                 new ParallelAction(
                                         shooter.runShooter(topVelocity-15,bottomVelocity-15),
@@ -115,7 +114,7 @@ public class Red_Far extends LinearOpMode {
                                         new SequentialAction(
                                                 new SleepAction(1),
                                                 transfer.runTransfer(),
-                                                new SleepAction(1.5),
+                                                new SleepAction(1),
                                                 transfer.stopTransfer(),
                                                 shooter.stopShooter(),
                                                 intake.stopIntake()

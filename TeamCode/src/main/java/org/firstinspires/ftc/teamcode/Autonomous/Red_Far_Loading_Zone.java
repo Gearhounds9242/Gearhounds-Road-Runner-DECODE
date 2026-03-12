@@ -130,7 +130,7 @@ public class Red_Far_Loading_Zone extends LinearOpMode {
                         .waitSeconds(1)
 
 
-                        .splineToSplineHeading(new Pose2d(30, 30, Math.toRadians(90)), Math.toRadians(0))
+                        .strafeToLinearHeading(new Vector2d(50, 50), Math.toRadians(90))
 
 
 
