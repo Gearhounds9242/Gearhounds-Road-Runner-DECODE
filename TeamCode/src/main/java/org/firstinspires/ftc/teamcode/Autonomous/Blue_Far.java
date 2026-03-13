@@ -29,6 +29,8 @@ public class Blue_Far extends LinearOpMode {
 
     int topVelocity = 1215;
     int bottomVelocity = 1215;
+    int goalX = -70;
+    int goalY = -70;
     MecanumDrive drive;
     // Starting pose
     Pose2d startPose = new Pose2d(new Vector2d(60, -14), Math.toRadians(180));
@@ -56,13 +58,14 @@ public class Blue_Far extends LinearOpMode {
         if (isStopRequested()) return;
         Actions.runBlocking(
                 drive.actionBuilder(startPose, mirrorPoseMap)
-                        .strafeToSplineHeading(new Vector2d(55, 14), Math.toRadians(156))
+                        .strafeToSplineHeading(new Vector2d(55, 14), Math.toRadians(157))
+                        .stopAndAdd(new ParallelAction(drivetrain.turnTo(goalX,goalY)))
                         .stopAndAdd(
                                 new ParallelAction(
                                         shooter.runShooter(topVelocity,bottomVelocity),
                                         intake.runIntake(1,1),
                                         new SequentialAction(
-                                                new SleepAction(1.5),
+                                                new SleepAction(1),
                                                 transfer.runTransfer(),
                                                 new SleepAction(1),
                                                 transfer.stopTransfer(),
@@ -73,7 +76,8 @@ public class Blue_Far extends LinearOpMode {
                         .strafeToSplineHeading(new Vector2d(35,25), Math.toRadians(90))
                         .strafeToConstantHeading(new Vector2d(35, 60))
                         .stopAndAdd(transfer.tapTransfer())
-                        .strafeToSplineHeading(new Vector2d(55, 14), Math.toRadians(158))
+                        .strafeToSplineHeading(new Vector2d(55, 14), Math.toRadians(157))
+                        .stopAndAdd(new ParallelAction(drivetrain.turnTo(goalX,goalY)))
                         .stopAndAdd(
                                 new ParallelAction(
                                         shooter.runShooter(topVelocity,bottomVelocity),
@@ -87,13 +91,14 @@ public class Blue_Far extends LinearOpMode {
                                 )
                         )
                         .waitSeconds(0.5)
-                        .strafeToSplineHeading(new Vector2d(12, 25), Math.toRadians(90))
-                        .strafeToConstantHeading(new Vector2d(12, 60))
+                        .strafeToSplineHeading(new Vector2d(10, 25), Math.toRadians(90))
+                        .strafeToConstantHeading(new Vector2d(11, 60))
                         .stopAndAdd(transfer.tapTransfer())
-                        .strafeToSplineHeading(new Vector2d(55, 14), Math.toRadians(158))
+                        .strafeToSplineHeading(new Vector2d(55, 18), Math.toRadians(157))
+                        .stopAndAdd(new ParallelAction(drivetrain.turnTo(goalX,goalY)))
                         .stopAndAdd(
                                 new ParallelAction(
-                                        shooter.runShooter(topVelocity+10, bottomVelocity+10),
+                                        shooter.runShooter(topVelocity, bottomVelocity),
                                         intake.runIntake(1,1),
                                         new SequentialAction(
                                                 new SleepAction(1),
@@ -104,13 +109,16 @@ public class Blue_Far extends LinearOpMode {
                                         )
                                 )
                         )
-                        .splineToSplineHeading(new Pose2d(60, 52.5, Math.toRadians(90)), Math.toRadians(0))
+                        .splineToSplineHeading(new Pose2d(60, 14, Math.toRadians(90)), Math.toRadians(0))
+                        .strafeTo(new Vector2d(60, 60))
+                        .strafeTo(new Vector2d(60, 55))
                         .strafeTo(new Vector2d(60, 60))
                         .stopAndAdd(transfer.tapTransfer())
-                        .strafeToSplineHeading(new Vector2d(55, 14), Math.toRadians(158))
+                        .strafeToSplineHeading(new Vector2d(55, 18), Math.toRadians(157))
+                        .stopAndAdd(new ParallelAction(drivetrain.turnTo(goalX,goalY)))
                         .stopAndAdd(
                                 new ParallelAction(
-                                        shooter.runShooter(topVelocity+10,bottomVelocity+10),
+                                        shooter.runShooter(topVelocity-15,bottomVelocity-15),
                                         intake.runIntake(1,1),
                                         new SequentialAction(
                                                 new SleepAction(1),
@@ -122,7 +130,7 @@ public class Blue_Far extends LinearOpMode {
                                         )
                                 )
                         )
-                        .strafeTo(new Vector2d(35, 14))
+                        .splineToSplineHeading(new Pose2d(30,30, Math.toRadians(90)), Math.toRadians(0))
                         .stopAndAdd(new SavePose())
                         .build());
     }
