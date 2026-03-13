@@ -95,7 +95,7 @@ public class Blue_Far_NoMirror extends LinearOpMode {
                         .strafeToConstantHeading(new Vector2d(12, -60))
                         .stopAndAdd(transfer.tapTransfer())
                         // Return to shoot position 3
-                        .strafeToSplineHeading(new Vector2d(55, -14), Math.toRadians(200))
+                        .strafeToSplineHeading(new Vector2d(55, -19), Math.toRadians(205))
                         .stopAndAdd(
                                 new ParallelAction(
                                         shooter.runShooter(topVelocity + 10, bottomVelocity + 10),
@@ -110,15 +110,16 @@ public class Blue_Far_NoMirror extends LinearOpMode {
                                 )
                         )
                         // Drive to third intake location
-                        .splineToSplineHeading(new Pose2d(60, -52.5, Math.toRadians(270)), Math.toRadians(0))
-                        .strafeTo(new Vector2d(60, -60))
+                        .strafeToSplineHeading(new Vector2d(60,-52.5), Math.toRadians(270))
+                        .strafeTo(new Vector2d(65, -60))
+                        .strafeTo(new Vector2d(65, -58))
+                        .strafeTo(new Vector2d(65, -60))
                         .stopAndAdd(transfer.tapTransfer())
                         // Return to shoot position 4
-                        .strafeToSplineHeading(new Vector2d(55, -14), Math.toRadians(200))
-                        .stopAndAdd(new ParallelAction(drivetrain.turnTo(goalX,goalY)))
+                        .strafeToSplineHeading(new Vector2d(55, -14), Math.toRadians(198))
                         .stopAndAdd(
                                 new ParallelAction(
-                                        shooter.runShooter(topVelocity + 10, bottomVelocity + 10),
+                                        shooter.runShooter(topVelocity + 20, bottomVelocity + 20),
                                         intake.runIntake(1, 1),
                                         new SequentialAction(
                                                 new SleepAction(1),
