@@ -119,7 +119,7 @@ public class Blue_Far_NoMirror extends LinearOpMode {
                         .strafeToSplineHeading(new Vector2d(55, -14), Math.toRadians(198))
                         .stopAndAdd(
                                 new ParallelAction(
-                                        shooter.runShooter(topVelocity + 20, bottomVelocity + 20),
+                                        shooter.runShooter(topVelocity + 50, bottomVelocity + 50),
                                         intake.runIntake(1, 1),
                                         new SequentialAction(
                                                 new SleepAction(1),
