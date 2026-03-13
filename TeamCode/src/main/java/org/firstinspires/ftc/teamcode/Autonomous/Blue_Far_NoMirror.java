@@ -81,7 +81,7 @@ public class Blue_Far_NoMirror extends LinearOpMode {
                                 new ParallelAction(
                                         shooter.runShooter(topVelocity, bottomVelocity),
                                         new SequentialAction(
-                                                new SleepAction(1),
+                                                new SleepAction(1.3),
                                                 transfer.runTransfer(),
                                                 new SleepAction(1),
                                                 transfer.stopTransfer(),
@@ -110,13 +110,13 @@ public class Blue_Far_NoMirror extends LinearOpMode {
                                 )
                         )
                         // Drive to third intake location
-                        .strafeToSplineHeading(new Vector2d(60,-52.5), Math.toRadians(270))
+                        .strafeToSplineHeading(new Vector2d(65,-52.5), Math.toRadians(270))
                         .strafeTo(new Vector2d(65, -60))
                         .strafeTo(new Vector2d(65, -58))
                         .strafeTo(new Vector2d(65, -60))
                         .stopAndAdd(transfer.tapTransfer())
                         // Return to shoot position 4
-                        .strafeToSplineHeading(new Vector2d(55, -14), Math.toRadians(198))
+                        .strafeToSplineHeading(new Vector2d(55, -14), Math.toRadians(195))
                         .stopAndAdd(
                                 new ParallelAction(
                                         shooter.runShooter(topVelocity + 50, bottomVelocity + 50),
