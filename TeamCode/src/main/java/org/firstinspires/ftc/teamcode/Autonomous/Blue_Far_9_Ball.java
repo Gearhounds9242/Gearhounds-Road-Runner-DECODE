@@ -28,44 +28,15 @@ public class Blue_Far_9_Ball extends LinearOpMode {
 
     private final GearhoundsHardware robot = new GearhoundsHardware();
 
-    public int topVelocity = 1186;
-    public int bottomVelocity = 1186;
+    public int topVelocity = 1215;
+    public int bottomVelocity = 1215;
     int goalX = -70;
-    int goalY = -70;
+    int goalY = -60;
     MecanumDrive drive;
     // Starting pose
     Pose2d startPose = new Pose2d(new Vector2d(60, -14), Math.toRadians(180));
 
-    PoseMap mirrorPoseMap = pose -> new Pose2dDual<>(pose.position.x, pose.position.y.unaryMinus(), pose.heading.inverse());
 
-/*
-You may see the word "Pose thrown around a lot. Pose is essentially just a way of explaining a point in space using coordinates like X and Y
- */
-
-    /// Some of the Autonomous commands include (these may change as time goes on will be updated here)
-/*
-.stopAndAdd(new SavePose())
-
-.stopAndAdd(shooter.shootBallRapid("ballCount","transferWheelPower","timeout")
-.stopAndAdd(shooter.runShooter("topPower","bottomPower", "timeout"))
-.stopAndAdd(shooter.stopShooter())
-
-.stopAndAdd(intake.runIntake("power","timeout"))
-.stopAndAdd(intake.stopIntake())
-
-.stopAndAdd(transfer.tapTransfer())
- */
-
-//.stopAndAdd(
-//         new ParallelAction(
-//                 shooter.runShooter(800, 800),
-//                 intake.runIntake(1, 0.1),
-//                 new SequentialAction(
-//                         new SleepAction(2),
-//                         shooter.shootBallRapid(3, 1, 4)
-//                 )
-//         )
-//)
     @Override
     public void runOpMode() throws InterruptedException {
 
@@ -85,8 +56,9 @@ You may see the word "Pose thrown around a lot. Pose is essentially just a way o
 
         if (isStopRequested()) return;
         Actions.runBlocking(
-                drive.actionBuilder(startPose, mirrorPoseMap)
-                        .strafeToSplineHeading(new Vector2d(55, 14), Math.toRadians(158))
+                drive.actionBuilder(startPose)
+                        // Move to shoot position 1
+                        .strafeToSplineHeading(new Vector2d(55, -14), Math.toRadians(194))
                         .stopAndAdd(new ParallelAction(drivetrain.turnTo(goalX,goalY)))
                         .stopAndAdd(
                                 new ParallelAction(
@@ -101,16 +73,18 @@ You may see the word "Pose thrown around a lot. Pose is essentially just a way o
                                         )
                                 )
                         )
-                        .strafeToSplineHeading(new Vector2d(35, 25), Math.toRadians(90))
-                        .strafeToConstantHeading(new Vector2d(35, 60))
+                        // Drive to first intake location
+                        .strafeToSplineHeading(new Vector2d(35, -25), Math.toRadians(270))
+                        .strafeToConstantHeading(new Vector2d(35, -60))
                         .stopAndAdd(transfer.tapTransfer())
-                        .strafeToSplineHeading(new Vector2d(55, 14), Math.toRadians(158))
+                        // Return to shoot position 2
+                        .strafeToSplineHeading(new Vector2d(55, -14), Math.toRadians(202))
                         .stopAndAdd(new ParallelAction(drivetrain.turnTo(goalX,goalY)))
                         .stopAndAdd(
                                 new ParallelAction(
                                         shooter.runShooter(topVelocity, bottomVelocity),
                                         new SequentialAction(
-                                                new SleepAction(1),
+                                                new SleepAction(1.3),
                                                 transfer.runTransfer(),
                                                 new SleepAction(1),
                                                 transfer.stopTransfer(),
@@ -118,16 +92,18 @@ You may see the word "Pose thrown around a lot. Pose is essentially just a way o
                                         )
                                 )
                         )
-                        .splineToSplineHeading(new Pose2d(60, 52.5, Math.toRadians(90)), Math.toRadians(0))
-                        .strafeTo(new Vector2d(60, 60))
-                        .strafeTo(new Vector2d(60, 55))
-                        .strafeTo(new Vector2d(60, 60))
+                        .waitSeconds(0.5)
+                        // Drive to second intake location
+                        .strafeToSplineHeading(new Vector2d(65,-52.5), Math.toRadians(270))
+                        .strafeTo(new Vector2d(65, -60))
+                        .strafeTo(new Vector2d(65, -55))
+                        .strafeTo(new Vector2d(65, -60))
                         .stopAndAdd(transfer.tapTransfer())
-                        .strafeToSplineHeading(new Vector2d(55, 14), Math.toRadians(158))
-                        .stopAndAdd(new ParallelAction(drivetrain.turnTo(goalX,goalY)))
+                        // Return to shoot position 3
+                        .strafeToSplineHeading(new Vector2d(55, -14), Math.toRadians(195))
                         .stopAndAdd(
                                 new ParallelAction(
-                                        shooter.runShooter(topVelocity, bottomVelocity),
+                                        shooter.runShooter(topVelocity + 50, bottomVelocity + 50),
                                         intake.runIntake(1, 1),
                                         new SequentialAction(
                                                 new SleepAction(1),
@@ -139,9 +115,8 @@ You may see the word "Pose thrown around a lot. Pose is essentially just a way o
                                         )
                                 )
                         )
-                        .splineToSplineHeading(new Pose2d(30,30, Math.toRadians(90)), Math.toRadians(0))
-
-
+                        // Park and save pose
+                        .strafeTo(new Vector2d(35, -14))
                         .stopAndAdd(new SavePose())
 
                         .build());

@@ -29,10 +29,11 @@ public class Blue_Far_Spikemark_Loading_Zone extends LinearOpMode {
 
     int topVelocity = 1230;
     int bottomVelocity = 1230;
+    int goalX = -70;
+    int goalY = -60;
     MecanumDrive drive;
     // Starting pose
     Pose2d startPose = new Pose2d(new Vector2d(60, -14), Math.toRadians(180));
-    PoseMap mirrorPoseMap = pose -> new Pose2dDual<>(pose.position.x, pose.position.y.unaryMinus(), pose.heading.inverse());
 
 
     @Override
@@ -55,13 +56,13 @@ public class Blue_Far_Spikemark_Loading_Zone extends LinearOpMode {
 
         if (isStopRequested()) return;
         Actions.runBlocking(
-                drive.actionBuilder(startPose, mirrorPoseMap)
-
-                        .strafeToSplineHeading(new Vector2d(55, 14), Math.toRadians(158))
-                        // shoot
+                drive.actionBuilder(startPose)
+                        // Move to shoot position 1
+                        .strafeToSplineHeading(new Vector2d(55, -14), Math.toRadians(194))
+                        .stopAndAdd(new ParallelAction(drivetrain.turnTo(goalX,goalY)))
                         .stopAndAdd(
                                 new ParallelAction(
-                                        shooter.runShooter(topVelocity, bottomVelocity),
+                                        shooter.runShooter(topVelocity-10, bottomVelocity-10),
                                         intake.runIntake(1, 0.1),
                                         new SequentialAction(
                                                 new SleepAction(1),
@@ -72,19 +73,18 @@ public class Blue_Far_Spikemark_Loading_Zone extends LinearOpMode {
                                         )
                                 )
                         )
-
-
-                        //pick up
-                        .strafeToSplineHeading(new Vector2d(35, 25), Math.toRadians(90))
-                        .strafeToConstantHeading(new Vector2d(35, 60))
+                        // Drive to first intake location
+                        .strafeToSplineHeading(new Vector2d(35, -25), Math.toRadians(270))
+                        .strafeToConstantHeading(new Vector2d(35, -60))
                         .stopAndAdd(transfer.tapTransfer())
 
 
-                        .strafeToSplineHeading(new Vector2d(55, 15), Math.toRadians(156))
-                        //shoot
+                        // Move to shoot position 2
+                        .strafeToSplineHeading(new Vector2d(55, -14), Math.toRadians(196.8))
+                        .stopAndAdd(new ParallelAction(drivetrain.turnTo(goalX,goalY)))
                         .stopAndAdd(
                                 new ParallelAction(
-                                        shooter.runShooter(topVelocity, bottomVelocity),
+                                        shooter.runShooter(topVelocity-10, bottomVelocity-10),
                                         intake.runIntake(1, 0.1),
                                         new SequentialAction(
                                                 new SleepAction(1),
@@ -96,19 +96,18 @@ public class Blue_Far_Spikemark_Loading_Zone extends LinearOpMode {
                                 )
                         )
 
-                        // intake
-                        .strafeToLinearHeading(new Vector2d(60, 14), Math.toRadians(90))
-                        .strafeTo(new Vector2d(60, 60))
+                        // Drive to intake position 2
+                        .strafeToSplineHeading(new Vector2d(65,-52.5), Math.toRadians(270))
+                        .strafeTo(new Vector2d(65, -60))
+                        .strafeTo(new Vector2d(65, -55))
+                        .strafeTo(new Vector2d(65, -60))
                         .stopAndAdd(transfer.tapTransfer())
-                        .strafeTo(new Vector2d(60, 50))
-                        .strafeTo(new Vector2d(60, 60))
-
-                        //Shoot
-                        .strafeToSplineHeading(new Vector2d(55, 15), Math.toRadians(156))
+                        // Move to shoot position 3
+                        .strafeToSplineHeading(new Vector2d(55, -14), Math.toRadians(194))
                         .stopAndAdd(
                                 new ParallelAction(
-                                        shooter.runShooter(topVelocity, bottomVelocity),
-                                        intake.runIntake(1, 0.1),
+                                        shooter.runShooter(topVelocity + 10, bottomVelocity + 10),
+                                        intake.runIntake(1, 1),
                                         new SequentialAction(
                                                 new SleepAction(1),
                                                 transfer.runTransfer(),
@@ -119,20 +118,18 @@ public class Blue_Far_Spikemark_Loading_Zone extends LinearOpMode {
                                 )
                         )
 
-
-                        // intake
-                        .strafeToSplineHeading(new Vector2d(35, 25), Math.toRadians(90))
-                        .strafeTo(new Vector2d(35, 60))
+                        // Drive to intake position 3
+                        .strafeToSplineHeading(new Vector2d(35,-48), Math.toRadians(270))
+                        .strafeTo(new Vector2d(35, -60))
+                        .strafeTo(new Vector2d(35, -58))
+                        .strafeTo(new Vector2d(35, -60))
                         .stopAndAdd(transfer.tapTransfer())
-                        .strafeTo(new Vector2d(35, 50))
-                        .strafeTo(new Vector2d(35, 60))
-
-                        //Shoot
-                        .strafeToSplineHeading(new Vector2d(55, 15), Math.toRadians(156))
+                        // Move to shoot position 4
+                        .strafeToSplineHeading(new Vector2d(55, -14), Math.toRadians(196.7))
                         .stopAndAdd(
                                 new ParallelAction(
-                                        shooter.runShooter(topVelocity, bottomVelocity),
-                                        intake.runIntake(1, 0.1),
+                                        shooter.runShooter(topVelocity + 10, bottomVelocity + 10),
+                                        intake.runIntake(1, 1),
                                         new SequentialAction(
                                                 new SleepAction(1),
                                                 transfer.runTransfer(),
@@ -144,31 +141,12 @@ public class Blue_Far_Spikemark_Loading_Zone extends LinearOpMode {
                         )
 
 
-                        // intake
-                        .strafeToLinearHeading(new Vector2d(60, 14), Math.toRadians(90))
-                        .strafeTo(new Vector2d(60, 60))
-                        .stopAndAdd(transfer.tapTransfer())
-                        .strafeTo(new Vector2d(60, 50))
-                        .strafeTo(new Vector2d(60, 60))
+                        // Drive to intake position 4
+                        .strafeToSplineHeading(new Vector2d(59,-48), Math.toRadians(270))
+                        .strafeTo(new Vector2d(59, -60))
+                        .strafeTo(new Vector2d(59, -58))
+                        .strafeTo(new Vector2d(59, -60))
 
-
-                        //Shoot
-                        .strafeToSplineHeading(new Vector2d(55, 15), Math.toRadians(156))
-                        .stopAndAdd(
-                                new ParallelAction(
-                                        shooter.runShooter(topVelocity, bottomVelocity),
-                                        intake.runIntake(1, 0.1),
-                                        new SequentialAction(
-                                                new SleepAction(1),
-                                                transfer.runTransfer(),
-                                                new SleepAction(1),
-                                                transfer.stopTransfer(),
-                                                shooter.stopShooter()
-                                        )
-                                )
-                        )
-
-                        .strafeToSplineHeading(new Vector2d(60, 60), Math.toRadians(90))
                         .stopAndAdd(new SavePose())
                         .build());
     }
