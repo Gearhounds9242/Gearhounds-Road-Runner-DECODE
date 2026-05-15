@@ -14,7 +14,6 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.MecanumDrive;
-import org.firstinspires.ftc.teamcode.Mechanisms.Drivetrain;
 import org.firstinspires.ftc.teamcode.Mechanisms.Intake;
 import org.firstinspires.ftc.teamcode.Mechanisms.Shooter;
 import org.firstinspires.ftc.teamcode.Mechanisms.Transfer;
@@ -22,16 +21,16 @@ import org.firstinspires.ftc.teamcode.Mechanisms.Vision;
 import org.firstinspires.ftc.teamcode.Utilities.GearhoundsHardware;
 import org.firstinspires.ftc.teamcode.Utilities.PoseStorage;
 
-@Autonomous(name = "AutoAlignToBlueGoal")
-public class AutoAlignToBlueGoal extends LinearOpMode {
+@Autonomous(name = "AutoAlignToRedGoal")
+public class AutoAlignToRedGoal extends LinearOpMode {
 
-    int topVelocity = 1200;
-    int bottomVelocity = 1200;
+    int topVelocity = 1215;
+    int bottomVelocity = 1215;
     private final GearhoundsHardware robot = new GearhoundsHardware();
     MecanumDrive drive;
 
     // Starting pose
-    Pose2d startPose = new Pose2d(new Vector2d(60, -14), Math.toRadians(180));
+    Pose2d startPose = new Pose2d(new Vector2d(60, 14), Math.toRadians(180));
 
     PoseMap mirrorPoseMap = pose -> new Pose2dDual<>(pose.position.x, pose.position.y.unaryMinus(), pose.heading.inverse());
 
@@ -50,15 +49,14 @@ public class AutoAlignToBlueGoal extends LinearOpMode {
         Transfer transfer = new Transfer(robot);
         Vision vision = new Vision(robot);
         vision.setDrive(drive);
-        Drivetrain drivetrain = new Drivetrain(drive);
 
         waitForStart();
 
         if (isStopRequested()) return;
         Actions.runBlocking(
-                drive.actionBuilder(startPose, mirrorPoseMap)
-                        .strafeToSplineHeading(new Vector2d(55, 14), Math.toRadians(158))
-                        .stopAndAdd(vision.alignToTag(20,0))
+                drive.actionBuilder(startPose)
+                        .strafeToSplineHeading(new Vector2d(55, 14), Math.toRadians(156))
+                        .stopAndAdd(vision.alignToTag(Vision.RED_GOAL_TAG_ID,0))
                         .stopAndAdd(
                                 new ParallelAction(
                                         shooter.runShooter(topVelocity,bottomVelocity),
@@ -76,7 +74,6 @@ public class AutoAlignToBlueGoal extends LinearOpMode {
 
                         .stopAndAdd(new SavePose())
                         .build());
-                        vision.close();
 
 
     }
