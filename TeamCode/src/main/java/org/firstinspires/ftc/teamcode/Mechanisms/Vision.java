@@ -14,7 +14,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Position;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
-import org.firstinspires.ftc.teamcode.R;
 import org.firstinspires.ftc.teamcode.Utilities.GearhoundsHardware;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
@@ -108,7 +107,8 @@ public class Vision {
         private final double offset;
         private ElapsedTime  timer;
         private int          stableCount = 0;
-        private int itNumber =0;
+        private int tagNotVisibleItCount = 0;
+        private int itNumber = 0;
 
         AlignToTag(int targetTagId, double offset) {
             this.targetTagId = targetTagId;
@@ -123,20 +123,21 @@ public class Vision {
             if (timer == null) {
                 timer = new ElapsedTime();
             }
-
-
             AprilTagDetection target = getTag(targetTagId);
+
+
+            if (target == null){
+                tagNotVisibleItCount++;
+            }
+
 
 //            // Tag not visible - stop and exit, odometry got us close enough
 
-            if (target != null) {
-//                packet.addLine("AlignToTag: tag not visible, skipping");
-//                return false;
+            if (target != null && tagNotVisibleItCount < 3) {
 
-
+                double bearingError = target.ftcPose.bearing - offset;
                 // bearing is how many degrees the tag is left/right of camera center
                 // offset shifts where we want to be relative to tag center
-                double bearingError = target.ftcPose.bearing - offset;
 
                 // Hard timeout
                 if (timer.seconds() > ALIGN_TIMEOUT_SEC) {
@@ -169,6 +170,9 @@ public class Vision {
 
                 drive.setDrivePowers(new PoseVelocity2d(new Vector2d(0, 0), turnPower));
 
+            }
+            else {
+                return false;
             }
 
             List<AprilTagDetection> tags = tagProcessor.getDetections();
