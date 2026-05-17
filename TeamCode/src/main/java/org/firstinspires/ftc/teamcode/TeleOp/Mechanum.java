@@ -1,14 +1,18 @@
 package org.firstinspires.ftc.teamcode.TeleOp;
 
+import static com.seattlesolvers.solverslib.purepursuit.PurePursuitUtil.angleWrap;
+
 import android.util.Size;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.PoseVelocity2d;
 import com.acmerobotics.roadrunner.Rotation2d;
 import com.acmerobotics.roadrunner.Vector2d;
+import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Gamepad;
@@ -17,6 +21,7 @@ import com.seattlesolvers.solverslib.controller.PIDController;
 import com.seattlesolvers.solverslib.controller.PIDFController;
 import com.seattlesolvers.solverslib.util.InterpLUT;
 
+import org.firstinspires.ftc.robotcontroller.external.samples.UtilityOctoQuadConfigMenu;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
@@ -31,6 +36,7 @@ import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -57,6 +63,8 @@ public class Mechanum extends OpMode {
     public static double rotationFactor = -0.03;
     public static double aimTolorance = 0.2;
     public static int ballNumber = 0;
+    public static int goalX = 0;
+    public static int goalY = 0;
     public static double offset = 0;
     public static double rightKickstandPosition;
     public static double leftKickstandPosition;
@@ -77,6 +85,7 @@ public class Mechanum extends OpMode {
     public static double rightLightDeafualtColor = 0;
     public static double range;
     public static boolean autoPower = true;
+    public static boolean driverIsControlling;
     public static double farOffset = 0;
     public static double closeOffset = 0;
     public static double bearing = 0;
@@ -111,6 +120,9 @@ public class Mechanum extends OpMode {
             0, 0, 0, 0);
     public YawPitchRollAngles cameraOrientation = new YawPitchRollAngles(AngleUnit.DEGREES,
             0, 180, 0, 0);
+
+
+    private List<Action> driveActions = new ArrayList<>();
 
     @Override
     public void init() {
@@ -194,6 +206,11 @@ public class Mechanum extends OpMode {
         Pose2d pose = drive.localizer.getPose();
         //
 
+        driverIsControlling =
+            Math.abs(gamepad1.left_stick_x) > 0.1 ||
+            Math.abs(gamepad1.left_stick_y) > 0.1 ||
+            Math.abs(gamepad1.right_stick_x) > 0.1 ||
+            Math.abs(gamepad1.right_stick_y) > 0.1;
 
         topShooterController.setPIDF(top_P, top_I, top_D, top_F);
         bottomShooterController.setPIDF(bottom_P, bottom_I, bottom_D, bottom_F);
@@ -246,10 +263,14 @@ public class Mechanum extends OpMode {
         if (gamepad1.dpadRightWasPressed() || gamepad2.optionsWasPressed()) {
             TARGET_ID = 24;
             offset = 2.1;
+            goalX = -70;
+            goalY = 70;
             isRedAlliance = true;
         }
         if (gamepad1.dpadLeftWasPressed() || gamepad2.shareWasPressed()) {
             TARGET_ID = 20;
+            goalX = -70;
+            goalY = -70;
             isRedAlliance = false;
         }
 
@@ -359,7 +380,6 @@ public class Mechanum extends OpMode {
         }
 
 
-
 /*
 CAMERA STUFF
  */
@@ -385,43 +405,91 @@ CAMERA STUFF
             canSeeTag = false;
         }
 
+        for (AprilTagDetection detection : detections) {
+            if (detection.metadata != null) {
+                telemetry.addLine(String.format("\n==== (ID %d) %s", detection.id, detection.metadata.name));
+                // Only use tags that don't have Obelisk in them
+                if (!detection.metadata.name.contains("Obelisk")) {
+                    double cameraOutputX = detection.robotPose.getPosition().x;
+                    double cameraOutputY = detection.robotPose.getPosition().y;
+//                    double cameraOutputZ = detection.robotPose.getPosition().z;
 
-        if (gamepad1.left_trigger > 0.9 && targetTag != null) {
+//                    double cameraOutputPitch = detection.robotPose.getOrientation().getPitch(AngleUnit.DEGREES);
+//                    double cameraOutputRoll = detection.robotPose.getOrientation().getRoll(AngleUnit.DEGREES);
+                    double cameraOutputYaw = detection.robotPose.getOrientation().getYaw(AngleUnit.DEGREES);
 
-            double bearing = targetTag.ftcPose.bearing;
+                    drive.localizer.setPose(new Pose2d(cameraOutputX, cameraOutputY, Math.toRadians(cameraOutputYaw)));
 
-            if (Math.abs(bearing) > aimTolorance) {    // 5-degree tolerance
-                autoTurn = (bearing + offset) * rotationFactor;// proportional turn
+                }
             }
-            telemetry.addData("range", targetTag.ftcPose.range);
-        }
-        if (gamepad1.left_trigger > 0.9 && targetTag == null) {
-            gamepad1.runRumbleEffect(noEffect);
         }
 
 
+        if (gamepad1.left_trigger > 0.9) {
+            if (targetTag != null) {
 
-//TODO: Combine joystick movement and camera auto centering movement
+                // Tag visible: old controll that I know works
+                double bearing = targetTag.ftcPose.bearing;
+
+                if (Math.abs(bearing) > aimTolorance) {
+                    autoTurn = (bearing + offset) * rotationFactor;
+                }
+
+                telemetry.addData("range", targetTag.ftcPose.range);
+
+            } else {
+                // Tag not visible: use odo and rr to turn us twords the goal coordinates only works if there is no other drive action happening
+
+                // This may be slow like 0.5 seconds before it will even start to move so may have to switch to a point to point driving style not using rr actions
+                if (driveActions.isEmpty() && targetTag == null) {
+                    double dx = goalX - drive.localizer.getPose().position.x;
+                    double dy = goalY - drive.localizer.getPose().position.y;
+                    double targetHeading = Math.atan2(dy, dx) + offset;
+                    double currentHeading = drive.localizer.getPose().heading.toDouble();
+                    double turnAngle = angleWrap(targetHeading - currentHeading);
+
+                    Action goalTurnAction = drive.actionBuilder(drive.localizer.getPose())
+                            .turn(turnAngle)
+                            .build();
+                    driveActions.add(goalTurnAction);
+                }
+
+            }
+        }
+        // Yeah so this is made by claude and I have no idea if this makes any sense
+        List<Action> newDriveActions = new ArrayList<>();
+        for (Action action : driveActions) {
+            action.preview(new TelemetryPacket().fieldOverlay());
+            if (action.run(new TelemetryPacket())) {
+                newDriveActions.add(action);
+            }
+        }
+        driveActions = newDriveActions;
 
 
-        // Options button - reset driver's forward reference
         if (gamepad1.optionsWasPressed()) {
-            // Store current robot heading as the new "forward" reference
-            // without touching the localizer pose at all
             headingOffset = drive.localizer.getPose().heading.toDouble();
         }
 
-// Then in the drive.setDrivePowers call, apply the offset:
-        drive.setDrivePowers(
-                Rotation2d.exp(-drive.localizer.getPose().heading.toDouble() + headingOffset)
-                        .times(new PoseVelocity2d(
-                                new Vector2d(
-                                        (-gamepad1.left_stick_y * shift),
-                                        (-gamepad1.left_stick_x * shift)
-                                ),
-                                (-gamepad1.right_stick_x * shift) + autoTurn
-                        ))
-        );
+        // ================================================================
+        // DRIVE CONTROL
+        //
+        // If a drive action is running, skip manual input so we don't
+        // fight the action. The driver can always cancel by moving a stick.
+        // If no drive action is running, normal field-centric drive applies.
+        // ================================================================
+        if (driveActions.isEmpty()) {
+            drive.setDrivePowers(
+                    Rotation2d.exp(-drive.localizer.getPose().heading.toDouble() + headingOffset)
+                            .times(new PoseVelocity2d(
+                                    new Vector2d(
+                                            (-gamepad1.left_stick_y * shift),
+                                            (-gamepad1.left_stick_x * shift)
+                                    ),
+                                    (-gamepad1.right_stick_x * shift) + autoTurn
+                            ))
+            );
+        }
 
 
         TelemetryPacket packet = new TelemetryPacket();
@@ -448,7 +516,7 @@ CAMERA STUFF
         telemetry.addData("autopower", autoPower);
         telemetry.addData("X",drive.localizer.getPose().position.x);
         telemetry.addData("Y",drive.localizer.getPose().position.y);
-        telemetry.addData("Heading",drive.localizer.getPose().heading);
+        telemetry.addData("Heading",Math.toDegrees(pose.heading.toDouble()));
         telemetry.update();
     }
 
