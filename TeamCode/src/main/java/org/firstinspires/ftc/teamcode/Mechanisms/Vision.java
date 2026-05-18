@@ -24,8 +24,8 @@ import java.util.List;
 public class Vision {
 
     // Tuning constants - all adjustable from FTC Dashboard
-    public static double BEARING_TOLERANCE_DEG = 1.5;
-    public static double TURN_GAIN             = 0.015;
+    public static double aimTolorance = 0.2;
+    public static double rotationFactor = 0.015;
 //    public static double MAX_TURN_POWER        = 0.4;
 //    public static double MIN_TURN_POWER        = 0.05;
     public static double ALIGN_TIMEOUT_SEC     = 3.0;
@@ -131,20 +131,18 @@ public class Vision {
             }
 
 
-//            // Tag not visible - stop and exit, odometry got us close enough
+            // Hard timeout
+            if (timer.seconds() > ALIGN_TIMEOUT_SEC) {
+                drive.setDrivePowers(new PoseVelocity2d(new Vector2d(0, 0), 0));
+                packet.addLine("AlignToTag: TIMED OUT");
+                return false;
+            }
 
             if (target != null && tagNotVisibleItCount < 3) {
 
                 double bearingError = target.ftcPose.bearing - offset;
                 // bearing is how many degrees the tag is left/right of camera center
                 // offset shifts where we want to be relative to tag center
-
-                // Hard timeout
-                if (timer.seconds() > ALIGN_TIMEOUT_SEC) {
-                    drive.setDrivePowers(new PoseVelocity2d(new Vector2d(0, 0), 0));
-                    packet.addLine("AlignToTag: TIMED OUT");
-                    return false;
-                }
 
                 packet.put("AlignToTag bearing", target.ftcPose.bearing);
                 packet.put("AlignToTag bearingError", bearingError);
@@ -153,7 +151,7 @@ public class Vision {
 
 
                 // Check tolerance
-                if (Math.abs(bearingError) < BEARING_TOLERANCE_DEG) {
+                if (Math.abs(target.ftcPose.bearing + offset) > aimTolorance) {
                     stableCount++;
                     if (stableCount >= STABLE_COUNT_REQ) {
                         drive.setDrivePowers(new PoseVelocity2d(new Vector2d(0, 0), 0));
@@ -166,7 +164,7 @@ public class Vision {
 
                 // Proportional turn toward tag - negated because positive bearing
                 // means tag is to the left, so we turn left (positive angular vel)
-                double turnPower = -bearingError * TURN_GAIN;
+                double turnPower = target.ftcPose.bearing + offset * rotationFactor;
 
                 drive.setDrivePowers(new PoseVelocity2d(new Vector2d(0, 0), turnPower));
 

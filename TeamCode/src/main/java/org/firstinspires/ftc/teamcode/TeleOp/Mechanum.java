@@ -225,7 +225,7 @@ public class Mechanum extends OpMode {
         boolean topReady = Math.abs(Top_Target_Speed - robot.topMotor.getVelocity()) < ROLLER_VELOCITY_TOLERANCE;
         boolean bottomReady = Math.abs(Bottom_Target_Speed - robot.bottomMotor.getVelocity()) < ROLLER_VELOCITY_TOLERANCE;
 
-        double autoTurn = 0;
+        double turnPower = 0;
 
         if ((topReady && bottomReady) && (Math.abs(bearing) < 3)) {
             leftLightColor = 0.472;
@@ -432,7 +432,7 @@ CAMERA STUFF
                 double bearing = targetTag.ftcPose.bearing;
 
                 if (Math.abs(bearing) > aimTolorance) {
-                    autoTurn = (bearing + offset) * rotationFactor;
+                    turnPower = (bearing + offset) * rotationFactor;
                 }
 
                 telemetry.addData("range", targetTag.ftcPose.range);
@@ -486,7 +486,7 @@ CAMERA STUFF
                                             (-gamepad1.left_stick_y * shift),
                                             (-gamepad1.left_stick_x * shift)
                                     ),
-                                    (-gamepad1.right_stick_x * shift) + autoTurn
+                                    (-gamepad1.right_stick_x * shift) + turnPower
                             ))
             );
         }
