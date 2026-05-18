@@ -120,17 +120,10 @@ public class Vision {
             itNumber++;
             drive.localizer.update();
 
+
             if (timer == null) {
                 timer = new ElapsedTime();
             }
-            AprilTagDetection target = getTag(targetTagId);
-
-
-            if (target == null){
-                tagNotVisibleItCount++;
-            }
-
-
             // Hard timeout
             if (timer.seconds() > ALIGN_TIMEOUT_SEC) {
                 drive.setDrivePowers(new PoseVelocity2d(new Vector2d(0, 0), 0));
@@ -138,22 +131,28 @@ public class Vision {
                 return false;
             }
 
-            if (target != null && tagNotVisibleItCount < 3) {
 
-                double bearingError = target.ftcPose.bearing - offset;
-                // bearing is how many degrees the tag is left/right of camera center
-                // offset shifts where we want to be relative to tag center
+            AprilTagDetection target = getTag(targetTagId);
 
+            if (target == null){
+                tagNotVisibleItCount++;
+            }
+            if (tagNotVisibleItCount > 5) {
+                return false;
+            }
+
+            if (target != null) {
                 packet.put("AlignToTag bearing", target.ftcPose.bearing);
-                packet.put("AlignToTag bearingError", bearingError);
                 packet.put("AlignToTag range", target.ftcPose.range);
                 packet.put("AlignToTag stableCount", stableCount);
 
 
                 // Check tolerance
-                if (Math.abs(target.ftcPose.bearing + offset) > aimTolorance) {
+                // bearing is how many degrees the tag is left/right of camera center
+                // offset shifts where we want to be relative to tag center
+                if (Math.abs(target.ftcPose.bearing + offset) < aimTolorance) {
                     stableCount++;
-                    if (stableCount >= STABLE_COUNT_REQ) {
+                    if (stableCount > STABLE_COUNT_REQ) {
                         drive.setDrivePowers(new PoseVelocity2d(new Vector2d(0, 0), 0));
                         packet.addLine("AlignToTag: LOCKED");
                         return false;
@@ -164,13 +163,9 @@ public class Vision {
 
                 // Proportional turn toward tag - negated because positive bearing
                 // means tag is to the left, so we turn left (positive angular vel)
-                double turnPower = target.ftcPose.bearing + offset * rotationFactor;
+                double turnPower = target.ftcPose.bearing * rotationFactor;
 
                 drive.setDrivePowers(new PoseVelocity2d(new Vector2d(0, 0), turnPower));
-
-            }
-            else {
-                return false;
             }
 
             List<AprilTagDetection> tags = tagProcessor.getDetections();
