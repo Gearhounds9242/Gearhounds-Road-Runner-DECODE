@@ -55,7 +55,8 @@ public class AutoAlignToRedGoal extends LinearOpMode {
         if (isStopRequested()) return;
         Actions.runBlocking(
                 drive.actionBuilder(startPose)
-                        .strafeToSplineHeading(new Vector2d(55, 14), Math.toRadians(156))
+                        .strafeToSplineHeading(new Vector2d(55, 14), Math.toRadians(170))
+                        .waitSeconds(2)
                         .stopAndAdd(vision.alignToTag(Vision.RED_GOAL_TAG_ID,0))
                         .stopAndAdd(
                                 new ParallelAction(
@@ -71,7 +72,7 @@ public class AutoAlignToRedGoal extends LinearOpMode {
                                 )
                         )
 
-
+                        .stopAndAdd(vision.close())
                         .stopAndAdd(new SavePose())
                         .build());
 

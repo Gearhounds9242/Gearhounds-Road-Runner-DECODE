@@ -24,8 +24,8 @@ import java.util.List;
 public class Vision {
 
     // Tuning constants - all adjustable from FTC Dashboard
-    public static double aimTolorance = 0.2;
-    public static double rotationFactor = 0.015;
+    public static double aimTolorance = 3.0;
+    public static double rotationFactor = -0.03;
 //    public static double MAX_TURN_POWER        = 0.4;
 //    public static double MIN_TURN_POWER        = 0.05;
     public static double ALIGN_TIMEOUT_SEC     = 3.0;
@@ -134,17 +134,22 @@ public class Vision {
 
             AprilTagDetection target = getTag(targetTagId);
 
-            if (target == null){
-                tagNotVisibleItCount++;
-            }
-            if (tagNotVisibleItCount > 5) {
-                return false;
-            }
+//            if (target == null){
+//                tagNotVisibleItCount++;
+//            }
+//            if (tagNotVisibleItCount > 5) {
+//                packet.addLine("AlignToTag: Not Visible count exceeded 5");
+//                return false;
+//            }
+
+            packet.put("AlignToTag: IsAttached", robot.webcam.isAttached());
+            packet.put("AlignToTag: CameraName", robot.webcam.getUsbDeviceNameIfAttached());
 
             if (target != null) {
                 packet.put("AlignToTag bearing", target.ftcPose.bearing);
                 packet.put("AlignToTag range", target.ftcPose.range);
                 packet.put("AlignToTag stableCount", stableCount);
+
 
 
                 // Check tolerance
@@ -159,25 +164,29 @@ public class Vision {
                     }
                 } else {
                     stableCount = 0;
+                    // Proportional turn toward tag - negated because positive bearing
+                    // means tag is to the left, so we turn left (positive angular vel)
+                    double turnPower = target.ftcPose.bearing * rotationFactor;
+
+                    packet.put("AlignToTag turnPower", turnPower);
+
+                    drive.setDrivePowers(new PoseVelocity2d(new Vector2d(0, 0), turnPower));
                 }
 
-                // Proportional turn toward tag - negated because positive bearing
-                // means tag is to the left, so we turn left (positive angular vel)
-                double turnPower = target.ftcPose.bearing * rotationFactor;
 
-                drive.setDrivePowers(new PoseVelocity2d(new Vector2d(0, 0), turnPower));
+
             }
 
-            List<AprilTagDetection> tags = tagProcessor.getDetections();
-            packet.put("List Length", tags.toArray().length);
-            for (AprilTagDetection t : tags) {
-                packet.put("Detections", t.id);
-
-                if(t.id == RED_GOAL_TAG_ID){
-                    packet.put("it number", itNumber);
-                    return false;
-                }
-            }
+//            List<AprilTagDetection> tags = tagProcessor.getDetections();
+//            packet.put("List Length", tags.toArray().length);
+//            for (AprilTagDetection t : tags) {
+//                packet.put("Detections", t.id);
+//
+//                if(t.id == RED_GOAL_TAG_ID){
+//                    packet.put("it number", itNumber);
+//                    return false;
+//                }
+//            }
 
             return true;
         }

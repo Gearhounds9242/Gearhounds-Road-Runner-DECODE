@@ -90,6 +90,7 @@ public class GearhoundsHardware extends Hardware {
 
 //Comment back in when needed for vision
         webcam = robotMap.get(WebcamName.class, "Webcam 1");
+        webcam.resetDeviceConfigurationForOpMode();
         //Drivetrain Members
 
 //        drop = robotMap.get(Servo.class, "drop");
