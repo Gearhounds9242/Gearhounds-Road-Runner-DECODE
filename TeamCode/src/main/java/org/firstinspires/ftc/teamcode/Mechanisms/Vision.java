@@ -31,9 +31,9 @@ public class Vision {
     public static double ALIGN_TIMEOUT_SEC     = 3.0;
     public static int    STABLE_COUNT_REQ      = 5;
     public Position cameraPosition = new Position(DistanceUnit.INCH,
-            0, 0, 0, 0);
+            0, -3.74102362, 15.939252, 0);
     public YawPitchRollAngles cameraOrientation = new YawPitchRollAngles(AngleUnit.DEGREES,
-            0, 180, 0, 0);
+            0, -75, 180, 0);
 
     // Tag IDs
     public static final int RED_GOAL_TAG_ID  = 24;

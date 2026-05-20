@@ -117,9 +117,9 @@ public class Mechanum extends OpMode {
     private VisionPortal visionPortal;
     private MecanumDrive drive;
     public Position cameraPosition = new Position(DistanceUnit.INCH,
-            0, 0, 0, 0);
+            0, -3.74102362, 15.939252, 0);
     public YawPitchRollAngles cameraOrientation = new YawPitchRollAngles(AngleUnit.DEGREES,
-            0, 180, 0, 0);
+            0, -75, 180, 0);
 
 
     private List<Action> driveActions = new ArrayList<>();

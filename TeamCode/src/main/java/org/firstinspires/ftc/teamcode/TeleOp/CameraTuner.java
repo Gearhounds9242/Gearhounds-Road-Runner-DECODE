@@ -46,9 +46,9 @@ public class CameraTuner extends OpMode {
 
     // Camera pose (same as your original)
     public Position cameraPosition = new Position(DistanceUnit.INCH,
-            0, 0, 0, 0);
+            0, -3.74102362, 15.939252, 0);
     public YawPitchRollAngles cameraOrientation = new YawPitchRollAngles(AngleUnit.DEGREES,
-            0, 180, 0, 0);
+            0, -75, 180, 0);
 
     // ====== Internal state ======
     private long curExposure;
