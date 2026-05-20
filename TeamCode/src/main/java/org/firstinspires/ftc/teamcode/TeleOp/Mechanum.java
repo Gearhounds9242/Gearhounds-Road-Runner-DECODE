@@ -417,8 +417,11 @@ CAMERA STUFF
 //                    double cameraOutputPitch = detection.robotPose.getOrientation().getPitch(AngleUnit.DEGREES);
 //                    double cameraOutputRoll = detection.robotPose.getOrientation().getRoll(AngleUnit.DEGREES);
                     double cameraOutputYaw = detection.robotPose.getOrientation().getYaw(AngleUnit.DEGREES);
+                    telemetry.addData("cameraOutputX", cameraOutputX);
+                    telemetry.addData("cameraOutputY",cameraOutputY);
+                    telemetry.addData("cameraOutputYaw", cameraOutputYaw);
 
-                    drive.localizer.setPose(new Pose2d(cameraOutputX, cameraOutputY, Math.toRadians(cameraOutputYaw)));
+//                    drive.localizer.setPose(new Pose2d(cameraOutputX, cameraOutputY, Math.toRadians(cameraOutputYaw)));
 
                 }
             }
@@ -445,8 +448,9 @@ CAMERA STUFF
                     double dx = goalX - drive.localizer.getPose().position.x;
                     double dy = goalY - drive.localizer.getPose().position.y;
                     double targetHeading = Math.atan2(dy, dx) + offset;
-                    double currentHeading = drive.localizer.getPose().heading.toDouble();
+                    double currentHeading = Math.toDegrees(pose.heading.toDouble());
                     double turnAngle = angleWrap(targetHeading - currentHeading);
+                    telemetry.addData("turnAngle", turnAngle);
 
                     Action goalTurnAction = drive.actionBuilder(drive.localizer.getPose())
                             .turn(turnAngle)
@@ -466,7 +470,10 @@ CAMERA STUFF
         }
         driveActions = newDriveActions;
 
-
+        if (driverIsControlling = true){
+            //cancel all current drive actions
+            driveActions.clear();
+        }
         if (gamepad1.optionsWasPressed()) {
             headingOffset = drive.localizer.getPose().heading.toDouble();
         }
