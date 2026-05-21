@@ -205,6 +205,7 @@ public class Mechanum extends OpMode {
         drive.localizer.update();
         Pose2d pose = drive.localizer.getPose();
         //
+        TelemetryPacket packet = new TelemetryPacket();
 
         driverIsControlling =
             Math.abs(gamepad1.left_stick_x) > 0.1 ||
@@ -420,6 +421,9 @@ CAMERA STUFF
                     telemetry.addData("cameraOutputX", cameraOutputX);
                     telemetry.addData("cameraOutputY",cameraOutputY);
                     telemetry.addData("cameraOutputYaw", cameraOutputYaw);
+                    packet.put("cameraOutputX", cameraOutputX);
+                    packet.put("cameraOutputY", cameraOutputY);
+                    packet.put("cameraOutputYaw", cameraOutputYaw);
 
 //                    drive.localizer.setPose(new Pose2d(cameraOutputX, cameraOutputY, Math.toRadians(cameraOutputYaw)));
 
@@ -447,7 +451,7 @@ CAMERA STUFF
                 if (driveActions.isEmpty() && targetTag == null) {
                     double dx = goalX - drive.localizer.getPose().position.x;
                     double dy = goalY - drive.localizer.getPose().position.y;
-                    double targetHeading = Math.atan2(dy, dx) + offset;
+                    double targetHeading = Math.atan2(-dy, -dx) + offset;
                     double currentHeading = Math.toDegrees(pose.heading.toDouble());
                     double turnAngle = angleWrap(targetHeading - currentHeading);
                     telemetry.addData("turnAngle", turnAngle);
@@ -499,7 +503,7 @@ CAMERA STUFF
         }
 
 
-        TelemetryPacket packet = new TelemetryPacket();
+
 //        packet.put("TopMotorRPM", (robot.TopMotor.getVelocity() / 28.0) * 60.0);
 //        packet.put("BottomMotorRPM", (robot.BottomMotor.getVelocity() / 28.0) * 60.0);
 //        packet.put("TopCurrentA", robot.TopMotor.getCurrent(CurrentUnit.AMPS));
