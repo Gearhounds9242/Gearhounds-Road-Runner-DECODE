@@ -5,6 +5,7 @@ import static com.seattlesolvers.solverslib.purepursuit.PurePursuitUtil.angleWra
 import android.util.Size;
 
 import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.canvas.Canvas;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
@@ -146,7 +147,10 @@ public class Mechanum extends OpMode {
 
         velocityTopLut.add(-1, 0);
         velocityTopLut.add(0, 0);
+        velocityTopLut.add(55, 400);
+        velocityTopLut.add(65.5, 700);
         velocityTopLut.add(66,1125);
+        velocityTopLut.add(74, 880);
         velocityTopLut.add(86,1125);
         velocityTopLut.add(125,1170);
         velocityTopLut.add(134.5,1241);
@@ -155,7 +159,10 @@ public class Mechanum extends OpMode {
 //
         velocityBottomLut.add(-1, 0);
         velocityBottomLut.add(0, 0);
+        velocityBottomLut.add(55, 1820);
+        velocityBottomLut.add(65.5, 1480);
         velocityBottomLut.add(66,1200);
+        velocityBottomLut.add(74, 1380);
         velocityBottomLut.add(86,1125);
         velocityBottomLut.add(125,1170);
         velocityBottomLut.add(134.5,1241);
@@ -200,7 +207,7 @@ public class Mechanum extends OpMode {
 
 
     @Override
-    public void loop() {
+    public void  loop() {
         // Update Road Runner’s localization
         drive.localizer.update();
         Pose2d pose = drive.localizer.getPose();
@@ -277,10 +284,10 @@ public class Mechanum extends OpMode {
 
 
         if (gamepad1.ps && isRedAlliance){
-            drive.localizer.setPose(new Pose2d(60.5, -61, 90));
+            drive.localizer.setPose(new Pose2d(60.5, -61, Math.toRadians(90)));
         }
         if (gamepad1.ps && !isRedAlliance){
-            drive.localizer.setPose(new Pose2d(60.5, 61, 270));
+            drive.localizer.setPose(new Pose2d(60.5, 61, Math.toRadians(90)));
         }
 
 
@@ -425,8 +432,36 @@ CAMERA STUFF
                     packet.put("cameraOutputY", cameraOutputY);
                     packet.put("cameraOutputYaw", cameraOutputYaw);
 
-//                    drive.localizer.setPose(new Pose2d(cameraOutputX, cameraOutputY, Math.toRadians(cameraOutputYaw)));
+                    drive.localizer.setPose(new Pose2d(cameraOutputX, cameraOutputY, (Math.toRadians(cameraOutputYaw)) ));
 
+                }
+            }
+        }
+
+///all standing at the blue aliance
+        if (drive.localizer.getPose().position.x > 10){
+            if (isRedAlliance){
+                offset = -1;
+            }else{
+                offset = 1;
+            }
+
+        }
+        else {
+            if(drive.localizer.getPose().position.y > 0){
+                //red goal side
+                if(isRedAlliance){
+                    offset = -4.5;
+                }else{
+                    offset = 4.5;
+                }
+            }
+            else {
+                //blue goal side
+                if(isRedAlliance){
+                    offset = -3;
+                }else {
+                    offset = 3;
                 }
             }
         }
@@ -444,14 +479,14 @@ CAMERA STUFF
 
                 telemetry.addData("range", targetTag.ftcPose.range);
 
-            } else {
+            }/* else {
                 // Tag not visible: use odo and rr to turn us twords the goal coordinates only works if there is no other drive action happening
 
                 // This may be slow like 0.5 seconds before it will even start to move so may have to switch to a point to point driving style not using rr actions
                 if (driveActions.isEmpty() && targetTag == null) {
                     double dx = goalX - drive.localizer.getPose().position.x;
                     double dy = goalY - drive.localizer.getPose().position.y;
-                    double targetHeading = Math.atan2(-dy, -dx) + offset;
+                    double targetHeading = Math.atan2(-dy, -dx);
                     double currentHeading = Math.toDegrees(pose.heading.toDouble());
                     double turnAngle = angleWrap(targetHeading - currentHeading);
                     telemetry.addData("turnAngle", turnAngle);
@@ -462,22 +497,22 @@ CAMERA STUFF
                     driveActions.add(goalTurnAction);
                 }
 
-            }
+            }*/
         }
-        // Yeah so this is made by claude and I have no idea if this makes any sense
-        List<Action> newDriveActions = new ArrayList<>();
-        for (Action action : driveActions) {
-            action.preview(new TelemetryPacket().fieldOverlay());
-            if (action.run(new TelemetryPacket())) {
-                newDriveActions.add(action);
-            }
-        }
-        driveActions = newDriveActions;
-
-        if (driverIsControlling = true){
-            //cancel all current drive actions
-            driveActions.clear();
-        }
+//        // Yeah so this is made by claude and I have no idea if this makes any sense
+//        List<Action> newDriveActions = new ArrayList<>();
+//        for (Action action : driveActions) {
+//            action.preview(new TelemetryPacket().fieldOverlay());
+//            if (action.run(new TelemetryPacket())) {
+//                newDriveActions.add(action);
+//            }
+//        }
+//        driveActions = newDriveActions;
+//
+//        if (driverIsControlling){
+//            //cancel all current drive actions
+//            driveActions.clear();
+//        }
         if (gamepad1.optionsWasPressed()) {
             headingOffset = drive.localizer.getPose().heading.toDouble();
         }
@@ -528,6 +563,7 @@ CAMERA STUFF
         telemetry.addData("X",drive.localizer.getPose().position.x);
         telemetry.addData("Y",drive.localizer.getPose().position.y);
         telemetry.addData("Heading",Math.toDegrees(pose.heading.toDouble()));
+        telemetry.addData("offset", offset);
         telemetry.update();
     }
 
