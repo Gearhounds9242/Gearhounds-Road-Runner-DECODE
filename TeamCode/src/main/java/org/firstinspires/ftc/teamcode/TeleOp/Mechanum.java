@@ -24,6 +24,9 @@ import com.seattlesolvers.solverslib.util.InterpLUT;
 
 import org.firstinspires.ftc.robotcontroller.external.samples.UtilityOctoQuadConfigMenu;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.ExposureControl;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.GainControl;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.WhiteBalanceControl;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Position;
@@ -39,6 +42,7 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 
 /**
@@ -116,6 +120,15 @@ public class Mechanum extends OpMode {
     private FtcDashboard dashboard;
     private AprilTagProcessor tagProcessor;
     private VisionPortal visionPortal;
+    private ExposureControl exposureControl;
+    private GainControl gainControl;
+    private WhiteBalanceControl whiteBalanceControl;
+    private boolean controlsReady = false;
+    public static long EXPOSURE_MS = 6;
+    public static int GAIN = 0;
+    public static int WHITE_BALANCE_K = 4000;
+
+
     private MecanumDrive drive;
     public Position cameraPosition = new Position(DistanceUnit.INCH,
             0, -3.74102362, 15.939252, 0);
@@ -127,6 +140,9 @@ public class Mechanum extends OpMode {
 
     @Override
     public void init() {
+        robot.init(hardwareMap);             // motors/servos/IMU setup// webcam + AprilTag setup
+
+
         dashboard = FtcDashboard.getInstance();
         dashboard.setTelemetryTransmissionInterval(25);
 //        TARGET_ID = 20;
@@ -187,7 +203,7 @@ public class Mechanum extends OpMode {
 //                .enableLiveView(true)
                 .build();
 
-        robot.init(hardwareMap);             // motors/servos/IMU setup// webcam + AprilTag setup
+
         drive = new MecanumDrive(hardwareMap, PoseStorage.currentPose);
         telemetry.addData("Status", "Initialized");
         telemetry.update();
@@ -195,6 +211,28 @@ public class Mechanum extends OpMode {
         topShooterController = new PIDFController(top_P, top_I, top_D, top_F);
         bottomShooterController = new PIDFController(bottom_P, bottom_I, bottom_D, bottom_F);
         aimController = new PIDController(aim_P, aim_I, aime_D);
+    }
+
+
+    @Override
+    public void init_loop() {
+        // Wait until the camera is streaming before trying to grab controls
+        if (!controlsReady && visionPortal.getCameraState() == VisionPortal.CameraState.STREAMING) {
+            setupCameraControls();
+            controlsReady = true;
+        }
+
+        if (controlsReady) {
+            telemetry.addLine(">> Camera ready!");
+//            telemetry.addData("Exposure range", "%d - %d ms", minExposure, maxExposure);
+//            telemetry.addData("Gain range", "%d - %d", minGain, maxGain);
+//            telemetry.addData("White Balance range", "%d - %d K", minWhiteBalance, maxWhiteBalance);
+            exposureControl.setExposure(EXPOSURE_MS, TimeUnit.MILLISECONDS);
+            gainControl.setGain(GAIN);
+            whiteBalanceControl.setWhiteBalanceTemperature(WHITE_BALANCE_K);
+        } else {
+            telemetry.addLine("Waiting for camera...");
+        }
     }
 
     @Override
@@ -432,13 +470,13 @@ CAMERA STUFF
                     packet.put("cameraOutputY", cameraOutputY);
                     packet.put("cameraOutputYaw", cameraOutputYaw);
 
-                    drive.localizer.setPose(new Pose2d(cameraOutputX, cameraOutputY, (Math.toRadians(cameraOutputYaw)) ));
+                    drive.localizer.setPose(new Pose2d(cameraOutputX, cameraOutputY, (Math.toRadians(cameraOutputYaw + 90)) ));
 
                 }
             }
         }
 
-///all standing at the blue aliance
+///all standing at the blue alliance
         if (drive.localizer.getPose().position.x > 10){
             if (isRedAlliance){
                 offset = -1;
@@ -572,6 +610,41 @@ CAMERA STUFF
         if (visionPortal != null) {
             visionPortal.close();
         }
+    }
+
+    private void setupCameraControls() {
+        // Get control interfaces from VisionPortal
+        exposureControl = visionPortal.getCameraControl(ExposureControl.class);
+        gainControl = visionPortal.getCameraControl(GainControl.class);
+        whiteBalanceControl = visionPortal.getCameraControl(WhiteBalanceControl.class);
+
+        // Switch exposure to manual mode (required to set gain as well)
+        if (exposureControl.getMode() != ExposureControl.Mode.Manual) {
+            exposureControl.setMode(ExposureControl.Mode.Manual);
+        }
+
+        // Switch white balance to manual mode
+        if (whiteBalanceControl.getMode() != WhiteBalanceControl.Mode.MANUAL) {
+            whiteBalanceControl.setMode(WhiteBalanceControl.Mode.MANUAL);
+        }
+
+//        // Read the camera's supported ranges
+//        minExposure = exposureControl.getMinExposure(TimeUnit.MILLISECONDS);
+//        maxExposure = exposureControl.getMaxExposure(TimeUnit.MILLISECONDS);
+//        minGain = gainControl.getMinGain();
+//        maxGain = gainControl.getMaxGain();
+//        minWhiteBalance = whiteBalanceControl.getMinWhiteBalanceTemperature();
+//        maxWhiteBalance = whiteBalanceControl.getMaxWhiteBalanceTemperature();
+//
+//        // Initialize current values from the camera's current state
+//        curExposure = exposureControl.getExposure(TimeUnit.MILLISECONDS);
+//        curGain = gainControl.getGain();
+//        curWhiteBalance = whiteBalanceControl.getWhiteBalanceTemperature();
+//
+//        // Sync the Dashboard @Config fields
+//        EXPOSURE_MS = curExposure;
+//        GAIN = curGain;
+//        WHITE_BALANCE_K = curWhiteBalance;
     }
 
 }
