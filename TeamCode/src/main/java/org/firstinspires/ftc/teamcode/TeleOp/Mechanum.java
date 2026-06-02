@@ -94,6 +94,7 @@ public class Mechanum extends OpMode {
     public static double farOffset = 0;
     public static double closeOffset = 0;
     public static double bearing = 0;
+    public double aimOutput = 0;
     public static double shooterTolerance;
     public static double transfer_velocity = 2000;
     static double ROLLER_VELOCITY_TOLERANCE = 65;
@@ -517,40 +518,18 @@ CAMERA STUFF
 
                 telemetry.addData("range", targetTag.ftcPose.range);
 
-            }/* else {
-                // Tag not visible: use odo and rr to turn us twords the goal coordinates only works if there is no other drive action happening
+            } else {
 
-                // This may be slow like 0.5 seconds before it will even start to move so may have to switch to a point to point driving style not using rr actions
                 if (driveActions.isEmpty() && targetTag == null) {
                     double dx = goalX - drive.localizer.getPose().position.x;
                     double dy = goalY - drive.localizer.getPose().position.y;
                     double targetHeading = Math.atan2(-dy, -dx);
                     double currentHeading = Math.toDegrees(pose.heading.toDouble());
-                    double turnAngle = angleWrap(targetHeading - currentHeading);
-                    telemetry.addData("turnAngle", turnAngle);
-
-                    Action goalTurnAction = drive.actionBuilder(drive.localizer.getPose())
-                            .turn(turnAngle)
-                            .build();
-                    driveActions.add(goalTurnAction);
+                    aimOutput = aimController.calculate(currentHeading, targetHeading);
                 }
-
-            }*/
+// if driver not pressing the trigger make the aimOutput power = 0
+            }
         }
-//        // Yeah so this is made by claude and I have no idea if this makes any sense
-//        List<Action> newDriveActions = new ArrayList<>();
-//        for (Action action : driveActions) {
-//            action.preview(new TelemetryPacket().fieldOverlay());
-//            if (action.run(new TelemetryPacket())) {
-//                newDriveActions.add(action);
-//            }
-//        }
-//        driveActions = newDriveActions;
-//
-//        if (driverIsControlling){
-//            //cancel all current drive actions
-//            driveActions.clear();
-//        }
         if (gamepad1.optionsWasPressed()) {
             headingOffset = drive.localizer.getPose().heading.toDouble();
         }
@@ -570,7 +549,7 @@ CAMERA STUFF
                                             (-gamepad1.left_stick_y * shift),
                                             (-gamepad1.left_stick_x * shift)
                                     ),
-                                    (-gamepad1.right_stick_x * shift) + turnPower
+                                    (-gamepad1.right_stick_x * shift) + aimOutput
                             ))
             );
         }
