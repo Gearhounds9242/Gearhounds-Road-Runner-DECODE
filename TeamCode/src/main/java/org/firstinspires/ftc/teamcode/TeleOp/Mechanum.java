@@ -83,7 +83,7 @@ public class Mechanum extends OpMode {
     public static double bottom_F = 0.0004;
     public static double aim_P = 0;
     public static double aim_I = 0;
-    public static double aime_D = 0;
+    public static double aim_D = 0;
     public static double rightLightColor = 0;
     public static double leftLightColor = 0;
     public static double leftLightDeafualtColor = 0;
@@ -150,16 +150,6 @@ public class Mechanum extends OpMode {
         telemetry.addData("Status", "Initializing...");
         telemetry.update();
 
-        BilinearInterpolator cameraOffset = new BilinearInterpolator()
-                .add(0,  0,  0.30)
-                .add(0,  45, 0.45)
-                .add(0,  90, 0.60)
-                .add(12, 0,  0.50)
-                .add(12, 45, 0.65)
-                .add(12, 90, 0.80)
-                .add(24, 0,  0.70)
-                .add(24, 45, 0.85)
-                .add(24, 90, 1.00);
 
 
         velocityTopLut.add(-1, 0);
@@ -211,7 +201,7 @@ public class Mechanum extends OpMode {
 
         topShooterController = new PIDFController(top_P, top_I, top_D, top_F);
         bottomShooterController = new PIDFController(bottom_P, bottom_I, bottom_D, bottom_F);
-        aimController = new PIDController(aim_P, aim_I, aime_D);
+        aimController = new PIDController(aim_P, aim_I, aim_D);
     }
 
 
@@ -261,7 +251,7 @@ public class Mechanum extends OpMode {
 
         topShooterController.setPIDF(top_P, top_I, top_D, top_F);
         bottomShooterController.setPIDF(bottom_P, bottom_I, bottom_D, bottom_F);
-        aimController.setPID(aim_P,aim_I,aime_D);
+        aimController.setPID(aim_P,aim_I,aim_D);
         if ((range > 0 && range < 189.9) && autoPower) {
             Top_Target_Speed = velocityTopLut.get(range);
             Bottom_Target_Speed = velocityBottomLut.get(range);
@@ -274,13 +264,13 @@ public class Mechanum extends OpMode {
 
         double turnPower = 0;
 
-        if ((topReady && bottomReady) && (Math.abs(bearing) < 3)) {
+        if ((topReady && bottomReady) && (aimOutput > 0 && aimOutput < 0.2)) {
             leftLightColor = 0.472;
             rightLightColor = 0.472;
         } else if (topReady && bottomReady) {
             leftLightColor = 0.583;
             rightLightColor = 0.583;
-        } else if (Math.abs(bearing) < 3) {
+        } else if (aimOutput > 0 && aimOutput < 0.2) {
             leftLightColor = 0.388;
             rightLightColor = 0.388;
         } else {
@@ -288,6 +278,8 @@ public class Mechanum extends OpMode {
             leftLightColor = 0;
             rightLightColor = 0;
         }
+
+
 
         if (leftLightColor >= 0.001) {
             robot.leftLight.setPosition(leftLightColor);
@@ -477,59 +469,21 @@ CAMERA STUFF
             }
         }
 
-///all standing at the blue alliance
-        if (drive.localizer.getPose().position.x > 10){
-            if (isRedAlliance){
-                offset = -1;
-            }else{
-                offset = 1;
-            }
-
-        }
-        else {
-            if(drive.localizer.getPose().position.y > 0){
-                //red goal side
-                if(isRedAlliance){
-                    offset = -4.5;
-                }else{
-                    offset = 4.5;
-                }
-            }
-            else {
-                //blue goal side
-                if(isRedAlliance){
-                    offset = -3;
-                }else {
-                    offset = 3;
-                }
-            }
-        }
 
 
         if (gamepad1.left_trigger > 0.9) {
-            if (targetTag != null) {
-
-                // Tag visible: old controll that I know works
-                double bearing = targetTag.ftcPose.bearing;
-
-                if (Math.abs(bearing) > aimTolorance) {
-                    turnPower = (bearing + offset) * rotationFactor;
-                }
-
-                telemetry.addData("range", targetTag.ftcPose.range);
-
-            } else {
-
-                if (driveActions.isEmpty() && targetTag == null) {
-                    double dx = goalX - drive.localizer.getPose().position.x;
-                    double dy = goalY - drive.localizer.getPose().position.y;
-                    double targetHeading = Math.atan2(-dy, -dx);
-                    double currentHeading = Math.toDegrees(pose.heading.toDouble());
-                    aimOutput = aimController.calculate(currentHeading, targetHeading);
-                }
-// if driver not pressing the trigger make the aimOutput power = 0
-            }
+            double dx = goalX - drive.localizer.getPose().position.x;
+            double dy = goalY - drive.localizer.getPose().position.y;
+            double targetHeading = Math.atan2(-dy, -dx);
+            double currentHeading = Math.toDegrees(pose.heading.toDouble());
+            aimOutput = aimController.calculate(currentHeading, targetHeading);
         }
+        else{
+            aimOutput = 0;
+        }
+
+
+        // if driver not pressing the trigger make the aimOutput power = 0
         if (gamepad1.optionsWasPressed()) {
             headingOffset = drive.localizer.getPose().heading.toDouble();
         }
