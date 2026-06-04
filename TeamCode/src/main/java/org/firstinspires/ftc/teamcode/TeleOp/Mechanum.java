@@ -26,6 +26,7 @@ import org.firstinspires.ftc.robotcontroller.external.samples.UtilityOctoQuadCon
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.ExposureControl;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.GainControl;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.PtzControl;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.WhiteBalanceControl;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
@@ -124,12 +125,14 @@ public class Mechanum extends OpMode {
     private ExposureControl exposureControl;
     private GainControl gainControl;
     private WhiteBalanceControl whiteBalanceControl;
+    private PtzControl ptzControl = null;
+    private boolean cameraReady = false;
     private boolean controlsReady = false;
     public static long EXPOSURE_MS = 6;
     public static int GAIN = 0;
     public static int WHITE_BALANCE_K = 4000;
 
-
+    public static int zoom;
     private MecanumDrive drive;
     public Position cameraPosition = new Position(DistanceUnit.INCH,
             0, -3.74102362, 15.939252, 0);
@@ -183,6 +186,7 @@ public class Mechanum extends OpMode {
                 .setDrawTagOutline(true)
                 .setLensIntrinsics(539.0239404, 539.0239404, 316.450283269, 236.36479005)
                 .setCameraPose(cameraPosition,cameraOrientation)
+
                 .build();
 
         // Vision portal
@@ -193,6 +197,7 @@ public class Mechanum extends OpMode {
                 .setStreamFormat(VisionPortal.StreamFormat.MJPEG)
 //                .enableLiveView(true)
                 .build();
+        tagProcessor.setDecimation(1);
 
 
         drive = new MecanumDrive(hardwareMap, PoseStorage.currentPose);
@@ -208,21 +213,33 @@ public class Mechanum extends OpMode {
     @Override
     public void init_loop() {
         // Wait until the camera is streaming before trying to grab controls
-        if (!controlsReady && visionPortal.getCameraState() == VisionPortal.CameraState.STREAMING) {
-            setupCameraControls();
-            controlsReady = true;
-        }
+        if (!cameraReady && visionPortal.getCameraState() == VisionPortal.CameraState.STREAMING) {
 
-        if (controlsReady) {
-            telemetry.addLine(">> Camera ready!");
-//            telemetry.addData("Exposure range", "%d - %d ms", minExposure, maxExposure);
-//            telemetry.addData("Gain range", "%d - %d", minGain, maxGain);
-//            telemetry.addData("White Balance range", "%d - %d K", minWhiteBalance, maxWhiteBalance);
+            exposureControl  = visionPortal.getCameraControl(ExposureControl.class);
+            gainControl      = visionPortal.getCameraControl(GainControl.class);
+            whiteBalanceControl = visionPortal.getCameraControl(WhiteBalanceControl.class);
+            ptzControl = visionPortal.getCameraControl(PtzControl.class);
+
+            // Switch to manual mode so our values are respected
+            exposureControl.setMode(ExposureControl.Mode.Manual);
+            whiteBalanceControl.setMode(WhiteBalanceControl.Mode.MANUAL);
+            ptzControl.setZoom(zoom);
+
+            // Apply initial values
             exposureControl.setExposure(EXPOSURE_MS, TimeUnit.MILLISECONDS);
             gainControl.setGain(GAIN);
             whiteBalanceControl.setWhiteBalanceTemperature(WHITE_BALANCE_K);
+
+            cameraReady = true;
+        }
+
+        if (cameraReady) {
+            telemetry.addLine("Camera ready");
+            telemetry.addData("Exposure", EXPOSURE_MS);
+            telemetry.addData("Gain", GAIN);
+            telemetry.addData("Framerate", visionPortal.getFps());
         } else {
-            telemetry.addLine("Waiting for camera...");
+            telemetry.addLine("Waiting for camera");
         }
     }
 
@@ -474,9 +491,11 @@ CAMERA STUFF
         if (gamepad1.left_trigger > 0.9) {
             double dx = goalX - drive.localizer.getPose().position.x;
             double dy = goalY - drive.localizer.getPose().position.y;
-            double targetHeading = Math.atan2(-dy, -dx);
+            double targetHeading = ((Math.atan2(dy, dx)) * 180 / Math.PI);
             double currentHeading = Math.toDegrees(pose.heading.toDouble());
             aimOutput = aimController.calculate(currentHeading, targetHeading);
+            packet.put("CurrentHeading", currentHeading);
+            packet.put("TargetHeading", targetHeading);
         }
         else{
             aimOutput = 0;
@@ -525,6 +544,8 @@ CAMERA STUFF
         dashboard.sendTelemetryPacket(packet);
 
 //        telemetry.addData("Intake Power", Intake_Speed);
+        telemetry.addData("goalX", goalX);
+        telemetry.addData("goalY", goalY);
         telemetry.addData("Top Shooter Target Speed", Top_Target_Speed);
         telemetry.addData("Bottom Shooter Target Speed", Bottom_Target_Speed);
         telemetry.addData("Selected Id", TARGET_ID);

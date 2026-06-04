@@ -17,6 +17,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.ExposureControl;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.GainControl;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.PtzControl;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.WhiteBalanceControl;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
@@ -51,8 +52,8 @@ public class CameraTest extends OpMode {
     public static boolean autoPower = true;
     public static boolean driverIsControlling;
     public static double bearing = 0;
-    public static long EXPOSURE_MS = 6;
-    public static int GAIN = 0;
+    public static long EXPOSURE_MS = 2;
+    public static int GAIN = 19;
     public static int WHITE_BALANCE_K = 4000;
     private final GearhoundsHardware robot = new GearhoundsHardware();
     private final ElapsedTime runtime = new ElapsedTime();
@@ -69,9 +70,12 @@ public class CameraTest extends OpMode {
     private ExposureControl exposureControl;
     private GainControl gainControl;
     private WhiteBalanceControl whiteBalanceControl;
+    private PtzControl ptzControl = null;
     private boolean cameraReady = false;
     private MecanumDrive drive;
     private final List<Action> driveActions = new ArrayList<>();
+
+    public static int zoom;
 
     // Track previous values so we only write to the camera when something changes
     private long prevExposure = -1;
@@ -88,6 +92,7 @@ public class CameraTest extends OpMode {
 //        TARGET_ID = 20;
         telemetry.addData("Status", "Initializing...");
         telemetry.update();
+
 
         tagProcessor = new AprilTagProcessor.Builder()
                 .setDrawAxes(true)
@@ -107,7 +112,6 @@ public class CameraTest extends OpMode {
 //                .enableLiveView(true)
                 .build();
 
-
         drive = new MecanumDrive(hardwareMap, PoseStorage.currentPose);
         dashboard.startCameraStream(visionPortal, 0);
         telemetry.addData("Status", "Initialized");
@@ -124,10 +128,12 @@ public class CameraTest extends OpMode {
             exposureControl  = visionPortal.getCameraControl(ExposureControl.class);
             gainControl      = visionPortal.getCameraControl(GainControl.class);
             whiteBalanceControl = visionPortal.getCameraControl(WhiteBalanceControl.class);
+            ptzControl = visionPortal.getCameraControl(PtzControl.class);
 
             // Switch to manual mode so our values are respected
             exposureControl.setMode(ExposureControl.Mode.Manual);
             whiteBalanceControl.setMode(WhiteBalanceControl.Mode.MANUAL);
+            ptzControl.setZoom(zoom);
 
             // Apply initial values
             exposureControl.setExposure(EXPOSURE_MS, TimeUnit.MILLISECONDS);
@@ -142,6 +148,8 @@ public class CameraTest extends OpMode {
             telemetry.addData("Exposure", EXPOSURE_MS);
             telemetry.addData("Gain", GAIN);
             telemetry.addData("White Balance", WHITE_BALANCE_K);
+            telemetry.addData("max zoom", ptzControl.getMaxZoom());
+            telemetry.addData("min zoom", ptzControl.getMinZoom());
         } else {
             telemetry.addLine("Waiting for camera");
         }
@@ -328,6 +336,7 @@ CAMERA STUFF
         telemetry.addData("Selected Id", TARGET_ID);
 //        telemetry.addData("bearing", bearing);
         telemetry.addData("range", range);
+        telemetry.addData("Camera Framerate", visionPortal.getFps());
         telemetry.addData("autopower", autoPower);
         telemetry.addData("X", drive.localizer.getPose().position.x);
         telemetry.addData("Y", drive.localizer.getPose().position.y);
