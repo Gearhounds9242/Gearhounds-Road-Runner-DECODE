@@ -105,8 +105,10 @@ public class GearhoundsHardware extends Hardware {
 
         topMotor = robotMap.get(DcMotorEx.class, "topmotor");
         topMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        topMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         bottomMotor = robotMap.get(DcMotorEx.class, "bottommotor");
         bottomMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+        bottomMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
 
         leftFront = robotMap.get(DcMotorEx.class, "leftFront");
