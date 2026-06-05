@@ -95,6 +95,7 @@ public class Mechanum extends OpMode {
     public static double farOffset = 0;
     public static double closeOffset = 0;
     public static double bearing = 0;
+    public static double yaw;
     public double aimOutput = 0;
     public static double shooterTolerance;
     public static double transfer_velocity = 2000;
@@ -455,6 +456,7 @@ CAMERA STUFF
         if (targetTag != null) {
             range = targetTag.ftcPose.range;
             bearing = targetTag.ftcPose.bearing;
+            yaw = targetTag.ftcPose.yaw;
         } else {
             range = -1;
             bearing = 0;
@@ -489,16 +491,19 @@ CAMERA STUFF
 
 
         if (gamepad1.left_trigger > 0.9) {
-            double dx = goalX - drive.localizer.getPose().position.x;
-            double dy = goalY - drive.localizer.getPose().position.y;
-            double targetHeading = ((Math.atan2(dy, dx)) * 180 / Math.PI);
-            double currentHeading = Math.toDegrees(pose.heading.toDouble());
-            aimOutput = aimController.calculate(currentHeading, targetHeading);
-            packet.put("CurrentHeading", currentHeading);
-            packet.put("TargetHeading", targetHeading);
-        }
-        else{
-            aimOutput = 0;
+            if (targetTag != null) {
+
+                // Tag visible: old controll that I know works
+                double bearing = targetTag.ftcPose.bearing;
+
+                if (Math.abs(bearing) > aimTolorance) {
+                    turnPower = (bearing + offset) * rotationFactor;
+                }
+
+                telemetry.addData("range", targetTag.ftcPose.range);
+                telemetry.addData("yaw", yaw);
+
+            }
         }
 
 
@@ -522,7 +527,7 @@ CAMERA STUFF
                                             (-gamepad1.left_stick_y * shift),
                                             (-gamepad1.left_stick_x * shift)
                                     ),
-                                    (-gamepad1.right_stick_x * shift) + aimOutput
+                                    (-gamepad1.right_stick_x * shift) + turnPower
                             ))
             );
         }
@@ -542,8 +547,8 @@ CAMERA STUFF
         packet.fieldOverlay().setFill("#3F51B5");
         Drawing.drawRobot(packet.fieldOverlay(), pose);
         dashboard.sendTelemetryPacket(packet);
-
 //        telemetry.addData("Intake Power", Intake_Speed);
+
         telemetry.addData("goalX", goalX);
         telemetry.addData("goalY", goalY);
         telemetry.addData("Top Shooter Target Speed", Top_Target_Speed);
