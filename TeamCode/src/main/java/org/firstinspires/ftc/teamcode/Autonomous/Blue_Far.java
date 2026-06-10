@@ -59,8 +59,6 @@ public class Blue_Far extends LinearOpMode {
         Actions.runBlocking(
                 drive.actionBuilder(startPose, mirrorPoseMap)
                         .strafeToSplineHeading(new Vector2d(55, 14), Math.toRadians(157))
-                        .stopAndAdd(drivetrain.turnTo(-63.2,-55.9))
-
                         .stopAndAdd(new ParallelAction(drivetrain.turnTo(goalX,goalY)))
                         .stopAndAdd(
                                 new ParallelAction(
@@ -79,8 +77,6 @@ public class Blue_Far extends LinearOpMode {
                         .strafeToConstantHeading(new Vector2d(35, 60))
                         .stopAndAdd(transfer.tapTransfer())
                         .strafeToSplineHeading(new Vector2d(55, 14), Math.toRadians(157))
-                        .stopAndAdd(drivetrain.turnTo(-63.2,-55.9))
-
                         .stopAndAdd(new ParallelAction(drivetrain.turnTo(goalX,goalY)))
                         .stopAndAdd(
                                 new ParallelAction(
@@ -99,8 +95,6 @@ public class Blue_Far extends LinearOpMode {
                         .strafeToConstantHeading(new Vector2d(11, 60))
                         .stopAndAdd(transfer.tapTransfer())
                         .strafeToSplineHeading(new Vector2d(55, 18), Math.toRadians(157))
-                        .stopAndAdd(drivetrain.turnTo(-63.2,-55.9))
-
                         .stopAndAdd(new ParallelAction(drivetrain.turnTo(goalX,goalY)))
                         .stopAndAdd(
                                 new ParallelAction(
@@ -121,8 +115,6 @@ public class Blue_Far extends LinearOpMode {
                         .strafeTo(new Vector2d(60, 60))
                         .stopAndAdd(transfer.tapTransfer())
                         .strafeToSplineHeading(new Vector2d(55, 18), Math.toRadians(157))
-                        .stopAndAdd(drivetrain.turnTo(-63.2,-55.9))
-
                         .stopAndAdd(new ParallelAction(drivetrain.turnTo(goalX,goalY)))
                         .stopAndAdd(
                                 new ParallelAction(

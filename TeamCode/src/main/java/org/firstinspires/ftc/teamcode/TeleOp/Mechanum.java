@@ -1,14 +1,19 @@
 package org.firstinspires.ftc.teamcode.TeleOp;
 
+import static com.seattlesolvers.solverslib.purepursuit.PurePursuitUtil.angleWrap;
+
 import android.util.Size;
 
 import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.canvas.Canvas;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.PoseVelocity2d;
 import com.acmerobotics.roadrunner.Rotation2d;
 import com.acmerobotics.roadrunner.Vector2d;
+import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Gamepad;
@@ -17,7 +22,12 @@ import com.seattlesolvers.solverslib.controller.PIDController;
 import com.seattlesolvers.solverslib.controller.PIDFController;
 import com.seattlesolvers.solverslib.util.InterpLUT;
 
+import org.firstinspires.ftc.robotcontroller.external.samples.UtilityOctoQuadConfigMenu;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.ExposureControl;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.GainControl;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.PtzControl;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.WhiteBalanceControl;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Position;
@@ -31,7 +41,9 @@ import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 
 /**
@@ -57,6 +69,8 @@ public class Mechanum extends OpMode {
     public static double rotationFactor = -0.03;
     public static double aimTolorance = 0.2;
     public static int ballNumber = 0;
+    public static int goalX = 0;
+    public static int goalY = 0;
     public static double offset = 0;
     public static double rightKickstandPosition;
     public static double leftKickstandPosition;
@@ -70,16 +84,19 @@ public class Mechanum extends OpMode {
     public static double bottom_F = 0.0004;
     public static double aim_P = 0;
     public static double aim_I = 0;
-    public static double aime_D = 0;
+    public static double aim_D = 0;
     public static double rightLightColor = 0;
     public static double leftLightColor = 0;
     public static double leftLightDeafualtColor = 0;
     public static double rightLightDeafualtColor = 0;
     public static double range;
     public static boolean autoPower = true;
+    public static boolean driverIsControlling;
     public static double farOffset = 0;
     public static double closeOffset = 0;
     public static double bearing = 0;
+    public static double yaw;
+    public double aimOutput = 0;
     public static double shooterTolerance;
     public static double transfer_velocity = 2000;
     static double ROLLER_VELOCITY_TOLERANCE = 65;
@@ -106,35 +123,45 @@ public class Mechanum extends OpMode {
     private FtcDashboard dashboard;
     private AprilTagProcessor tagProcessor;
     private VisionPortal visionPortal;
+    private ExposureControl exposureControl;
+    private GainControl gainControl;
+    private WhiteBalanceControl whiteBalanceControl;
+    private PtzControl ptzControl = null;
+    private boolean cameraReady = false;
+    private boolean controlsReady = false;
+    public static long EXPOSURE_MS = 6;
+    public static int GAIN = 0;
+    public static int WHITE_BALANCE_K = 4000;
+
+    public static int zoom;
     private MecanumDrive drive;
     public Position cameraPosition = new Position(DistanceUnit.INCH,
-            0, 0, 0, 0);
+            0, -3.74102362, 15.939252, 0);
     public YawPitchRollAngles cameraOrientation = new YawPitchRollAngles(AngleUnit.DEGREES,
-            0, 180, 0, 0);
+            0, -75, 180, 0);
+
+
+    private List<Action> driveActions = new ArrayList<>();
 
     @Override
     public void init() {
+        robot.init(hardwareMap);             // motors/servos/IMU setup// webcam + AprilTag setup
+
+
         dashboard = FtcDashboard.getInstance();
         dashboard.setTelemetryTransmissionInterval(25);
 //        TARGET_ID = 20;
         telemetry.addData("Status", "Initializing...");
         telemetry.update();
 
-        BilinearInterpolator cameraOffset = new BilinearInterpolator()
-                .add(0,  0,  0.30)
-                .add(0,  45, 0.45)
-                .add(0,  90, 0.60)
-                .add(12, 0,  0.50)
-                .add(12, 45, 0.65)
-                .add(12, 90, 0.80)
-                .add(24, 0,  0.70)
-                .add(24, 45, 0.85)
-                .add(24, 90, 1.00);
 
 
         velocityTopLut.add(-1, 0);
         velocityTopLut.add(0, 0);
+        velocityTopLut.add(55, 400);
+        velocityTopLut.add(65.5, 700);
         velocityTopLut.add(66,1125);
+        velocityTopLut.add(74, 880);
         velocityTopLut.add(86,1125);
         velocityTopLut.add(125,1170);
         velocityTopLut.add(134.5,1241);
@@ -143,7 +170,10 @@ public class Mechanum extends OpMode {
 //
         velocityBottomLut.add(-1, 0);
         velocityBottomLut.add(0, 0);
+        velocityBottomLut.add(55, 1820);
+        velocityBottomLut.add(65.5, 1480);
         velocityBottomLut.add(66,1200);
+        velocityBottomLut.add(74, 1380);
         velocityBottomLut.add(86,1125);
         velocityBottomLut.add(125,1170);
         velocityBottomLut.add(134.5,1241);
@@ -157,6 +187,7 @@ public class Mechanum extends OpMode {
                 .setDrawTagOutline(true)
                 .setLensIntrinsics(539.0239404, 539.0239404, 316.450283269, 236.36479005)
                 .setCameraPose(cameraPosition,cameraOrientation)
+
                 .build();
 
         // Vision portal
@@ -167,15 +198,50 @@ public class Mechanum extends OpMode {
                 .setStreamFormat(VisionPortal.StreamFormat.MJPEG)
 //                .enableLiveView(true)
                 .build();
+        tagProcessor.setDecimation(1);
 
-        robot.init(hardwareMap);             // motors/servos/IMU setup// webcam + AprilTag setup
+
         drive = new MecanumDrive(hardwareMap, PoseStorage.currentPose);
         telemetry.addData("Status", "Initialized");
         telemetry.update();
 
         topShooterController = new PIDFController(top_P, top_I, top_D, top_F);
         bottomShooterController = new PIDFController(bottom_P, bottom_I, bottom_D, bottom_F);
-        aimController = new PIDController(aim_P, aim_I, aime_D);
+        aimController = new PIDController(aim_P, aim_I, aim_D);
+    }
+
+
+    @Override
+    public void init_loop() {
+        // Wait until the camera is streaming before trying to grab controls
+        if (!cameraReady && visionPortal.getCameraState() == VisionPortal.CameraState.STREAMING) {
+
+            exposureControl  = visionPortal.getCameraControl(ExposureControl.class);
+            gainControl      = visionPortal.getCameraControl(GainControl.class);
+            whiteBalanceControl = visionPortal.getCameraControl(WhiteBalanceControl.class);
+            ptzControl = visionPortal.getCameraControl(PtzControl.class);
+
+            // Switch to manual mode so our values are respected
+            exposureControl.setMode(ExposureControl.Mode.Manual);
+            whiteBalanceControl.setMode(WhiteBalanceControl.Mode.MANUAL);
+            ptzControl.setZoom(zoom);
+
+            // Apply initial values
+            exposureControl.setExposure(EXPOSURE_MS, TimeUnit.MILLISECONDS);
+            gainControl.setGain(GAIN);
+            whiteBalanceControl.setWhiteBalanceTemperature(WHITE_BALANCE_K);
+
+            cameraReady = true;
+        }
+
+        if (cameraReady) {
+            telemetry.addLine("Camera ready");
+            telemetry.addData("Exposure", EXPOSURE_MS);
+            telemetry.addData("Gain", GAIN);
+            telemetry.addData("Framerate", visionPortal.getFps());
+        } else {
+            telemetry.addLine("Waiting for camera");
+        }
     }
 
     @Override
@@ -188,16 +254,22 @@ public class Mechanum extends OpMode {
 
 
     @Override
-    public void loop() {
+    public void  loop() {
         // Update Road Runner’s localization
         drive.localizer.update();
         Pose2d pose = drive.localizer.getPose();
         //
+        TelemetryPacket packet = new TelemetryPacket();
 
+        driverIsControlling =
+            Math.abs(gamepad1.left_stick_x) > 0.1 ||
+            Math.abs(gamepad1.left_stick_y) > 0.1 ||
+            Math.abs(gamepad1.right_stick_x) > 0.1 ||
+            Math.abs(gamepad1.right_stick_y) > 0.1;
 
         topShooterController.setPIDF(top_P, top_I, top_D, top_F);
         bottomShooterController.setPIDF(bottom_P, bottom_I, bottom_D, bottom_F);
-        aimController.setPID(aim_P,aim_I,aime_D);
+        aimController.setPID(aim_P,aim_I,aim_D);
         if ((range > 0 && range < 189.9) && autoPower) {
             Top_Target_Speed = velocityTopLut.get(range);
             Bottom_Target_Speed = velocityBottomLut.get(range);
@@ -208,15 +280,15 @@ public class Mechanum extends OpMode {
         boolean topReady = Math.abs(Top_Target_Speed - robot.topMotor.getVelocity()) < ROLLER_VELOCITY_TOLERANCE;
         boolean bottomReady = Math.abs(Bottom_Target_Speed - robot.bottomMotor.getVelocity()) < ROLLER_VELOCITY_TOLERANCE;
 
-        double autoTurn = 0;
+        double turnPower = 0;
 
-        if ((topReady && bottomReady) && (Math.abs(bearing) < 3)) {
+        if ((topReady && bottomReady) && (aimOutput > 0 && aimOutput < 0.2)) {
             leftLightColor = 0.472;
             rightLightColor = 0.472;
         } else if (topReady && bottomReady) {
             leftLightColor = 0.583;
             rightLightColor = 0.583;
-        } else if (Math.abs(bearing) < 3) {
+        } else if (aimOutput > 0 && aimOutput < 0.2) {
             leftLightColor = 0.388;
             rightLightColor = 0.388;
         } else {
@@ -224,6 +296,8 @@ public class Mechanum extends OpMode {
             leftLightColor = 0;
             rightLightColor = 0;
         }
+
+
 
         if (leftLightColor >= 0.001) {
             robot.leftLight.setPosition(leftLightColor);
@@ -246,19 +320,23 @@ public class Mechanum extends OpMode {
         if (gamepad1.dpadRightWasPressed() || gamepad2.optionsWasPressed()) {
             TARGET_ID = 24;
             offset = 2.1;
+            goalX = -70;
+            goalY = 70;
             isRedAlliance = true;
         }
         if (gamepad1.dpadLeftWasPressed() || gamepad2.shareWasPressed()) {
             TARGET_ID = 20;
+            goalX = -70;
+            goalY = -70;
             isRedAlliance = false;
         }
 
 
         if (gamepad1.ps && isRedAlliance){
-            drive.localizer.setPose(new Pose2d(60.5, -61, 90));
+            drive.localizer.setPose(new Pose2d(60.5, -61, Math.toRadians(90)));
         }
         if (gamepad1.ps && !isRedAlliance){
-            drive.localizer.setPose(new Pose2d(60.5, 61, 270));
+            drive.localizer.setPose(new Pose2d(60.5, 61, Math.toRadians(90)));
         }
 
 
@@ -359,7 +437,6 @@ public class Mechanum extends OpMode {
         }
 
 
-
 /*
 CAMERA STUFF
  */
@@ -379,52 +456,84 @@ CAMERA STUFF
         if (targetTag != null) {
             range = targetTag.ftcPose.range;
             bearing = targetTag.ftcPose.bearing;
+            yaw = targetTag.ftcPose.yaw;
         } else {
             range = -1;
             bearing = 0;
             canSeeTag = false;
         }
 
+        for (AprilTagDetection detection : detections) {
+            if (detection.metadata != null) {
+                telemetry.addLine(String.format("\n==== (ID %d) %s", detection.id, detection.metadata.name));
+                // Only use tags that don't have Obelisk in them
+                if (!detection.metadata.name.contains("Obelisk")) {
+                    double cameraOutputX = detection.robotPose.getPosition().x;
+                    double cameraOutputY = detection.robotPose.getPosition().y;
+//                    double cameraOutputZ = detection.robotPose.getPosition().z;
 
-        if (gamepad1.left_trigger > 0.9 && targetTag != null) {
+//                    double cameraOutputPitch = detection.robotPose.getOrientation().getPitch(AngleUnit.DEGREES);
+//                    double cameraOutputRoll = detection.robotPose.getOrientation().getRoll(AngleUnit.DEGREES);
+                    double cameraOutputYaw = detection.robotPose.getOrientation().getYaw(AngleUnit.DEGREES);
+                    telemetry.addData("cameraOutputX", cameraOutputX);
+                    telemetry.addData("cameraOutputY",cameraOutputY);
+                    telemetry.addData("cameraOutputYaw", cameraOutputYaw);
+                    packet.put("cameraOutputX", cameraOutputX);
+                    packet.put("cameraOutputY", cameraOutputY);
+                    packet.put("cameraOutputYaw", cameraOutputYaw);
 
-            double bearing = targetTag.ftcPose.bearing;
+                    drive.localizer.setPose(new Pose2d(cameraOutputX, cameraOutputY, (Math.toRadians(cameraOutputYaw + 90)) ));
 
-            if (Math.abs(bearing) > aimTolorance) {    // 5-degree tolerance
-                autoTurn = (bearing + offset) * rotationFactor;// proportional turn
+                }
             }
-            telemetry.addData("range", targetTag.ftcPose.range);
-        }
-        if (gamepad1.left_trigger > 0.9 && targetTag == null) {
-            gamepad1.runRumbleEffect(noEffect);
         }
 
 
 
-//TODO: Combine joystick movement and camera auto centering movement
+        if (gamepad1.left_trigger > 0.9) {
+            if (targetTag != null) {
+
+                // Tag visible: old controll that I know works
+                double bearing = targetTag.ftcPose.bearing;
+
+                if (Math.abs(bearing) > aimTolorance) {
+                    turnPower = (bearing + offset) * rotationFactor;
+                }
+
+                telemetry.addData("range", targetTag.ftcPose.range);
+                telemetry.addData("yaw", yaw);
+
+            }
+        }
 
 
-        // Options button - reset driver's forward reference
+        // if driver not pressing the trigger make the aimOutput power = 0
         if (gamepad1.optionsWasPressed()) {
-            // Store current robot heading as the new "forward" reference
-            // without touching the localizer pose at all
             headingOffset = drive.localizer.getPose().heading.toDouble();
         }
 
-// Then in the drive.setDrivePowers call, apply the offset:
-        drive.setDrivePowers(
-                Rotation2d.exp(-drive.localizer.getPose().heading.toDouble() + headingOffset)
-                        .times(new PoseVelocity2d(
-                                new Vector2d(
-                                        (-gamepad1.left_stick_y * shift),
-                                        (-gamepad1.left_stick_x * shift)
-                                ),
-                                (-gamepad1.right_stick_x * shift) + autoTurn
-                        ))
-        );
+        // ================================================================
+        // DRIVE CONTROL
+        //
+        // If a drive action is running, skip manual input so we don't
+        // fight the action. The driver can always cancel by moving a stick.
+        // If no drive action is running, normal field-centric drive applies.
+        // ================================================================
+        if (driveActions.isEmpty()) {
+            drive.setDrivePowers(
+                    Rotation2d.exp(-drive.localizer.getPose().heading.toDouble() + headingOffset)
+                            .times(new PoseVelocity2d(
+                                    new Vector2d(
+                                            (-gamepad1.left_stick_y * shift),
+                                            (-gamepad1.left_stick_x * shift)
+                                    ),
+                                    (-gamepad1.right_stick_x * shift) + turnPower
+                            ))
+            );
+        }
 
 
-        TelemetryPacket packet = new TelemetryPacket();
+
 //        packet.put("TopMotorRPM", (robot.TopMotor.getVelocity() / 28.0) * 60.0);
 //        packet.put("BottomMotorRPM", (robot.BottomMotor.getVelocity() / 28.0) * 60.0);
 //        packet.put("TopCurrentA", robot.TopMotor.getCurrent(CurrentUnit.AMPS));
@@ -438,8 +547,10 @@ CAMERA STUFF
         packet.fieldOverlay().setFill("#3F51B5");
         Drawing.drawRobot(packet.fieldOverlay(), pose);
         dashboard.sendTelemetryPacket(packet);
-
 //        telemetry.addData("Intake Power", Intake_Speed);
+
+        telemetry.addData("goalX", goalX);
+        telemetry.addData("goalY", goalY);
         telemetry.addData("Top Shooter Target Speed", Top_Target_Speed);
         telemetry.addData("Bottom Shooter Target Speed", Bottom_Target_Speed);
         telemetry.addData("Selected Id", TARGET_ID);
@@ -448,7 +559,8 @@ CAMERA STUFF
         telemetry.addData("autopower", autoPower);
         telemetry.addData("X",drive.localizer.getPose().position.x);
         telemetry.addData("Y",drive.localizer.getPose().position.y);
-        telemetry.addData("Heading",drive.localizer.getPose().heading);
+        telemetry.addData("Heading",Math.toDegrees(pose.heading.toDouble()));
+        telemetry.addData("offset", offset);
         telemetry.update();
     }
 
@@ -457,6 +569,41 @@ CAMERA STUFF
         if (visionPortal != null) {
             visionPortal.close();
         }
+    }
+
+    private void setupCameraControls() {
+        // Get control interfaces from VisionPortal
+        exposureControl = visionPortal.getCameraControl(ExposureControl.class);
+        gainControl = visionPortal.getCameraControl(GainControl.class);
+        whiteBalanceControl = visionPortal.getCameraControl(WhiteBalanceControl.class);
+
+        // Switch exposure to manual mode (required to set gain as well)
+        if (exposureControl.getMode() != ExposureControl.Mode.Manual) {
+            exposureControl.setMode(ExposureControl.Mode.Manual);
+        }
+
+        // Switch white balance to manual mode
+        if (whiteBalanceControl.getMode() != WhiteBalanceControl.Mode.MANUAL) {
+            whiteBalanceControl.setMode(WhiteBalanceControl.Mode.MANUAL);
+        }
+
+//        // Read the camera's supported ranges
+//        minExposure = exposureControl.getMinExposure(TimeUnit.MILLISECONDS);
+//        maxExposure = exposureControl.getMaxExposure(TimeUnit.MILLISECONDS);
+//        minGain = gainControl.getMinGain();
+//        maxGain = gainControl.getMaxGain();
+//        minWhiteBalance = whiteBalanceControl.getMinWhiteBalanceTemperature();
+//        maxWhiteBalance = whiteBalanceControl.getMaxWhiteBalanceTemperature();
+//
+//        // Initialize current values from the camera's current state
+//        curExposure = exposureControl.getExposure(TimeUnit.MILLISECONDS);
+//        curGain = gainControl.getGain();
+//        curWhiteBalance = whiteBalanceControl.getWhiteBalanceTemperature();
+//
+//        // Sync the Dashboard @Config fields
+//        EXPOSURE_MS = curExposure;
+//        GAIN = curGain;
+//        WHITE_BALANCE_K = curWhiteBalance;
     }
 
 }
