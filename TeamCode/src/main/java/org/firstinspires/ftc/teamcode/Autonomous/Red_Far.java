@@ -54,6 +54,7 @@ public class Red_Far extends LinearOpMode {
         Actions.runBlocking(
                 drive.actionBuilder(startPose)
                         .strafeToSplineHeading(new Vector2d(55, 14), Math.toRadians(150))
+                        .stopAndAdd(drivetrain.turnTo(-70,65))
                         .stopAndAdd(
                                 new ParallelAction(
                                         shooter.runShooter(topVelocity,bottomVelocity),
@@ -68,9 +69,10 @@ public class Red_Far extends LinearOpMode {
                                 )
                         )
                         .strafeToSplineHeading(new Vector2d(35,25), Math.toRadians(90))
-                        .strafeToConstantHeading(new Vector2d(35, 60))
+                        .strafeToConstantHeading(new Vector2d(35, 65))
                         .stopAndAdd(transfer.tapTransfer())
                         .strafeToSplineHeading(new Vector2d(55, 14), Math.toRadians(152))
+                        .stopAndAdd(drivetrain.turnTo(-70,70))
                         .stopAndAdd(
                                 new ParallelAction(
                                         shooter.runShooter(topVelocity,bottomVelocity),
@@ -83,14 +85,14 @@ public class Red_Far extends LinearOpMode {
                                         )
                                 )
                         )
-                        .waitSeconds(0.5)
                         .strafeToSplineHeading(new Vector2d(10, 25), Math.toRadians(90))
                         .strafeToConstantHeading(new Vector2d(11, 60))
                         .stopAndAdd(transfer.tapTransfer())
                         .strafeToSplineHeading(new Vector2d(55, 14), Math.toRadians(155))
+                        .stopAndAdd(drivetrain.turnTo(-70,65))
                         .stopAndAdd(
                                 new ParallelAction(
-                                        shooter.runShooter(topVelocity, bottomVelocity),
+                                        shooter.runShooter(topVelocity-10, bottomVelocity-10),
                                         intake.runIntake(1,1),
                                         new SequentialAction(
                                                 new SleepAction(1),
@@ -101,15 +103,16 @@ public class Red_Far extends LinearOpMode {
                                         )
                                 )
                         )
-                        .splineToSplineHeading(new Pose2d(60, 14, Math.toRadians(90)), Math.toRadians(0))
+                        .splineToSplineHeading(new Pose2d(60, 20, Math.toRadians(90)), Math.toRadians(0))
                         .strafeTo(new Vector2d(60, 60))
                         .strafeTo(new Vector2d(60, 55))
                         .strafeTo(new Vector2d(60, 60))
                         .stopAndAdd(transfer.tapTransfer())
                         .strafeToSplineHeading(new Vector2d(55, 14), Math.toRadians(155))
+                        .stopAndAdd(drivetrain.turnTo(-70,65))
                         .stopAndAdd(
                                 new ParallelAction(
-                                        shooter.runShooter(topVelocity-15,bottomVelocity-15),
+                                        shooter.runShooter(topVelocity-10,bottomVelocity-10),
                                         intake.runIntake(1,1),
                                         new SequentialAction(
                                                 new SleepAction(1),

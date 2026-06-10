@@ -9,6 +9,10 @@ import com.acmerobotics.roadrunner.PoseVelocity2d;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.ExposureControl;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.GainControl;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.PtzControl;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.WhiteBalanceControl;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Position;
@@ -19,6 +23,7 @@ import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @Config
 public class Vision {
@@ -28,7 +33,7 @@ public class Vision {
     public static double rotationFactor = -0.03;
 //    public static double MAX_TURN_POWER        = 0.4;
 //    public static double MIN_TURN_POWER        = 0.05;
-    public static double ALIGN_TIMEOUT_SEC     = 3.0;
+    public static double ALIGN_TIMEOUT_SEC     = 3;
     public static int    STABLE_COUNT_REQ      = 5;
     public Position cameraPosition = new Position(DistanceUnit.INCH,
             0, -3.74102362, 15.939252, 0);
@@ -38,10 +43,16 @@ public class Vision {
     // Tag IDs
     public static final int RED_GOAL_TAG_ID  = 24;
     public static final int BLUE_GOAL_TAG_ID = 20;
+    public static long EXPOSURE_MS = 6;
+    public static int GAIN = 0;
 
     private final GearhoundsHardware robot;
     private final VisionPortal visionPortal;
     private final AprilTagProcessor tagProcessor;
+    private ExposureControl exposureControl;
+    private GainControl gainControl;
+    private WhiteBalanceControl whiteBalanceControl;
+    private PtzControl ptzControl = null;
     private MecanumDrive drive;
 
     public Vision(GearhoundsHardware robot) {
@@ -72,6 +83,16 @@ public class Vision {
      */
     public void setDrive(MecanumDrive drive) {
         this.drive = drive;
+//        exposureControl  = visionPortal.getCameraControl(ExposureControl.class);
+//        gainControl      = visionPortal.getCameraControl(GainControl.class);
+//
+//        // Switch to manual mode so our values are respected
+//        exposureControl.setMode(ExposureControl.Mode.Manual);
+//        whiteBalanceControl.setMode(WhiteBalanceControl.Mode.MANUAL);
+//
+//        // Apply initial values
+//        exposureControl.setExposure(EXPOSURE_MS, TimeUnit.MILLISECONDS);
+//        gainControl.setGain(GAIN);
     }
 
     /**
@@ -109,6 +130,12 @@ public class Vision {
         private int          stableCount = 0;
         private int tagNotVisibleItCount = 0;
         private int itNumber = 0;
+        private ExposureControl exposureControl;
+        private GainControl gainControl;
+        private WhiteBalanceControl whiteBalanceControl;
+        private PtzControl ptzControl = null;
+        private long EXPOSURE_MS = 6;
+        private int GAIN = 0;
 
         AlignToTag(int targetTagId, double offset) {
             this.targetTagId = targetTagId;
@@ -119,6 +146,7 @@ public class Vision {
         public boolean run(@NonNull TelemetryPacket packet) {
             itNumber++;
             drive.localizer.update();
+            AprilTagDetection target = getTag(targetTagId);
 
 
             if (timer == null) {
@@ -131,21 +159,27 @@ public class Vision {
                 return false;
             }
 
+            if (visionPortal.getFps() == 0){
+                drive.setDrivePowers(new PoseVelocity2d(new Vector2d(0,0),0));
+                packet.addLine("AlignToTag: CAMERA SNAPSHOT");
+                return  false;
+            }
 
-            AprilTagDetection target = getTag(targetTagId);
 
-//            if (target == null){
-//                tagNotVisibleItCount++;
-//            }
-//            if (tagNotVisibleItCount > 5) {
-//                packet.addLine("AlignToTag: Not Visible count exceeded 5");
-//                return false;
-//            }
+            if (target == null){
+                tagNotVisibleItCount++;
+            }
+            if (tagNotVisibleItCount > 20) {
+                packet.addLine("AlignToTag: Not Visible count exceeded 20");
+                drive.setDrivePowers(new PoseVelocity2d(new Vector2d(0, 0), 0));
+                return false;
+            }
 
             packet.put("AlignToTag: IsAttached", robot.webcam.isAttached());
             packet.put("AlignToTag: CameraName", robot.webcam.getUsbDeviceNameIfAttached());
 
             if (target != null) {
+                tagNotVisibleItCount = 0;
                 packet.put("AlignToTag bearing", target.ftcPose.bearing);
                 packet.put("AlignToTag range", target.ftcPose.range);
                 packet.put("AlignToTag stableCount", stableCount);

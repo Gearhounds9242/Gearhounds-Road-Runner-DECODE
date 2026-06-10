@@ -53,8 +53,8 @@ public class Red_Far_Spikemark_Loading_Zone extends LinearOpMode {
         if (isStopRequested()) return;
         Actions.runBlocking(
                 drive.actionBuilder(startPose)
-                        .strafeToLinearHeading(new Vector2d(50,14), Math.toRadians(180))
                         .strafeToSplineHeading(new Vector2d(55, 14), Math.toRadians(151))
+                        .stopAndAdd(drivetrain.turnTo(-70,65))
                         // shoot
                         .stopAndAdd(
                                 new ParallelAction(
@@ -78,10 +78,11 @@ public class Red_Far_Spikemark_Loading_Zone extends LinearOpMode {
 
 
                         .strafeToSplineHeading(new Vector2d(55, 14), Math.toRadians(152))
+                        .stopAndAdd(drivetrain.turnTo(-70,65))
                         //shoot
                         .stopAndAdd(
                                 new ParallelAction(
-                                        shooter.runShooter(topVelocity, bottomVelocity),
+                                        shooter.runShooter(topVelocity-5, bottomVelocity-5),
                                         intake.runIntake(1, 0.1),
                                         new SequentialAction(
                                                 new SleepAction(1),
@@ -102,9 +103,10 @@ public class Red_Far_Spikemark_Loading_Zone extends LinearOpMode {
 
                         //Shoot
                         .strafeToSplineHeading(new Vector2d(55, 14), Math.toRadians(156))
+                        .stopAndAdd(drivetrain.turnTo(-70,65))
                         .stopAndAdd(
                                 new ParallelAction(
-                                        shooter.runShooter(topVelocity, bottomVelocity),
+                                        shooter.runShooter(topVelocity-5, bottomVelocity-5),
                                         intake.runIntake(1, 0.1),
                                         new SequentialAction(
                                                 new SleepAction(1),
@@ -126,9 +128,10 @@ public class Red_Far_Spikemark_Loading_Zone extends LinearOpMode {
 
                         //Shoot
                         .strafeToSplineHeading(new Vector2d(55, 14), Math.toRadians(154))
+                        .stopAndAdd(drivetrain.turnTo(-70,65))
                         .stopAndAdd(
                                 new ParallelAction(
-                                        shooter.runShooter(topVelocity, bottomVelocity),
+                                        shooter.runShooter(topVelocity-5, bottomVelocity-5),
                                         intake.runIntake(1, 0.1),
                                         new SequentialAction(
                                                 new SleepAction(1),
@@ -151,9 +154,10 @@ public class Red_Far_Spikemark_Loading_Zone extends LinearOpMode {
 
                         //Shoot
                         .strafeToSplineHeading(new Vector2d(55, 14), Math.toRadians(154))
+                        .stopAndAdd(drivetrain.turnTo(-70,65))
                         .stopAndAdd(
                                 new ParallelAction(
-                                        shooter.runShooter(topVelocity, bottomVelocity),
+                                        shooter.runShooter(topVelocity-5, bottomVelocity-5),
                                         intake.runIntake(1, 0.1),
                                         new SequentialAction(
                                                 new SleepAction(1),

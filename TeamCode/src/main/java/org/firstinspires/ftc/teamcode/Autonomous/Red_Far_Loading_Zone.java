@@ -60,6 +60,7 @@ public class Red_Far_Loading_Zone extends LinearOpMode {
         Actions.runBlocking(
                 drive.actionBuilder(startPose)
                         .strafeToSplineHeading(new Vector2d(55, 14), Math.toRadians(156))
+                        .stopAndAdd(drivetrain.turnTo(-70,65))
                         .stopAndAdd(
                                 new ParallelAction(
                                         shooter.runShooter(topVelocity,bottomVelocity),
@@ -77,6 +78,7 @@ public class Red_Far_Loading_Zone extends LinearOpMode {
                         .strafeToSplineHeading(new Vector2d(60, 60), Math.toRadians(90))
 
                         .strafeToSplineHeading(new Vector2d(55, 14), Math.toRadians(156))
+                        .stopAndAdd(drivetrain.turnTo(-70,65))
                         .stopAndAdd(
                                 new ParallelAction(
                                         shooter.runShooter(topVelocity,bottomVelocity),
@@ -94,6 +96,7 @@ public class Red_Far_Loading_Zone extends LinearOpMode {
                         .strafeToSplineHeading(new Vector2d(60, 60), Math.toRadians(90))
 
                         .strafeToSplineHeading(new Vector2d(55, 14), Math.toRadians(156))
+                        .stopAndAdd(drivetrain.turnTo(-70,65))
                         .stopAndAdd(
                                 new ParallelAction(
                                         shooter.runShooter(topVelocity,bottomVelocity),
@@ -111,6 +114,7 @@ public class Red_Far_Loading_Zone extends LinearOpMode {
                         .strafeToSplineHeading(new Vector2d(60, 60), Math.toRadians(90))
 
                         .strafeToSplineHeading(new Vector2d(55, 14), Math.toRadians(156))
+                        .stopAndAdd(drivetrain.turnTo(-70,65))
                         .stopAndAdd(
                                 new ParallelAction(
                                         shooter.runShooter(topVelocity,bottomVelocity),

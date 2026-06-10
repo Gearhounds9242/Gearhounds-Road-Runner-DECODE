@@ -66,7 +66,7 @@ public class Mechanum extends OpMode {
     public static double Bottom_Target_Speed = 2000.0;
     public static double shift = 1.0;
     // Drop servo + ball count logic
-    public static double rotationFactor = -0.03;
+    public static double rotationFactor = -0.015;
     public static double aimTolorance = 0.2;
     public static int ballNumber = 0;
     public static int goalX = 0;
@@ -282,13 +282,13 @@ public class Mechanum extends OpMode {
 
         double turnPower = 0;
 
-        if ((topReady && bottomReady) && (aimOutput > 0 && aimOutput < 0.2)) {
+        if ((topReady && bottomReady) && (Math.abs(bearing) < offset)) {
             leftLightColor = 0.472;
             rightLightColor = 0.472;
         } else if (topReady && bottomReady) {
             leftLightColor = 0.583;
             rightLightColor = 0.583;
-        } else if (aimOutput > 0 && aimOutput < 0.2) {
+        } else if (Math.abs(bearing) < offset) {
             leftLightColor = 0.388;
             rightLightColor = 0.388;
         } else {
@@ -415,7 +415,7 @@ public class Mechanum extends OpMode {
 //
 //        }
         if (gamepad2.right_bumper) {
-            robot.transfer.setVelocity(transfer_velocity);
+            robot.transfer.setPower(1);
             robot.intake.setPower(1);
         }
 
@@ -561,6 +561,7 @@ CAMERA STUFF
         telemetry.addData("Y",drive.localizer.getPose().position.y);
         telemetry.addData("Heading",Math.toDegrees(pose.heading.toDouble()));
         telemetry.addData("offset", offset);
+        telemetry.addData("transfer", robot.transfer.getCurrentPosition());
         telemetry.update();
     }
 
