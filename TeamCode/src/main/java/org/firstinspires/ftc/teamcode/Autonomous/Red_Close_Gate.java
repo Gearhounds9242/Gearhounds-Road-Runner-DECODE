@@ -58,7 +58,7 @@ public class Red_Close_Gate extends LinearOpMode {
                 ///go to shoot location first time
                 .splineToConstantHeading(new Vector2d(-49, -40), Math.toRadians(58.5))
                 .splineToSplineHeading(new Pose2d(-18, -10, Math.toRadians(223.5)), Math.toRadians(60))
-                .waitSeconds(0.05)
+                .stopAndAdd(drivetrain.turnTo(-62.5,61.1))
                 //shoot preload3
                 .stopAndAdd(
                         new ParallelAction(
@@ -78,11 +78,9 @@ public class Red_Close_Gate extends LinearOpMode {
                 .splineToLinearHeading(new Pose2d(-11.5,-29.5, Math.toRadians(270)), Math.toRadians(-90))
                 //turn on intake
 //                .stopAndAdd(intake.runIntake(1, 0.1))
-                .waitSeconds(0.05)
                 .splineToConstantHeading(new Vector2d(-11.5, -53.5), Math.toRadians(-90))
                 //tap transfer
                 .stopAndAdd(transfer.tapTransfer())
-                .waitSeconds(0.05)
                 .strafeTo(new Vector2d(-14,-40))
                 //intake off
                 .stopAndAdd(intake.stopIntake())
@@ -92,7 +90,7 @@ public class Red_Close_Gate extends LinearOpMode {
                 .strafeTo(new Vector2d(-14,-33))
 //                ///go to shoot location second time
                 .splineToLinearHeading(new Pose2d(-10, -10, Math.toRadians(223.5)), Math.toRadians(270))
-                //shoot 3
+                .stopAndAdd(drivetrain.turnTo(-62.5,61.1))
                 .stopAndAdd(
                         new ParallelAction(
                                 shooter.runShooter(topVelocity,bottomVelocity),
@@ -106,25 +104,22 @@ public class Red_Close_Gate extends LinearOpMode {
                                 )
                         )
                 )
-                .waitSeconds(1)
                 ///go to 2nd spike mark
                 .strafeToLinearHeading(new Vector2d(12,-20), Math.toRadians(280))
 //                .splineToSplineHeading(new Pose2d(12, -29.5, Math.toRadians(270)), Math.toRadians(10))
                 //turn on intake
                 .stopAndAdd(intake.runIntake(1, 0.1))
-                .waitSeconds(0.05)
                 .strafeTo(new Vector2d(13,-53.5))
 
 //                .splineToConstantHeading(new Vector2d(12, -53.5), Math.toRadians(-90))
                 //tap transfer
                 .stopAndAdd(transfer.tapTransfer())
-                .waitSeconds(0.05)
                 .splineToConstantHeading(new Vector2d(12, -49), Math.toRadians(-90))
                 //intake off
                 ///go to shoot location third time
                 .splineToConstantHeading(new Vector2d(12, -20), Math.toRadians(-90))
                 .splineToLinearHeading(new Pose2d(-10, -10, Math.toRadians(223.5)), Math.toRadians(10))
-                .waitSeconds(0.05)
+                .stopAndAdd(drivetrain.turnTo(-62.5,61.1))
                 //shoot 3
                 .stopAndAdd(
                         new ParallelAction(

@@ -57,7 +57,7 @@ public class Blue_Close extends LinearOpMode {
 ///go to shoot location first time
 //                .splineToConstantHeading(new Vector2d(-49, -49), Math.toRadians(58.5))
                 .strafeToLinearHeading(new Vector2d(-15.8,-5.8), Math.toRadians(221.5))
-
+                .stopAndAdd(drivetrain.turnTo(-63.2,-55.9))
 //
 
                 ///shoot preload3
@@ -80,6 +80,7 @@ public class Blue_Close extends LinearOpMode {
 //                //tap transfer
                 .stopAndAdd(transfer.tapTransfer())
                 .strafeToLinearHeading(new Vector2d(-13.8,-5.8), Math.toRadians(220))
+                .stopAndAdd(drivetrain.turnTo(-63.2,-55.9))
 
 //                .waitSeconds(0.5)
 
@@ -105,6 +106,7 @@ public class Blue_Close extends LinearOpMode {
                 .strafeToLinearHeading(new Vector2d(-15.8,-5.8), Math.toRadians(220))
 
 //                .waitSeconds(0.5)
+                .stopAndAdd(drivetrain.turnTo(-63.2,-55.9))
 
 ///                shoot 3
                 .stopAndAdd(

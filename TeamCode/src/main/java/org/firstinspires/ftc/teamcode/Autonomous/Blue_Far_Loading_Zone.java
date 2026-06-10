@@ -29,13 +29,14 @@ public class Blue_Far_Loading_Zone extends LinearOpMode {
 
     int topVelocity = 1215;
     int bottomVelocity = 1215;
-    int goalX = -70;
-    int goalY = -60;
     private final GearhoundsHardware robot = new GearhoundsHardware();
     MecanumDrive drive;
 
     // Starting pose
     Pose2d startPose = new Pose2d(new Vector2d(60, -14), Math.toRadians(180));
+
+    PoseMap mirrorPoseMap = pose -> new Pose2dDual<>(pose.position.x, pose.position.y.unaryMinus(), pose.heading.inverse());
+
 
 
     @Override
@@ -57,35 +58,14 @@ public class Blue_Far_Loading_Zone extends LinearOpMode {
 
         if (isStopRequested()) return;
         Actions.runBlocking(
-                drive.actionBuilder(startPose)
-                        // Move to shoot position 1
-                        .strafeToSplineHeading(new Vector2d(55, -14), Math.toRadians(194))
-                        .stopAndAdd(new ParallelAction(drivetrain.turnTo(goalX,goalY)))
+                drive.actionBuilder(startPose, mirrorPoseMap)
+                        .strafeToSplineHeading(new Vector2d(55, 14), Math.toRadians(150))
+                        .stopAndAdd(drivetrain.turnTo(-63.2,-55.9))
+
                         .stopAndAdd(
                                 new ParallelAction(
-                                        shooter.runShooter(topVelocity, bottomVelocity),
-                                        intake.runIntake(1, 1),
-                                        new SequentialAction(
-                                                new SleepAction(1.5),
-                                                transfer.runTransfer(),
-                                                new SleepAction(1),
-                                                transfer.stopTransfer(),
-                                                shooter.stopShooter()
-                                        )
-                                )
-                        )
-                        // Drive to intake position 1
-                        .strafeToSplineHeading(new Vector2d(65,-52.5), Math.toRadians(270))
-                        .strafeTo(new Vector2d(65, -60))
-                        .strafeTo(new Vector2d(65, -58))
-                        .strafeTo(new Vector2d(65, -60))
-                        .stopAndAdd(transfer.tapTransfer())
-                        // Move to shoot position 2
-                        .strafeToSplineHeading(new Vector2d(55, -14), Math.toRadians(195))
-                        .stopAndAdd(
-                                new ParallelAction(
-                                        shooter.runShooter(topVelocity + 50, bottomVelocity + 50),
-                                        intake.runIntake(1, 1),
+                                        shooter.runShooter(topVelocity,bottomVelocity),
+                                        intake.runIntake(1,0.1),
                                         new SequentialAction(
                                                 new SleepAction(1),
                                                 transfer.runTransfer(),
@@ -95,18 +75,16 @@ public class Blue_Far_Loading_Zone extends LinearOpMode {
                                         )
                                 )
                         )
-                        // Drive to intake position 2
-                        .strafeToSplineHeading(new Vector2d(65,-52.5), Math.toRadians(270))
-                        .strafeTo(new Vector2d(65, -60))
-                        .strafeTo(new Vector2d(65, -58))
-                        .strafeTo(new Vector2d(65, -60))
-                        .stopAndAdd(transfer.tapTransfer())
-                        // Move to shoot position 3
-                        .strafeToSplineHeading(new Vector2d(55, -14), Math.toRadians(195))
+                        .strafeToSplineHeading(new Vector2d(60, 14), Math.toRadians(90))
+                        .strafeToSplineHeading(new Vector2d(60, 60), Math.toRadians(90))
+
+                        .strafeToSplineHeading(new Vector2d(55, 14), Math.toRadians(150))
+                        .stopAndAdd(drivetrain.turnTo(-63.2,-55.9))
+
                         .stopAndAdd(
                                 new ParallelAction(
-                                        shooter.runShooter(topVelocity + 50, bottomVelocity + 50),
-                                        intake.runIntake(1, 1),
+                                        shooter.runShooter(topVelocity,bottomVelocity),
+                                        intake.runIntake(1,1),
                                         new SequentialAction(
                                                 new SleepAction(1),
                                                 transfer.runTransfer(),
@@ -116,30 +94,29 @@ public class Blue_Far_Loading_Zone extends LinearOpMode {
                                         )
                                 )
                         )
-                        // Drive to intake position 3
-                        .strafeToSplineHeading(new Vector2d(65,-52.5), Math.toRadians(270))
-                        .strafeTo(new Vector2d(65, -60))
-                        .strafeTo(new Vector2d(65, -58))
-                        .strafeTo(new Vector2d(65, -60))
-                        .stopAndAdd(transfer.tapTransfer())
-                        // Move to shoot position 4
-                        .strafeToSplineHeading(new Vector2d(55, -14), Math.toRadians(195))
+                        .waitSeconds(1)
+                        .strafeToSplineHeading(new Vector2d(60, 14), Math.toRadians(90))
+                        .strafeToSplineHeading(new Vector2d(60, 60), Math.toRadians(90))
+
+                        .strafeToSplineHeading(new Vector2d(55, 14), Math.toRadians(150))
+                        .stopAndAdd(drivetrain.turnTo(-63.2,-55.9))
+
                         .stopAndAdd(
                                 new ParallelAction(
-                                        shooter.runShooter(topVelocity + 50, bottomVelocity + 50),
-                                        intake.runIntake(1, 1),
+                                        shooter.runShooter(topVelocity,bottomVelocity),
+                                        intake.runIntake(1,1),
                                         new SequentialAction(
                                                 new SleepAction(1),
                                                 transfer.runTransfer(),
                                                 new SleepAction(1),
                                                 transfer.stopTransfer(),
-                                                shooter.stopShooter(),
-                                                intake.stopIntake()
+                                                shooter.stopShooter()
                                         )
                                 )
                         )
 
-                        .strafeToSplineHeading(new Vector2d(60,-60), Math.toRadians(270))
+
+                        .splineToSplineHeading(new Pose2d(30, 30, Math.toRadians(90)), Math.toRadians(0))
 
 
 
