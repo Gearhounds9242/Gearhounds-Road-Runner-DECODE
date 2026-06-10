@@ -87,7 +87,7 @@ You may see the word "Pose thrown around a lot. Pose is essentially just a way o
         Actions.runBlocking(
                 drive.actionBuilder(startPose, mirrorPoseMap)
                         .strafeToSplineHeading(new Vector2d(55, 14), Math.toRadians(158))
-                        .stopAndAdd(new ParallelAction(drivetrain.turnTo(goalX,goalY)))
+                        .stopAndAdd(drivetrain.turnTo(-63.2,-55.9))
                         .stopAndAdd(
                                 new ParallelAction(
                                         shooter.runShooter(topVelocity, bottomVelocity),
@@ -105,7 +105,8 @@ You may see the word "Pose thrown around a lot. Pose is essentially just a way o
                         .strafeToConstantHeading(new Vector2d(35, 60))
                         .stopAndAdd(transfer.tapTransfer())
                         .strafeToSplineHeading(new Vector2d(55, 14), Math.toRadians(158))
-                        .stopAndAdd(new ParallelAction(drivetrain.turnTo(goalX,goalY)))
+                        .stopAndAdd(drivetrain.turnTo(-63.2,-55.9))
+
                         .stopAndAdd(
                                 new ParallelAction(
                                         shooter.runShooter(topVelocity, bottomVelocity),
@@ -124,7 +125,7 @@ You may see the word "Pose thrown around a lot. Pose is essentially just a way o
                         .strafeTo(new Vector2d(60, 60))
                         .stopAndAdd(transfer.tapTransfer())
                         .strafeToSplineHeading(new Vector2d(55, 14), Math.toRadians(158))
-                        .stopAndAdd(new ParallelAction(drivetrain.turnTo(goalX,goalY)))
+                        .stopAndAdd(drivetrain.turnTo(-63.2,-55.9))
                         .stopAndAdd(
                                 new ParallelAction(
                                         shooter.runShooter(topVelocity, bottomVelocity),

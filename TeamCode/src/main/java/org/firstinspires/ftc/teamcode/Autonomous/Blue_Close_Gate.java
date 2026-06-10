@@ -60,6 +60,8 @@ public class Blue_Close_Gate extends LinearOpMode {
                 .splineToSplineHeading(new Pose2d(-18, -10, Math.toRadians(223.5)), Math.toRadians(60))
                 .waitSeconds(0.05)
                 //shoot preload3
+                .stopAndAdd(drivetrain.turnTo(-63.2,-55.9))
+
                 .stopAndAdd(
                         new ParallelAction(
                                 shooter.runShooter(topVelocity,bottomVelocity),

@@ -58,7 +58,7 @@ public class Blue_Far_Spikemark_Loading_Zone extends LinearOpMode {
                 drive.actionBuilder(startPose, mirrorPoseMap)
 
                         .strafeToSplineHeading(new Vector2d(55, 14), Math.toRadians(158))
-                        // shoot
+                        .stopAndAdd(drivetrain.turnTo(-63.2,-55.9))
                         .stopAndAdd(
                                 new ParallelAction(
                                         shooter.runShooter(topVelocity, bottomVelocity),
@@ -81,6 +81,8 @@ public class Blue_Far_Spikemark_Loading_Zone extends LinearOpMode {
 
 
                         .strafeToSplineHeading(new Vector2d(55, 15), Math.toRadians(156))
+                        .stopAndAdd(drivetrain.turnTo(-63.2,-55.9))
+
                         //shoot
                         .stopAndAdd(
                                 new ParallelAction(
@@ -105,6 +107,8 @@ public class Blue_Far_Spikemark_Loading_Zone extends LinearOpMode {
 
                         //Shoot
                         .strafeToSplineHeading(new Vector2d(55, 15), Math.toRadians(156))
+                        .stopAndAdd(drivetrain.turnTo(-63.2,-55.9))
+
                         .stopAndAdd(
                                 new ParallelAction(
                                         shooter.runShooter(topVelocity, bottomVelocity),
@@ -129,6 +133,8 @@ public class Blue_Far_Spikemark_Loading_Zone extends LinearOpMode {
 
                         //Shoot
                         .strafeToSplineHeading(new Vector2d(55, 15), Math.toRadians(156))
+                        .stopAndAdd(drivetrain.turnTo(-63.2,-55.9))
+
                         .stopAndAdd(
                                 new ParallelAction(
                                         shooter.runShooter(topVelocity, bottomVelocity),
@@ -154,6 +160,8 @@ public class Blue_Far_Spikemark_Loading_Zone extends LinearOpMode {
 
                         //Shoot
                         .strafeToSplineHeading(new Vector2d(55, 15), Math.toRadians(156))
+                        .stopAndAdd(drivetrain.turnTo(-63.2,-55.9))
+
                         .stopAndAdd(
                                 new ParallelAction(
                                         shooter.runShooter(topVelocity, bottomVelocity),

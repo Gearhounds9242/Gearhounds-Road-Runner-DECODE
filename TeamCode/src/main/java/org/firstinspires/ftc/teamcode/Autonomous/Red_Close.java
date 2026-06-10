@@ -60,6 +60,7 @@ public class Red_Close extends LinearOpMode {
                         .strafeToLinearHeading(new Vector2d(-19.5,-10), Math.toRadians(223.5))
 
 //                .waitSeconds(0.5)
+                        .stopAndAdd(drivetrain.turnTo(-62.5,61.1))
 
                         ///shoot preload3
                         .stopAndAdd(
@@ -83,6 +84,7 @@ public class Red_Close extends LinearOpMode {
                         .strafeToLinearHeading(new Vector2d(-19.5,-10), Math.toRadians(220))
 
 //                .waitSeconds(0.5)
+                        .stopAndAdd(drivetrain.turnTo(-62.5,61.1))
 
                         ///shoot 3
                         .stopAndAdd(
@@ -107,7 +109,7 @@ public class Red_Close extends LinearOpMode {
 
 //                .waitSeconds(0.5)
 
-//                shoot 3
+                        .stopAndAdd(drivetrain.turnTo(-62.5,61.1))
                         .stopAndAdd(
                                 new ParallelAction(
                                         shooter.runShooter(topVelocity,bottomVelocity+100),
