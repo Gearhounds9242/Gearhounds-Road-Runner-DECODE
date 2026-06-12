@@ -56,8 +56,7 @@ public class Red_Close_Gate extends LinearOpMode {
         Action path = drive.actionBuilder(startPose, mirrorPoseMap)
 
                 ///go to shoot location first time
-                .splineToConstantHeading(new Vector2d(-49, -40), Math.toRadians(58.5))
-                .splineToSplineHeading(new Pose2d(-18, -10, Math.toRadians(223.5)), Math.toRadians(60))
+                .strafeToLinearHeading(new Vector2d(-19.5,-10), Math.toRadians(223.5))
                 .stopAndAdd(drivetrain.turnTo(-62.5,61.1))
                 //shoot preload3
                 .stopAndAdd(

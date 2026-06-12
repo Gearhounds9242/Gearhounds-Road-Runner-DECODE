@@ -95,7 +95,7 @@ public class Red_Far_Spikemark_Loading_Zone extends LinearOpMode {
                         )
 
                         // intake
-                        .strafeToLinearHeading(new Vector2d(60, 14), Math.toRadians(90))
+                        .splineToSplineHeading(new Pose2d(60, 20, Math.toRadians(90)), Math.toRadians(0))
                         .strafeTo(new Vector2d(60, 60))
                         .stopAndAdd(transfer.tapTransfer())
                         .strafeTo(new Vector2d(60, 50))
@@ -123,8 +123,8 @@ public class Red_Far_Spikemark_Loading_Zone extends LinearOpMode {
                         .strafeToSplineHeading(new Vector2d(35, 25), Math.toRadians(90))
                         .strafeTo(new Vector2d(35, 60))
                         .stopAndAdd(transfer.tapTransfer())
-                        .strafeTo(new Vector2d(35, 50))
-                        .strafeTo(new Vector2d(35, 60))
+//                        .strafeTo(new Vector2d(35, 50))
+//                        .strafeTo(new Vector2d(35, 60))
 
                         //Shoot
                         .strafeToSplineHeading(new Vector2d(55, 14), Math.toRadians(154))
@@ -145,7 +145,7 @@ public class Red_Far_Spikemark_Loading_Zone extends LinearOpMode {
 
 
                         // intake
-                        .strafeToLinearHeading(new Vector2d(60, 14), Math.toRadians(90))
+                        .splineToSplineHeading(new Pose2d(60, 20, Math.toRadians(90)), Math.toRadians(0))
                         .strafeTo(new Vector2d(60, 60))
                         .stopAndAdd(transfer.tapTransfer())
                         .strafeTo(new Vector2d(60, 50))

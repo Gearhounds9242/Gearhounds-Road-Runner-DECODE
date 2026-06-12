@@ -55,8 +55,6 @@ public class Red_Close extends LinearOpMode {
         if (isStopRequested()) return;
         Actions.runBlocking(
                 drive.actionBuilder(startPose, mirrorPoseMap)
-//                .splineToConstantHeading(new Vector2d(-49, -49), Math.toRadians(58.5))
-                        .strafeToConstantHeading(new Vector2d(-17.5,-6))
                         .strafeToLinearHeading(new Vector2d(-19.5,-10), Math.toRadians(223.5))
 
 //                .waitSeconds(0.5)

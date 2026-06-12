@@ -26,7 +26,8 @@ import org.firstinspires.ftc.teamcode.Utilities.PoseStorage;
 
 @Autonomous(name = "Blue_Far_Loading_Zone")
 public class Blue_Far_Loading_Zone extends LinearOpMode {
-
+    int goalX = -68;
+    int goalY = -70;
     int topVelocity = 1215;
     int bottomVelocity = 1215;
     private final GearhoundsHardware robot = new GearhoundsHardware();
@@ -59,8 +60,8 @@ public class Blue_Far_Loading_Zone extends LinearOpMode {
         if (isStopRequested()) return;
         Actions.runBlocking(
                 drive.actionBuilder(startPose, mirrorPoseMap)
-                        .strafeToSplineHeading(new Vector2d(55, 14), Math.toRadians(150))
-                        .stopAndAdd(drivetrain.turnTo(-63.2,-55.9))
+                        .strafeToSplineHeading(new Vector2d(55, 14), Math.toRadians(157))
+                        .stopAndAdd(drivetrain.turnTo(goalX,goalY))
 
                         .stopAndAdd(
                                 new ParallelAction(
@@ -75,31 +76,10 @@ public class Blue_Far_Loading_Zone extends LinearOpMode {
                                         )
                                 )
                         )
-                        .strafeToSplineHeading(new Vector2d(60, 14), Math.toRadians(90))
-                        .strafeToSplineHeading(new Vector2d(60, 60), Math.toRadians(90))
-
-                        .strafeToSplineHeading(new Vector2d(55, 14), Math.toRadians(150))
-                        .stopAndAdd(drivetrain.turnTo(-63.2,-55.9))
-
-                        .stopAndAdd(
-                                new ParallelAction(
-                                        shooter.runShooter(topVelocity,bottomVelocity),
-                                        intake.runIntake(1,1),
-                                        new SequentialAction(
-                                                new SleepAction(1),
-                                                transfer.runTransfer(),
-                                                new SleepAction(1),
-                                                transfer.stopTransfer(),
-                                                shooter.stopShooter()
-                                        )
-                                )
-                        )
-                        .waitSeconds(1)
-                        .strafeToSplineHeading(new Vector2d(60, 14), Math.toRadians(90))
-                        .strafeToSplineHeading(new Vector2d(60, 60), Math.toRadians(90))
-
-                        .strafeToSplineHeading(new Vector2d(55, 14), Math.toRadians(150))
-                        .stopAndAdd(drivetrain.turnTo(-63.2,-55.9))
+                        .splineToSplineHeading(new Pose2d(60, 20, Math.toRadians(90)), Math.toRadians(0))
+                        .strafeTo(new Vector2d(60, 60))
+                        .strafeToSplineHeading(new Vector2d(55, 14), Math.toRadians(157))
+                        .stopAndAdd(drivetrain.turnTo(goalX,goalY))
 
                         .stopAndAdd(
                                 new ParallelAction(
@@ -114,9 +94,46 @@ public class Blue_Far_Loading_Zone extends LinearOpMode {
                                         )
                                 )
                         )
+                        .splineToSplineHeading(new Pose2d(60, 20, Math.toRadians(90)), Math.toRadians(0))
+                        .strafeTo(new Vector2d(60, 60))
+                        .strafeToSplineHeading(new Vector2d(55, 14), Math.toRadians(157))
+                        .stopAndAdd(drivetrain.turnTo(goalX,goalY))
+
+                        .stopAndAdd(
+                                new ParallelAction(
+                                        shooter.runShooter(topVelocity,bottomVelocity),
+                                        intake.runIntake(1,1),
+                                        new SequentialAction(
+                                                new SleepAction(1),
+                                                transfer.runTransfer(),
+                                                new SleepAction(1),
+                                                transfer.stopTransfer(),
+                                                shooter.stopShooter()
+                                        )
+                                )
+                        )
+
+                        .splineToSplineHeading(new Pose2d(60, 20, Math.toRadians(90)), Math.toRadians(0))
+                        .strafeTo(new Vector2d(60, 60))
+                        .strafeToSplineHeading(new Vector2d(55, 14), Math.toRadians(157))
+                        .stopAndAdd(drivetrain.turnTo(goalX,goalY))
+
+                        .stopAndAdd(
+                                new ParallelAction(
+                                        shooter.runShooter(topVelocity,bottomVelocity),
+                                        intake.runIntake(1,1),
+                                        new SequentialAction(
+                                                new SleepAction(1),
+                                                transfer.runTransfer(),
+                                                new SleepAction(1),
+                                                transfer.stopTransfer(),
+                                                shooter.stopShooter()
+                                        )
+                                )
+                        )
 
 
-                        .splineToSplineHeading(new Pose2d(30, 30, Math.toRadians(90)), Math.toRadians(0))
+                        .strafeToSplineHeading(new Vector2d(60, 60), Math.toRadians(90))
 
 
 

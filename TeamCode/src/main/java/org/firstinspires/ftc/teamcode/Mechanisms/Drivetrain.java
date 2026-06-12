@@ -13,8 +13,8 @@ import org.firstinspires.ftc.teamcode.MecanumDrive;
 public class Drivetrain {
 
     // Tunable constants
-    public static double HEADING_TOLERANCE = Math.toRadians(2.0); // 2 degrees
-    public static double TURN_GAIN         = 2;                 // proportional gain
+    public static double HEADING_TOLERANCE = Math.toRadians(1.5); // 2 degrees
+    public static double TURN_GAIN         = 1.9;                 // proportional gain
     public static double MAX_TURN_POWER    = 0.6;                 // cap turn speed
     public static double MIN_TURN_POWER    = 0.1;                 // prevent stalling
     public static double STABLE_COUNT_REQ  = 10;                  // loops within tolerance before done

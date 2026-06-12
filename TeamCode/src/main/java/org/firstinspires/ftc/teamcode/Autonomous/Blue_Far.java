@@ -29,7 +29,7 @@ public class Blue_Far extends LinearOpMode {
 
     int topVelocity = 1215;
     int bottomVelocity = 1215;
-    int goalX = -70;
+    int goalX = -68;
     int goalY = -70;
     MecanumDrive drive;
     // Starting pose
@@ -90,7 +90,6 @@ public class Blue_Far extends LinearOpMode {
                                         )
                                 )
                         )
-                        .waitSeconds(0.5)
                         .strafeToSplineHeading(new Vector2d(10, 25), Math.toRadians(90))
                         .strafeToConstantHeading(new Vector2d(11, 60))
                         .stopAndAdd(transfer.tapTransfer())
@@ -109,7 +108,7 @@ public class Blue_Far extends LinearOpMode {
                                         )
                                 )
                         )
-                        .splineToSplineHeading(new Pose2d(60, 14, Math.toRadians(90)), Math.toRadians(0))
+                        .splineToSplineHeading(new Pose2d(60, 20, Math.toRadians(90)), Math.toRadians(0))
                         .strafeTo(new Vector2d(60, 60))
                         .strafeTo(new Vector2d(60, 55))
                         .strafeTo(new Vector2d(60, 60))
@@ -130,7 +129,7 @@ public class Blue_Far extends LinearOpMode {
                                         )
                                 )
                         )
-                        .splineToSplineHeading(new Pose2d(30,30, Math.toRadians(90)), Math.toRadians(0))
+                        .strafeToSplineHeading(new Vector2d(60, 60), Math.toRadians(90))
                         .stopAndAdd(new SavePose())
                         .build());
     }

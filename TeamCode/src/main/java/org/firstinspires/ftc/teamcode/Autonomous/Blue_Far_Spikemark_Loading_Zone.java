@@ -27,6 +27,8 @@ public class Blue_Far_Spikemark_Loading_Zone extends LinearOpMode {
 
     private final GearhoundsHardware robot = new GearhoundsHardware();
 
+    int goalX = -68;
+    int goalY = -70;
     int topVelocity = 1230;
     int bottomVelocity = 1230;
     MecanumDrive drive;
@@ -57,11 +59,11 @@ public class Blue_Far_Spikemark_Loading_Zone extends LinearOpMode {
         Actions.runBlocking(
                 drive.actionBuilder(startPose, mirrorPoseMap)
 
-                        .strafeToSplineHeading(new Vector2d(55, 14), Math.toRadians(158))
-                        .stopAndAdd(drivetrain.turnTo(-63.2,-55.9))
+                        .strafeToSplineHeading(new Vector2d(55, 14), Math.toRadians(157))
+                        .stopAndAdd(drivetrain.turnTo(goalX,goalY))
                         .stopAndAdd(
                                 new ParallelAction(
-                                        shooter.runShooter(topVelocity, bottomVelocity),
+                                        shooter.runShooter(topVelocity - 20, bottomVelocity - 20.),
                                         intake.runIntake(1, 0.1),
                                         new SequentialAction(
                                                 new SleepAction(1),
@@ -80,13 +82,13 @@ public class Blue_Far_Spikemark_Loading_Zone extends LinearOpMode {
                         .stopAndAdd(transfer.tapTransfer())
 
 
-                        .strafeToSplineHeading(new Vector2d(55, 15), Math.toRadians(156))
-                        .stopAndAdd(drivetrain.turnTo(-63.2,-55.9))
+                        .strafeToSplineHeading(new Vector2d(55, 15), Math.toRadians(157))
+                        .stopAndAdd(drivetrain.turnTo(goalX + 15,goalY))
 
                         //shoot
                         .stopAndAdd(
                                 new ParallelAction(
-                                        shooter.runShooter(topVelocity, bottomVelocity),
+                                        shooter.runShooter(topVelocity - 15, bottomVelocity - 15),
                                         intake.runIntake(1, 0.1),
                                         new SequentialAction(
                                                 new SleepAction(1),
@@ -106,12 +108,12 @@ public class Blue_Far_Spikemark_Loading_Zone extends LinearOpMode {
                         .strafeTo(new Vector2d(60, 60))
 
                         //Shoot
-                        .strafeToSplineHeading(new Vector2d(55, 15), Math.toRadians(156))
-                        .stopAndAdd(drivetrain.turnTo(-63.2,-55.9))
+                        .strafeToSplineHeading(new Vector2d(55, 15), Math.toRadians(157))
+                        .stopAndAdd(drivetrain.turnTo(goalX + 15,goalY))
 
                         .stopAndAdd(
                                 new ParallelAction(
-                                        shooter.runShooter(topVelocity, bottomVelocity),
+                                        shooter.runShooter(topVelocity - 15, bottomVelocity - 15),
                                         intake.runIntake(1, 0.1),
                                         new SequentialAction(
                                                 new SleepAction(1),
@@ -132,12 +134,12 @@ public class Blue_Far_Spikemark_Loading_Zone extends LinearOpMode {
                         .strafeTo(new Vector2d(35, 60))
 
                         //Shoot
-                        .strafeToSplineHeading(new Vector2d(55, 15), Math.toRadians(156))
-                        .stopAndAdd(drivetrain.turnTo(-63.2,-55.9))
+                        .strafeToSplineHeading(new Vector2d(55, 15), Math.toRadians(157))
+                        .stopAndAdd(drivetrain.turnTo(goalX + 15,goalY))
 
                         .stopAndAdd(
                                 new ParallelAction(
-                                        shooter.runShooter(topVelocity, bottomVelocity),
+                                        shooter.runShooter(topVelocity - 15, bottomVelocity - 15),
                                         intake.runIntake(1, 0.1),
                                         new SequentialAction(
                                                 new SleepAction(1),
@@ -159,12 +161,12 @@ public class Blue_Far_Spikemark_Loading_Zone extends LinearOpMode {
 
 
                         //Shoot
-                        .strafeToSplineHeading(new Vector2d(55, 15), Math.toRadians(156))
-                        .stopAndAdd(drivetrain.turnTo(-63.2,-55.9))
+                        .strafeToSplineHeading(new Vector2d(55, 15), Math.toRadians(157))
+                        .stopAndAdd(drivetrain.turnTo(goalX + 15,goalY))
 
                         .stopAndAdd(
                                 new ParallelAction(
-                                        shooter.runShooter(topVelocity, bottomVelocity),
+                                        shooter.runShooter(topVelocity - 15, bottomVelocity - 15),
                                         intake.runIntake(1, 0.1),
                                         new SequentialAction(
                                                 new SleepAction(1),

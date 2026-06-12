@@ -30,7 +30,7 @@ public class Blue_Far_9_Ball extends LinearOpMode {
 
     public int topVelocity = 1186;
     public int bottomVelocity = 1186;
-    int goalX = -70;
+    int goalX = -68;
     int goalY = -70;
     MecanumDrive drive;
     // Starting pose
@@ -139,7 +139,7 @@ You may see the word "Pose thrown around a lot. Pose is essentially just a way o
                                         )
                                 )
                         )
-                        .splineToSplineHeading(new Pose2d(30,30, Math.toRadians(90)), Math.toRadians(0))
+                        .strafeToSplineHeading(new Vector2d(60, 60), Math.toRadians(90))
 
 
                         .stopAndAdd(new SavePose())

@@ -29,11 +29,11 @@ public class BilinearInterpolator {
      *
      * @param x  first axis value (e.g. distance, speed, angle)
      * @param y  second axis value
-     * @param z  output value at (x, y)
+     * @param   output value at (x, y)
      * @return   this table, for chaining
      */
-    public BilinearInterpolator add(double x, double y, double z) {
-        data.computeIfAbsent(x, k -> new TreeMap<>()).put(y, z);
+    public BilinearInterpolator add(double x, double y, double output) {
+        data.computeIfAbsent(x, k -> new TreeMap<>()).put(y, output);
         return this;
     }
 

@@ -40,6 +40,7 @@ import org.firstinspires.ftc.teamcode.Utilities.PoseStorage;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
+import org.firstinspires.ftc.teamcode.Mechanisms.BilinearInterpolator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -82,9 +83,9 @@ public class Mechanum extends OpMode {
     public static double bottom_I = 0;
     public static double bottom_D = 0;
     public static double bottom_F = 0.0004;
-    public static double aim_P = 0;
-    public static double aim_I = 0;
-    public static double aim_D = 0;
+    public static double aim_P = 0.0195;
+    public static double aim_I = 0.1;
+    public static double aim_D = 0.0009;
     public static double rightLightColor = 0;
     public static double leftLightColor = 0;
     public static double leftLightDeafualtColor = 0;
@@ -107,6 +108,8 @@ public class Mechanum extends OpMode {
     public boolean kickstandDown = false;
     InterpLUT velocityTopLut = new InterpLUT();
     InterpLUT velocityBottomLut = new InterpLUT();
+    BilinearInterpolator redOffset = new BilinearInterpolator();
+    BilinearInterpolator blueOffset = new BilinearInterpolator();
     PIDFController topShooterController;
     PIDFController bottomShooterController;
     PIDController aimController;
@@ -132,6 +135,8 @@ public class Mechanum extends OpMode {
     public static long EXPOSURE_MS = 6;
     public static int GAIN = 0;
     public static int WHITE_BALANCE_K = 4000;
+    public double redOffsetOutput;
+    public double blueOffsetOutput;
 
     public static int zoom;
     private MecanumDrive drive;
@@ -154,6 +159,33 @@ public class Mechanum extends OpMode {
         telemetry.addData("Status", "Initializing...");
         telemetry.update();
 
+        redOffset
+                .add(-50,50, 0)
+                .add(-25,25, 0)
+                .add(50,-50,0)
+                .add(-30,-24,0.5)
+                .add(-60,-35,0.8)
+                .add(-50,0,-2.9)
+                .add(-28,-20,1.1)
+                .add(52,-18,5.1)
+                .add(36,1,5.1)
+                .add(60,28,4.1)
+                .add(0,0,0);
+
+
+        blueOffset
+                .add(-50,-50,0)
+                .add(-25,-25,0)
+                .add(25,25,0)
+                .add(50,50,0)
+                .add(-30,25,2.1)
+                .add(-40,0,3.1)
+                .add(-40,20,1.1)
+                .add(52,-24,2.1)
+                .add(50,-20,2.67)
+                .add(40,-1,2.1)
+                .add(52,23,2.1)
+                .add(0,0,0);
 
 
         velocityTopLut.add(-1, 0);
@@ -260,6 +292,11 @@ public class Mechanum extends OpMode {
         Pose2d pose = drive.localizer.getPose();
         //
         TelemetryPacket packet = new TelemetryPacket();
+        redOffsetOutput = redOffset.get(pose.position.x, pose.position.y);
+        blueOffsetOutput = blueOffset.get(pose.position.x, pose.position.y);
+
+        packet.put("redOffsetOutput", redOffsetOutput);
+        packet.put("blueOffsetOutput", blueOffsetOutput);
 
         driverIsControlling =
             Math.abs(gamepad1.left_stick_x) > 0.1 ||
@@ -331,6 +368,15 @@ public class Mechanum extends OpMode {
             isRedAlliance = false;
         }
 
+
+
+        if(!isRedAlliance){
+            offset = blueOffset.get(pose.position.x, pose.position.y);
+        }
+
+        if(isRedAlliance){
+            offset = redOffset.get(pose.position.x, pose.position.y);
+        }
 
         if (gamepad1.ps && isRedAlliance){
             drive.localizer.setPose(new Pose2d(60.5, -61, Math.toRadians(90)));
@@ -415,7 +461,7 @@ public class Mechanum extends OpMode {
 //
 //        }
         if (gamepad2.right_bumper) {
-            robot.transfer.setPower(1);
+            robot.transfer.setVelocity(transfer_velocity);
             robot.intake.setPower(1);
         }
 
@@ -482,8 +528,9 @@ CAMERA STUFF
                     packet.put("cameraOutputY", cameraOutputY);
                     packet.put("cameraOutputYaw", cameraOutputYaw);
 
-                    drive.localizer.setPose(new Pose2d(cameraOutputX, cameraOutputY, (Math.toRadians(cameraOutputYaw + 90)) ));
-
+                    if(range <= 100) {
+                        drive.localizer.setPose(new Pose2d(cameraOutputX, cameraOutputY, (Math.toRadians(cameraOutputYaw + 90))));
+                    }
                 }
             }
         }
@@ -497,7 +544,8 @@ CAMERA STUFF
                 double bearing = targetTag.ftcPose.bearing;
 
                 if (Math.abs(bearing) > aimTolorance) {
-                    turnPower = (bearing + offset) * rotationFactor;
+                    turnPower = aimController.calculate(bearing, offset);
+//                    turnPower = (bearing + offset) * rotationFactor;
                 }
 
                 telemetry.addData("range", targetTag.ftcPose.range);
@@ -505,7 +553,7 @@ CAMERA STUFF
 
             }
         }
-
+//bearing to bearing offset
 
         // if driver not pressing the trigger make the aimOutput power = 0
         if (gamepad1.optionsWasPressed()) {
@@ -539,6 +587,8 @@ CAMERA STUFF
 //        packet.put("TopCurrentA", robot.TopMotor.getCurrent(CurrentUnit.AMPS));
 //        packet.put("BottomCurrentA", robot.BottomMotor.getCurrent(CurrentUnit.AMPS));
 //        packet.put("IntakeRPM", (robot.intake.getVelocity() / 28) * 60);
+        packet.put("bearing", bearing);
+        packet.put("offset", offset);
         packet.put("BottomVelocity", robot.bottomMotor.getVelocity());
         packet.put("TopVelocity", robot.topMotor.getVelocity());
         packet.put("TopTarget", Top_Target_Speed);
@@ -562,6 +612,8 @@ CAMERA STUFF
         telemetry.addData("Heading",Math.toDegrees(pose.heading.toDouble()));
         telemetry.addData("offset", offset);
         telemetry.addData("transfer", robot.transfer.getCurrentPosition());
+        telemetry.addData("blueOffsetOutput", blueOffsetOutput);
+        telemetry.addData("redOffsetOutput", redOffsetOutput);
         telemetry.update();
     }
 

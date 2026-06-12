@@ -74,8 +74,25 @@ public class Red_Far_Loading_Zone extends LinearOpMode {
                                         )
                                 )
                         )
-                        .strafeToSplineHeading(new Vector2d(60, 14), Math.toRadians(90))
-                        .strafeToSplineHeading(new Vector2d(60, 60), Math.toRadians(90))
+                        .splineToSplineHeading(new Pose2d(60, 20, Math.toRadians(90)), Math.toRadians(0))
+                        .strafeTo(new Vector2d(60, 60))
+                        .strafeToSplineHeading(new Vector2d(55, 14), Math.toRadians(156))
+                        .stopAndAdd(drivetrain.turnTo(-70,65))
+                        .stopAndAdd(
+                                new ParallelAction(
+                                        shooter.runShooter(topVelocity,bottomVelocity),
+                                        intake.runIntake(1,1),
+                                        new SequentialAction(
+                                                new SleepAction(1),
+                                                transfer.runTransfer(),
+                                                new SleepAction(1),
+                                                transfer.stopTransfer(),
+                                                shooter.stopShooter()
+                                        )
+                                )
+                        )
+                        .splineToSplineHeading(new Pose2d(60, 20, Math.toRadians(90)), Math.toRadians(0))
+                        .strafeTo(new Vector2d(60, 60))
 
                         .strafeToSplineHeading(new Vector2d(55, 14), Math.toRadians(156))
                         .stopAndAdd(drivetrain.turnTo(-70,65))
@@ -92,26 +109,8 @@ public class Red_Far_Loading_Zone extends LinearOpMode {
                                         )
                                 )
                         )
-                        .strafeToSplineHeading(new Vector2d(60, 14), Math.toRadians(90))
-                        .strafeToSplineHeading(new Vector2d(60, 60), Math.toRadians(90))
-
-                        .strafeToSplineHeading(new Vector2d(55, 14), Math.toRadians(156))
-                        .stopAndAdd(drivetrain.turnTo(-70,65))
-                        .stopAndAdd(
-                                new ParallelAction(
-                                        shooter.runShooter(topVelocity,bottomVelocity),
-                                        intake.runIntake(1,1),
-                                        new SequentialAction(
-                                                new SleepAction(1),
-                                                transfer.runTransfer(),
-                                                new SleepAction(1),
-                                                transfer.stopTransfer(),
-                                                shooter.stopShooter()
-                                        )
-                                )
-                        )
-                        .strafeToSplineHeading(new Vector2d(60, 14), Math.toRadians(90))
-                        .strafeToSplineHeading(new Vector2d(60, 60), Math.toRadians(90))
+                        .splineToSplineHeading(new Pose2d(60, 20, Math.toRadians(90)), Math.toRadians(0))
+                        .strafeTo(new Vector2d(60, 60))
 
                         .strafeToSplineHeading(new Vector2d(55, 14), Math.toRadians(156))
                         .stopAndAdd(drivetrain.turnTo(-70,65))
@@ -129,14 +128,10 @@ public class Red_Far_Loading_Zone extends LinearOpMode {
                                 )
                         )
 
-                        .strafeToSplineHeading(new Vector2d(60, 14), Math.toRadians(90))
-                        .strafeToSplineHeading(new Vector2d(60, 60), Math.toRadians(90))
-                        .waitSeconds(1)
-
+                        .splineToSplineHeading(new Pose2d(60, 20, Math.toRadians(90)), Math.toRadians(0))
+                        .strafeTo(new Vector2d(60, 60))
 
                         .strafeToLinearHeading(new Vector2d(50, 50), Math.toRadians(90))
-
-
 
                         .stopAndAdd(new SavePose())
                         .build());
