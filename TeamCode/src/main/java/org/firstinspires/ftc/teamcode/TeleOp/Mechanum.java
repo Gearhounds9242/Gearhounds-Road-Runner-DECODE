@@ -547,37 +547,30 @@ CAMERA STUFF
 
 
         if (gamepad1.left_trigger > 0.9) {
-            if (targetTag != null) {
+            double robotX = pose.position.x;
+            double robotY = pose.position.y;
+            double dx = goalX - robotX;
+            double dy = goalY - robotY;
+            double robotHeading = pose.heading.toDouble();
+            double robotHeadingDegrees = Math.toDegrees(robotHeading);
+            double fieldHeadingDegrees = Math.toDegrees(Math.atan2(dy, dx));
+            double targetHeading = fieldHeadingDegrees - robotHeadingDegrees;
+            packet.put("robotHeading", robotHeading);
+            packet.put("targetHeading", targetHeading);
+            // Tag visible: old controll that I know works
+//            double bearing = targetTag.ftcPose.bearing;
+            while (targetHeading > Math.PI) targetHeading -= 2 * Math.PI;
+            while (targetHeading < -Math.PI) targetHeading += 2 * Math.PI;
 
-                double robotX = pose.position.x;
-                double robotY = pose.position.y;
-                double dx = goalX - robotX;
-                double dy = goalY - robotY;
-                double robotHeading = pose.heading.toDouble();
-                double robotHeadingDegrees = Math.toDegrees(robotHeading);
-                double fieldHeadingDegrees = Math.toDegrees(Math.atan2(dy, dx));
-                double targetHeading = fieldHeadingDegrees - robotHeadingDegrees;
-                packet.put("robotHeading", robotHeading);
-                packet.put("targetHeading", targetHeading);
-                // Tag visible: old controll that I know works
-                double bearing = targetTag.ftcPose.bearing;
-                while (targetHeading >  Math.PI) targetHeading -= 2 * Math.PI;
-                while (targetHeading < -Math.PI) targetHeading += 2 * Math.PI;
+            turnPower = aimController.calculate(robotHeading, targetHeading + offset);
 
-                turnPower = aimController.calculate(robotHeading, targetHeading + offset);
+//            if (Math.abs(turnPower) < MIN_TURN_POWER /*&& Math.abs(bearing) > aimTolorance*/) {
+//                turnPower = Math.copySign(MIN_TURN_POWER, turnPower);
+//            }
 
-                if (Math.abs(turnPower) < MIN_TURN_POWER && Math.abs(bearing) > aimTolorance) {
-                    turnPower = Math.copySign(MIN_TURN_POWER, turnPower);
-                }
-
-                telemetry.addData("range", targetTag.ftcPose.range);
-                telemetry.addData("yaw", yaw);
-
-            }
-        }else{
-            turnPower = 0;
-
-        }//bearing to bearing offset
+//            telemetry.addData("range", targetTag.ftcPose.range);
+            telemetry.addData("yaw", yaw);
+        }
 
         // if driver not pressing the trigger make the aimOutput power = 0
         if (gamepad1.optionsWasPressed()) {
