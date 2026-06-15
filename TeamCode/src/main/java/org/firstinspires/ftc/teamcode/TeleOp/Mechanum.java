@@ -83,9 +83,9 @@ public class Mechanum extends OpMode {
     public static double bottom_I = 0;
     public static double bottom_D = 0;
     public static double bottom_F = 0.0004;
-    public static double aim_P = 0.0195;
-    public static double aim_I = 0.1;
-    public static double aim_D = 0.0009;
+    public static double aim_P = 0.02;
+    public static double aim_I = 0.025;
+    public static double aim_D = 0.0001;
     public static double rightLightColor = 0;
     public static double leftLightColor = 0;
     public static double leftLightDeafualtColor = 0;
@@ -96,6 +96,7 @@ public class Mechanum extends OpMode {
     public static double farOffset = 0;
     public static double closeOffset = 0;
     public static double bearing = 0;
+    public static double MIN_TURN_POWER    = 0.1;
     public static double yaw;
     public double aimOutput = 0;
     public static double shooterTolerance;
@@ -132,8 +133,8 @@ public class Mechanum extends OpMode {
     private PtzControl ptzControl = null;
     private boolean cameraReady = false;
     private boolean controlsReady = false;
-    public static long EXPOSURE_MS = 6;
-    public static int GAIN = 0;
+    public static long EXPOSURE_MS = 12;
+    public static int GAIN = 28;
     public static int WHITE_BALANCE_K = 4000;
     public double redOffsetOutput;
     public double blueOffsetOutput;
@@ -159,18 +160,26 @@ public class Mechanum extends OpMode {
         telemetry.addData("Status", "Initializing...");
         telemetry.update();
 
+        //inverse of april tag yaw - 45 degreese
         redOffset
                 .add(-50,50, 0)
                 .add(-25,25, 0)
+                .add(-25,-25,-2)
                 .add(50,-50,0)
                 .add(-30,-24,0.5)
                 .add(-60,-35,0.8)
                 .add(-50,0,-2.9)
+                .add(50,0,-2.7)
                 .add(-28,-20,1.1)
                 .add(52,-18,5.1)
                 .add(36,1,5.1)
-                .add(60,28,4.1)
+                .add(60,10,-8.1)
+                .add(62,-19, -7)
+                .add(65,17,-6)
+//                .add(60,28,4.1)
+                .add(41.6,-2.3,-5.7)
                 .add(0,0,0);
+
 
 
         blueOffset
@@ -319,7 +328,7 @@ public class Mechanum extends OpMode {
 
         double turnPower = 0;
 
-        if ((topReady && bottomReady) && (Math.abs(bearing) < offset)) {
+        if ((topReady && bottomReady) && (Math.abs(bearing) < aimTolorance)) {
             leftLightColor = 0.472;
             rightLightColor = 0.472;
         } else if (topReady && bottomReady) {
@@ -369,15 +378,15 @@ public class Mechanum extends OpMode {
         }
 
 
-
-        if(!isRedAlliance){
-            offset = blueOffset.get(pose.position.x, pose.position.y);
-        }
-
-        if(isRedAlliance){
-            offset = redOffset.get(pose.position.x, pose.position.y);
-        }
-
+//if (autoPower) {
+//    if (!isRedAlliance) {
+//        offset = blueOffset.get(pose.position.x, pose.position.y);
+//    }
+//
+//    if (isRedAlliance) {
+//        offset = redOffset.get(pose.position.x, pose.position.y);
+//    }
+//}
         if (gamepad1.ps && isRedAlliance){
             drive.localizer.setPose(new Pose2d(60.5, -61, Math.toRadians(90)));
         }
@@ -540,20 +549,35 @@ CAMERA STUFF
         if (gamepad1.left_trigger > 0.9) {
             if (targetTag != null) {
 
+                double robotX = pose.position.x;
+                double robotY = pose.position.y;
+                double dx = goalX - robotX;
+                double dy = goalY - robotY;
+                double robotHeading = pose.heading.toDouble();
+                double robotHeadingDegrees = Math.toDegrees(robotHeading);
+                double fieldHeadingDegrees = Math.toDegrees(Math.atan2(dy, dx));
+                double targetHeading = fieldHeadingDegrees - robotHeadingDegrees;
+                packet.put("robotHeading", robotHeading);
+                packet.put("targetHeading", targetHeading);
                 // Tag visible: old controll that I know works
                 double bearing = targetTag.ftcPose.bearing;
+                while (targetHeading >  Math.PI) targetHeading -= 2 * Math.PI;
+                while (targetHeading < -Math.PI) targetHeading += 2 * Math.PI;
 
-                if (Math.abs(bearing) > aimTolorance) {
-                    turnPower = aimController.calculate(bearing, offset);
-//                    turnPower = (bearing + offset) * rotationFactor;
+                turnPower = aimController.calculate(robotHeading, targetHeading + offset);
+
+                if (Math.abs(turnPower) < MIN_TURN_POWER && Math.abs(bearing) > aimTolorance) {
+                    turnPower = Math.copySign(MIN_TURN_POWER, turnPower);
                 }
 
                 telemetry.addData("range", targetTag.ftcPose.range);
                 telemetry.addData("yaw", yaw);
 
             }
-        }
-//bearing to bearing offset
+        }else{
+            turnPower = 0;
+
+        }//bearing to bearing offset
 
         // if driver not pressing the trigger make the aimOutput power = 0
         if (gamepad1.optionsWasPressed()) {

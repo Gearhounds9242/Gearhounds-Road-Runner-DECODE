@@ -43,8 +43,8 @@ public class Vision {
     // Tag IDs
     public static final int RED_GOAL_TAG_ID  = 24;
     public static final int BLUE_GOAL_TAG_ID = 20;
-    public static long EXPOSURE_MS = 6;
-    public static int GAIN = 0;
+    public static long EXPOSURE_MS = 1;
+    public static int GAIN = 5;
 
     private final GearhoundsHardware robot;
     private final VisionPortal visionPortal;
