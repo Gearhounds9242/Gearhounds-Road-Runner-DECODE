@@ -26,8 +26,8 @@ import org.firstinspires.ftc.teamcode.Utilities.PoseStorage;
 
 @Autonomous(name = "Blue_Far_Loading_Zone")
 public class Blue_Far_Loading_Zone extends LinearOpMode {
-    int goalX = -68;
-    int goalY = -70;
+    int goalX = -70;
+    int goalY = -66;
     int topVelocity = 1215;
     int bottomVelocity = 1215;
     private final GearhoundsHardware robot = new GearhoundsHardware();

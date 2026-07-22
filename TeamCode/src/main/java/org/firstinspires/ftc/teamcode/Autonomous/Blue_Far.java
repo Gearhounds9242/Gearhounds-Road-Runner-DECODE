@@ -29,8 +29,8 @@ public class Blue_Far extends LinearOpMode {
 
     int topVelocity = 1215;
     int bottomVelocity = 1215;
-    int goalX = -68;
-    int goalY = -70;
+    int goalX = -70;
+    int goalY = -66;
     MecanumDrive drive;
     // Starting pose
     Pose2d startPose = new Pose2d(new Vector2d(60, -14), Math.toRadians(180));

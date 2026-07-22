@@ -97,6 +97,7 @@ public class Mechanum extends OpMode {
     public static double closeOffset = 0;
     public static double bearing = 0;
     public static double MIN_TURN_POWER    = 0.1;
+    public static double offsetOffset;
     public static double yaw;
     public double aimOutput = 0;
     public static double shooterTolerance;
@@ -378,15 +379,15 @@ public class Mechanum extends OpMode {
         }
 
 
-//if (autoPower) {
-//    if (!isRedAlliance) {
-//        offset = blueOffset.get(pose.position.x, pose.position.y);
-//    }
-//
-//    if (isRedAlliance) {
-//        offset = redOffset.get(pose.position.x, pose.position.y);
-//    }
-//}
+if (autoPower) {
+    if (!isRedAlliance) {
+        offset = blueOffset.get(pose.position.x, pose.position.y);
+    }
+
+    if (isRedAlliance) {
+        offset = redOffset.get(pose.position.x, pose.position.y);
+    }
+}
         if (gamepad1.ps && isRedAlliance){
             drive.localizer.setPose(new Pose2d(60.5, -61, Math.toRadians(90)));
         }
@@ -396,10 +397,10 @@ public class Mechanum extends OpMode {
 
 
         if (gamepad1.dpadUpWasPressed()){
-            offset += 1;
+            offsetOffset += 1;
         }
         if (gamepad1.dpadDownWasPressed()){
-            offset -= 1;
+            offsetOffset -= 1;
         }
 
 
@@ -547,29 +548,19 @@ CAMERA STUFF
 
 
         if (gamepad1.left_trigger > 0.9) {
-            double robotX = pose.position.x;
-            double robotY = pose.position.y;
-            double dx = goalX - robotX;
-            double dy = goalY - robotY;
-            double robotHeading = pose.heading.toDouble();
-            double robotHeadingDegrees = Math.toDegrees(robotHeading);
-            double fieldHeadingDegrees = Math.toDegrees(Math.atan2(dy, dx));
-            double targetHeading = fieldHeadingDegrees - robotHeadingDegrees;
-            packet.put("robotHeading", robotHeading);
-            packet.put("targetHeading", targetHeading);
-            // Tag visible: old controll that I know works
-//            double bearing = targetTag.ftcPose.bearing;
-            while (targetHeading > Math.PI) targetHeading -= 2 * Math.PI;
-            while (targetHeading < -Math.PI) targetHeading += 2 * Math.PI;
+            if (targetTag != null) {
 
-            turnPower = aimController.calculate(robotHeading, targetHeading + offset);
+                // Tag visible: old controll that I know works
+                double bearing = targetTag.ftcPose.bearing;
 
-//            if (Math.abs(turnPower) < MIN_TURN_POWER /*&& Math.abs(bearing) > aimTolorance*/) {
-//                turnPower = Math.copySign(MIN_TURN_POWER, turnPower);
-//            }
+                if (Math.abs(bearing) > aimTolorance) {
+                    turnPower = (bearing + offset + offsetOffset) * rotationFactor;
+                }
 
-//            telemetry.addData("range", targetTag.ftcPose.range);
-            telemetry.addData("yaw", yaw);
+                telemetry.addData("range", targetTag.ftcPose.range);
+                telemetry.addData("yaw", yaw);
+
+            }
         }
 
         // if driver not pressing the trigger make the aimOutput power = 0

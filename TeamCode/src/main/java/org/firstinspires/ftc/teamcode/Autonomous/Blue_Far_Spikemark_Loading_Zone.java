@@ -27,8 +27,8 @@ public class Blue_Far_Spikemark_Loading_Zone extends LinearOpMode {
 
     private final GearhoundsHardware robot = new GearhoundsHardware();
 
-    int goalX = -68;
-    int goalY = -70;
+    int goalX = -70;
+    int goalY = -66;
     int topVelocity = 1230;
     int bottomVelocity = 1230;
     MecanumDrive drive;
